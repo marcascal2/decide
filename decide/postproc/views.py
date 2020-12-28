@@ -15,6 +15,23 @@ class PostProcView(APIView):
 
         out.sort(key=lambda x: -x['postproc'])
         return Response(out)
+        
+    def simple(self, options, seats):
+        out = []
+        for simp in options:
+            out.append({
+                **simp,
+                'postprocesado': 0,
+            })
+        out.sort(key=lamba x: -x['votes'])
+
+        sea = seats;
+        n = 0;
+
+        for votes in out:
+                n = votes['votes']+n;
+        
+        valEs = n/sea;
 
     def post(self, request):
         """
