@@ -2,7 +2,8 @@ from django.db import models
 from django.contrib.postgres.fields import JSONField
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-
+from django.utils import timezone
+from django.core.exceptions import ValidationError
 from base import mods
 from base.models import Auth, Key
 
@@ -27,13 +28,17 @@ class QuestionOption(models.Model):
     def __str__(self):
         return '{} ({})'.format(self.option, self.number)
 
+def validate_start_date(value):
+    #end_date = 
+    if value < timezone.now() or value > end_date:
+        raise ValidationError("La fecha introducida es inadecuada")
 
 class Voting(models.Model):
     name = models.CharField(max_length=200)
     desc = models.TextField(blank=True, null=True)
     question = models.ForeignKey(Question, related_name='voting', on_delete=models.CASCADE)
 
-    start_date = models.DateTimeField(blank=True, null=True)
+    start_date = models.DateTimeField(blank=True, null=True, validators=[validate_start_date])
     end_date = models.DateTimeField(blank=True, null=True)
 
     pub_key = models.OneToOneField(Key, related_name='voting', blank=True, null=True, on_delete=models.SET_NULL)
