@@ -4,8 +4,8 @@ from .models import Census
 
 
 class CensusAdmin(admin.ModelAdmin):
-    list_display = ('voting_id', 'voter_id','adscripcion')
-    list_filter = ('voting_id', 'adscripcion')
+    list_display = ('voting_id', 'voter_id','adscripcion','date')
+    list_filter = ('voting_id', 'adscripcion','date')
 
     search_fields = ('voter_id', 'adscripcion')
 

@@ -5,5 +5,7 @@ class Census(models.Model):
     voting_id = models.PositiveIntegerField()
     voter_id = models.PositiveIntegerField()
     adscripcion = models.CharField(max_length=20, blank=True, null=True)
+    date = models.DateField()
+
     class Meta:
-        unique_together = (('voting_id', 'voter_id', 'adscripcion'),)
+        unique_together = (('voting_id', 'voter_id'),)
