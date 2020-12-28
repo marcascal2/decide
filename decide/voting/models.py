@@ -74,7 +74,6 @@ class Voting(models.Model):
         shuffle_url = "/shuffle/{}/".format(self.id)
         decrypt_url = "/decrypt/{}/".format(self.id)
         auths = [{"name": a.name, "url": a.url} for a in self.auths.all()]
-
         # first, we do the shuffle
         data = { "msgs": votes }
         response = mods.post('mixnet', entry_point=shuffle_url, baseurl=auth.url, json=data,
@@ -102,7 +101,10 @@ class Voting(models.Model):
         options = self.question.options.all()
 
         opts = []
+        print(tally)
+        print(options)
         for opt in options:
+            print(opt)
             if isinstance(tally, list):
                 votes = tally.count(opt.number)
             else:

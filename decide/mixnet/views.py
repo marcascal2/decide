@@ -73,7 +73,7 @@ class Shuffle(APIView):
          * pk: { "p": int, "g": int, "y": int } / nullable
          * position: int / nullable
         """
-
+        print(voting_id)
         position = request.data.get("position", 0)
         mn = get_object_or_404(Mixnet, voting_id=voting_id, auth_position=position)
 

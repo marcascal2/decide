@@ -16,6 +16,18 @@ class PostProcView(APIView):
         out.sort(key=lambda x: -x['postproc'])
         return Response(out)
 
+    def paridad(self, options): 
+        out = []
+        
+        for opt in options:
+            out.append({
+                **opt, 
+                'paridad': [],
+            })
+        for i in out: 
+            print(i)
+
+
     def post(self, request):
         """
          * type: IDENTITY | EQUALITY | WEIGHT
@@ -33,6 +45,6 @@ class PostProcView(APIView):
         opts = request.data.get('options', [])
 
         if t == 'IDENTITY':
-            return self.identity(opts)
+            return self.paridad(opts)
 
         return Response({})
