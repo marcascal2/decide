@@ -25,7 +25,7 @@ class CensusCreate(generics.ListCreateAPIView):
         date = request.data.get('date')
         try:
             for voter in voters:
-                census = Census(voting=voting, voter_id=voter, adscripcion=adscripcion, date=date)
+                census = Census(voting=voting, voter=voter, adscripcion=adscripcion, date=date)
                 census.save()
         except IntegrityError:
             return Response('Error try to create census', status=ST_409)
@@ -33,7 +33,7 @@ class CensusCreate(generics.ListCreateAPIView):
 
     def list(self, request, *args, **kwargs):
         voting = request.GET.get('voting')
-        voters = Census.objects.filter(voting=voting).values_list('voter_id', flat=True)
+        voters = Census.objects.filter(voting=voting).values_list('voter', flat=True)
         adscripcion = Census.objects.filter(voting=voting).values_list('adscripcion', flat=True)
         date = Census.objects.filter(voting=voting).values_list('date', flat=True)
         question = Voting.objects.filter(voting=voting).values_list('question', flat=True)
@@ -42,20 +42,20 @@ class CensusCreate(generics.ListCreateAPIView):
 
 class CensusDetail(generics.RetrieveDestroyAPIView):
 
-    def destroy(self, request, voting_id, *args, **kwargs):
+    def destroy(self, request, voting, *args, **kwargs):
         voters = request.data.get('voters')
         adscripcion = request.data.get('adscripcion')
         date = request.data.get('date')
-        census = Census.objects.filter(voting=voting, voter_id__in=voters,adscripcion=adscripcion, date=date)
+        census = Census.objects.filter(voting=voting, voter=voters,adscripcion=adscripcion, date=date)
         census.delete()
         return Response('Voters deleted from census', status=ST_204)
 
-    def retrieve(self, request, voting_id, *args, **kwargs):
-        voter = request.GET.get('voter_id')
+    def retrieve(self, request, voting, *args, **kwargs):
+        voter = request.GET.get('voter')
         adscripcion = request.GET.get('adscripcion')
         date = request.GET.get('date')
         try:
-            Census.objects.get(voting=voting, voter_id=voter, adscripcion=adscripcion, date=date)
+            Census.objects.get(voting=voting, voter=voter, adscripcion=adscripcion, date=date)
         except ObjectDoesNotExist:
             return Response('Invalid voter', status=ST_401)
         return Response('Valid voter')
