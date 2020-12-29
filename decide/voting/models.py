@@ -40,13 +40,19 @@ class Voting(models.Model):
     start_date = models.DateTimeField(blank=True, null=True)
     end_date = models.DateTimeField(blank=True, null=True)
 
-    age = models.PositiveIntegerField(blank=True, null=True, validators=[validate_age])
-
+    min_age = models.PositiveIntegerField(blank=True, null=True, validators=[validate_age])
+    max_age = models.PositiveIntegerField(blank=True, null=True, validators=[validate_age])
+    
     pub_key = models.OneToOneField(Key, related_name='voting', blank=True, null=True, on_delete=models.SET_NULL)
     auths = models.ManyToManyField(Auth, related_name='votings')
 
     tally = JSONField(blank=True, null=True)
     postproc = JSONField(blank=True, null=True)
+
+    def save(self):
+        if self.min_age > self.max_age :
+            raise ValidationError("Edad máxima debe ser mayor que la edad mínima")
+        return super().save()
 
     def create_pubkey(self):
         if self.pub_key or not self.auths.count():
