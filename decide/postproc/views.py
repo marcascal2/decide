@@ -33,7 +33,16 @@ class PostProcView(APIView):
         opts = request.data.get('options', [])
 
         if t == 'IDENTITY':
-            return self.identity(opts)
+            return self.identity(self, opcs)
+    def comprobar(self,opcs):
+        comprueba = False   
+        out = []
+        for opc in opcs:
+            out.append({
+                **opc
+            })
+
+
     def porcentaje_genero(self, mujeres, hombres):
         suma = len(mujeres) + len(hombres)
         porcentaje_mujeres = len(mujeres)/suma
