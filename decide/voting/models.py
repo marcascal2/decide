@@ -2,7 +2,8 @@ from django.db import models
 from django.contrib.postgres.fields import JSONField
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-
+from django.core.exceptions import ValidationError
+from django.utils import timezone
 from base import mods
 from base.models import Auth, Key
 
@@ -27,6 +28,9 @@ class QuestionOption(models.Model):
     def __str__(self):
         return '{} ({})'.format(self.option, self.number)
 
+def validate_end_date(value):
+    if value < timezone.now():
+        raise ValidationError("La fecha de fin no puede anterior a este momento")
 
 class Voting(models.Model):
     name = models.CharField(max_length=200)
@@ -34,7 +38,7 @@ class Voting(models.Model):
     question = models.ForeignKey(Question, related_name='voting', on_delete=models.CASCADE)
 
     start_date = models.DateTimeField(blank=True, null=True)
-    end_date = models.DateTimeField(blank=True, null=True)
+    end_date = models.DateTimeField(validators=[validate_end_date])
 
     pub_key = models.OneToOneField(Key, related_name='voting', blank=True, null=True, on_delete=models.SET_NULL)
     auths = models.ManyToManyField(Auth, related_name='votings')
