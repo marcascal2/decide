@@ -11,7 +11,7 @@ from rest_framework.status import (
 )
 
 from base.perms import UserIsStaff
-from .models import Census
+from .models import Census, CensusGroupByVoting
 from voting.models import Voting
 
 
@@ -38,7 +38,6 @@ class CensusCreate(generics.ListCreateAPIView):
         date = Census.objects.filter(voting=voting).values_list('date', flat=True)
         question = Voting.objects.filter(voting=voting).values_list('question', flat=True)
         return Response({'voters': voters, 'adscripcion': adscripcion, 'date': date})
-
 
 class CensusDetail(generics.RetrieveDestroyAPIView):
 
