@@ -83,7 +83,7 @@ class Voting(models.Model):
             # TODO: manage error
             pass
 
-        # then, we can decrypt that
+        # then, we can decrypt that 
         data = {"msgs": response.json()}
         response = mods.post('mixnet', entry_point=decrypt_url, baseurl=auth.url, json=data,
                 response=True)
