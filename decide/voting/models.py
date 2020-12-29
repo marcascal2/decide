@@ -7,8 +7,10 @@ from base import mods
 from base.models import Auth, Key
 
 
+
 class Question(models.Model):
     desc = models.TextField()
+    
 
     def __str__(self):
         return self.desc
@@ -26,6 +28,23 @@ class QuestionOption(models.Model):
 
     def __str__(self):
         return '{} ({})'.format(self.option, self.number)
+
+class QuestionPrefer(models.Model):
+    question = models.ForeignKey(Question, related_name='prefer_options', on_delete=models.CASCADE)
+    prefer = models.BooleanField(blank=True)
+    number = models.PositiveIntegerField(blank=True, null=True)
+    option = models.TextField()
+
+    def save(self):
+        if not self.number:
+            self.number = self.question.prefer_options.count() + 2
+        if not self.prefer:
+            self.prefer = self.question.prefer_options.count() + 2
+        return super().save()
+
+    def __str__(self):
+        return '{} ({})'.format(self.option, self.number)
+        
 
 
 class Voting(models.Model):
@@ -100,6 +119,7 @@ class Voting(models.Model):
     def do_postproc(self):
         tally = self.tally
         options = self.question.options.all()
+        prefer_options = self.question.prefer_options.all()
 
         opts = []
         for opt in options:
@@ -113,7 +133,21 @@ class Voting(models.Model):
                 'votes': votes
             })
 
-        data = { 'type': 'IDENTITY', 'options': opts }
+
+        prefers = []
+        for pre in prefer_options:
+            if isinstance(tally, list):
+                votes = tally.count(pre.number)
+            else:
+                votes = 0
+            prefers.append({
+                'option': pre.option,
+                'prefer_op': pre.prefer,
+                'number': pre.number,
+                'votes': votes
+            })
+
+        data = { 'type': 'IDENTITY', 'options': opts, 'prefer_options':prefers}
         postp = mods.post('postproc', json=data)
 
         self.postproc = postp
