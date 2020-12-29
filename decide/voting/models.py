@@ -28,6 +28,23 @@ class QuestionOption(models.Model):
         return '{} ({})'.format(self.option, self.number)
 
 
+class QuestionOrdering(models.Model):
+    question = models.ForeignKey(Question, related_name='options_ordering', on_delete=models.CASCADE)
+    number = models.PositiveIntegerField(blank=True, null=True)
+    option = models.TextField()
+    ordering = models.PositiveIntegerField(blank=True, null=True)
+
+    def save(self):
+        if not self.number:
+            self.number = self.question.options.count() + 2
+        if not self.ordering:
+            self.ordering = self.question.options_ordering.count() + 2
+        return super().save()
+        
+
+    def __str__(self):
+        return '{} ({})'.format(self.option, self.number)
+
 class Voting(models.Model):
     name = models.CharField(max_length=200)
     desc = models.TextField(blank=True, null=True)
@@ -100,6 +117,7 @@ class Voting(models.Model):
     def do_postproc(self):
         tally = self.tally
         options = self.question.options.all()
+        options_ordering = self.question.options_ordering.all()
 
         opts = []
         for opt in options:
@@ -113,7 +131,20 @@ class Voting(models.Model):
                 'votes': votes
             })
 
-        data = { 'type': 'IDENTITY', 'options': opts }
+        opts_ordering = []
+        for opt in options_ordering:
+            if isinstance(tally, list):
+                votes = tally.count(opt.ordering)
+            else:
+                votes = 0
+            opts_ordering.append({
+                'option': opt.option,
+                'ordering':opt.ordering,
+                'number': opt.number,
+                'votes': votes
+            })
+
+        data = { 'type': 'IDENTITY', 'options': opts, 'options_ordering': opts_ordering }
         postp = mods.post('postproc', json=data)
 
         self.postproc = postp
