@@ -21,7 +21,7 @@ class PostProcView(APIView):
         for simp in options:
             out.append({
                 **simp,
-                'postprocesado': 0,
+                'postproc': 0,
             })
         out.sort(key=lamba x: -x['votes'])
 
@@ -29,10 +29,20 @@ class PostProcView(APIView):
         n = 0;
 
         for votes in out:
-                n = votes['votes']+n;
+                n = votes['votes'] + n;
         
         valEs = n/sea;
 
+        n1 = 0;
+
+        while sea > 0:
+            if n1 < len(out):
+                seats_ = math.trunc(out[a]['votes']/valEs) 
+                out[n1]['postproc'] = seats_;
+                sea = sea - seats_;
+                n1 = n1+1;
+            else:
+                sea = sea + 1;    
     def post(self, request):
         """
          * type: IDENTITY | EQUALITY | WEIGHT
