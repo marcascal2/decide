@@ -28,10 +28,48 @@ class QuestionOption(models.Model):
         return '{} ({})'.format(self.option, self.number)
 
 
+class Candidate(models.Model):
+    name = models.TextField()
+    age = models.PositiveIntegerField(null=True)
+    number = models.PositiveIntegerField(blank=True, null=True)
+
+    PARTIDOS = (('PP', 'Partido popular'),
+        ('PSOE', 'Partido Socialista Obrero Español'),
+        ('UP', 'Unidas Podemos'),
+        ('PACMA', 'PACMA'),
+        ('VOX', 'VOX'),
+        ('CS', 'Ciudadanos')    
+    )
+    COMUNIDADES = (('AN', 'Andalucia'),        
+        ('AR', 'Aragon'),
+        ('AS', 'Asturias'),    
+        ('BA', 'Baleares'),     
+        ('CA', 'Canarias'),
+        ('CT', 'Cantabria'),         
+        ('CAM', 'Castilla-Mancha'),  
+        ('CAL', 'Castilla-Leon'),  
+        ('CAT', 'Cataluña'),  
+        ('CE', 'Ceuta'),  
+        ('EX', 'Extremadura'),  
+        ('GA', 'Galicia'),  
+        ('LR', 'La-Rioja'),  
+        ('MA', 'Madrid'), 
+        ('ME', 'Melilla'),   
+        ('MU', 'Murcia'),  
+        ('NA', 'Navarra'),
+        ('PV', 'País-Vasco'),
+        ('VA', 'Valencia')) 
+    auto_community = models.TextField(choices=COMUNIDADES, default='AN')
+    sex = models.TextField(blank=True, null=True, choices=[('H','HOMBRE'),('M','MUJER')])
+    political_party = models.TextField(choices= PARTIDOS, default = 'PACMA')
+    def __str__(self):
+         return '{} ({}) - {} - {} - {}'.format(self.name, self.age, self.auto_community, self.sex, self.political_party)
+
 class Voting(models.Model):
     name = models.CharField(max_length=200)
     desc = models.TextField(blank=True, null=True)
-    question = models.ForeignKey(Question, related_name='voting', on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, related_name='voting', on_delete=models.CASCADE,null=True)
+    candidates = models.ManyToManyField(Candidate, related_name='votings', blank = True)
 
     start_date = models.DateTimeField(blank=True, null=True)
     end_date = models.DateTimeField(blank=True, null=True)
@@ -100,6 +138,7 @@ class Voting(models.Model):
     def do_postproc(self):
         tally = self.tally
         options = self.question.options.all()
+        candidates = self.candidates.all()
 
         opts = []
         for opt in options:
@@ -112,8 +151,20 @@ class Voting(models.Model):
                 'number': opt.number,
                 'votes': votes
             })
-
-        data = { 'type': 'IDENTITY', 'options': opts }
+        cnds = []
+        for candidate in candidates:
+            if isinstance(tally,list):
+                votes = tally.count(candidate.number)
+            else:
+                votes=0
+            cnds.append({
+                'name': candidate.name,
+                'sex': candidate.sex,
+                'auto_community': candidate.auto_community,
+                'age': candidate.age,
+                'political_party': candidate.political_party
+            })
+        data = {'type': 'IDENTITY','options': opts, 'candidates': cnds}
         postp = mods.post('postproc', json=data)
 
         self.postproc = postp

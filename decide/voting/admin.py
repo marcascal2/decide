@@ -4,6 +4,8 @@ from django.utils import timezone
 from .models import QuestionOption
 from .models import Question
 from .models import Voting
+from .models import Candidate
+
 
 from .filters import StartedFilter
 
@@ -34,6 +36,12 @@ class QuestionOptionInline(admin.TabularInline):
 class QuestionAdmin(admin.ModelAdmin):
     inlines = [QuestionOptionInline]
 
+# class CandidateAdmin(admin.ModelAdmin):
+#     list_display = ('name', 'sex',)
+
+
+# class QuestionCandidateAdmin(admin.ModelAdmin):
+#     list_display = ('political_party',)
 
 class VotingAdmin(admin.ModelAdmin):
     list_display = ('name', 'start_date', 'end_date')
@@ -44,7 +52,19 @@ class VotingAdmin(admin.ModelAdmin):
     search_fields = ('name', )
 
     actions = [ start, stop, tally ]
+# class VotingCandidateAdmin(admin.ModelAdmin):
+#     list_display = ('name', 'start_date', 'end_date')
+#     readonly_fields = ('start_date', 'end_date', 'pub_key',
+#                        'tally', 'postproc')
+#     date_hierarchy = 'start_date'
+#     list_filter = (StartedFilter,)
+#     search_fields = ('name', )
 
+#     actions = [ start, stop, tally ]
 
 admin.site.register(Voting, VotingAdmin)
 admin.site.register(Question, QuestionAdmin)
+# admin.site.register(Candidate, CandidateAdmin)
+admin.site.register(Candidate)
+# admin.site.register(VotingCandidate, VotingCandidateAdmin)
+# admin.site.register(QuestionCandidate,QuestionCandidateAdmin)
