@@ -41,8 +41,19 @@ class PostProcView(APIView):
             out.append({
                 **opc
             })
-
-
+     for i in out:
+         candidatos=i['candidatos']
+         mujeres =[]
+         hombres=[]
+         for c in candidatos:
+             if c['sexo'] == 'mujer':
+                 mujeres.append(c)
+             elif c['sexo'] == 'hombre':
+                 hombres.append(c)
+        comprueba= self.porcentaje_genero(hombres,mujeres)
+        if ~comprueba:
+            break
+        return comprueba
     def porcentaje_genero(self, mujeres, hombres):
         suma = len(mujeres) + len(hombres)
         porcentaje_mujeres = len(mujeres)/suma
