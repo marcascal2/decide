@@ -26,7 +26,34 @@ class QuestionOption(models.Model):
 
     def __str__(self):
         return '{} ({})'.format(self.option, self.number)
+class Candidate(models.Model):
+    name = models.TextField()
+    age = models.PositiveIntegerField()
 
+    COMUNIDADES = (('AN', 'Andalucia'),        
+        ('AR', 'Aragon'),
+        ('AS', 'Asturias'),    
+        ('BA', 'Baleares'),     
+        ('CA', 'Canarias'),
+        ('CT', 'Cantabria'),         
+        ('CAM', 'Castilla-Mancha'),  
+        ('CAL', 'Castilla-Leon'),  
+        ('CAT', 'Cataluña'),  
+        ('CE', 'Ceuta'),  
+        ('EX', 'Extremadura'),  
+        ('GA', 'Galicia'),  
+        ('LR', 'La-Rioja'),  
+        ('MA', 'Madrid'), 
+        ('ME', 'Melilla'),   
+        ('MU', 'Murcia'),  
+        ('NA', 'Navarra'),
+        ('PV', 'País-Vasco'),
+        ('VA', 'Valencia')) 
+    auto_community = models.TextField(choices=COMUNIDADES, default='AN')
+    sex = models.TextField(blank=True, null=True, choices=[('H','HOMBRE'),('M','MUJER')])
+    
+    def __str__(self):
+         return '{} ({}) - {} - {}'.format(self.name, self.age, self.auto_community, self.sex)
 
 class Voting(models.Model):
     name = models.CharField(max_length=200)
