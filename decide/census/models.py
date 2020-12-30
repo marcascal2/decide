@@ -10,9 +10,14 @@ class CensusGroupByVoting(models.Model):
     def census_number(self):
         census = Census.objects.filter(voting=self.voting).all()
         return len(census)
+    
+    def census(self):
+        census = Census.objects.filter(voting=self.voting).values('voter__username').all()
+
+        return ', '.join(str(item['voter__username']) for item in census)
 
     class Meta:
-        unique_together = (('voting'),)
+        unique_together = (('voting',),)
 
 class CensusGroupByVoter(models.Model):
     voter = models.OneToOneField(User, on_delete=models.CASCADE)

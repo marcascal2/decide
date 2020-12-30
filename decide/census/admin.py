@@ -11,11 +11,11 @@ class CensusAdmin(admin.ModelAdmin):
 
 class CensusGroupByVotingAdmin(admin.ModelAdmin):
     list_display = ('voting', 'census_number')
-    readonly_fields = ('census_number', ) 
+    readonly_fields = ('census_number', 'census') 
 
 class CensusGroupByVoterAdmin(admin.ModelAdmin):
     list_display = ('voter', 'census_number',)
-    readonly_fields = ('voter','census_number', 'census') 
+    readonly_fields = ('census_number', 'census') 
 
 admin.site.register(Census, CensusAdmin)
 admin.site.register(CensusGroupByVoting, CensusGroupByVotingAdmin)

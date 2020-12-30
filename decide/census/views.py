@@ -73,7 +73,26 @@ class CensusGroupVoter(generics.RetrieveDestroyAPIView):
         num = request.GET.get('census_number')
         census = request.GET.get('census')
         try:
-            CensusGroupByVoter.objects.get(voter=voter,census_number=census_number,census=census)
+            CensusGroupByVoter.objects.get(voter=voter,census_number=num,census=census)
         except ObjectDoesNotExist:
             return Response('Invalid voter', status=ST_401)
         return Response('Valid voter')
+
+class CensusGroupVoting(generics.RetrieveDestroyAPIView):
+
+    def destroy(self, request, census_group_by_voting_id, *args, **kwargs):
+        voting = request.data.get('voting')
+        census = request.data.get('census')
+        group = CensusGroupByVoting.objects.filter(voting=voting,census=census)
+        group.delete()
+        return Response('Votings deleted from census', status=ST_204)
+
+    def retrieve(self, request, census_group_by_voting_id, *args, **kwargs):
+        voting = request.GET.get('voting')
+        num = request.GET.get('census_number')
+        census = request.GET.get('census')
+        try:
+            CensusGroupByVoting.objects.get(voting=voting,census_number=num,census=census)
+        except ObjectDoesNotExist:
+            return Response('Invalid voting', status=ST_401)
+        return Response('Valid voting')
