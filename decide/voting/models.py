@@ -31,6 +31,8 @@ class QuestionOption(models.Model):
 class Candidate(models.Model):
     name = models.TextField()
     age = models.PositiveIntegerField(null=True)
+    number = models.PositiveIntegerField(blank=True, null=True)
+
     PARTIDOS = (('PP', 'Partido popular'),
         ('PSOE', 'Partido Socialista Obrero Español'),
         ('UP', 'Unidas Podemos'),
@@ -67,7 +69,7 @@ class Voting(models.Model):
     name = models.CharField(max_length=200)
     desc = models.TextField(blank=True, null=True)
     question = models.ForeignKey(Question, related_name='voting', on_delete=models.CASCADE,null=True)
-    candidates = models.ManyToManyField(Candidate, related_name='votings', null=True, blank = True)
+    candidates = models.ManyToManyField(Candidate, related_name='votings', blank = True)
 
     start_date = models.DateTimeField(blank=True, null=True)
     end_date = models.DateTimeField(blank=True, null=True)
@@ -159,11 +161,10 @@ class Voting(models.Model):
                 'name': candidate.name,
                 'sex': candidate.sex,
                 'auto_community': candidate.auto_community,
-                'political_party': candidate.political_party,
-                'age': candidate.age
+                'age': candidate.age,
+                'political_party': candidate.political_party
             })
-
-        data = {'type': 'IDENTITY', 'options': opts, 'candidates': cnds}
+        data = {'type': 'IDENTITY','options': opts, 'candidates': cnds}
         postp = mods.post('postproc', json=data)
 
         self.postproc = postp

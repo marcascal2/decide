@@ -30,8 +30,7 @@ class PostProcView(APIView):
         """
 
         t = request.data.get('type', 'IDENTITY')
-        opts = request.data.get('candidates', [])
-        print(opts)
+        opts = request.data.get('options', [])
 
         if t == 'IDENTITY':
             return self.identity(opts)

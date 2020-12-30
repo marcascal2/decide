@@ -20,7 +20,7 @@ class QuestionSerializer(serializers.HyperlinkedModelSerializer):
 class CandidateSerializer(serializers.HyperlinkedModelSerializer):
    class Meta:
         model = Candidate
-        fields = ('name', 'age', 'sex', 'auto_community, political_party')
+        fields = ('number', 'name', 'age', 'sex', 'auto_community', 'political_party' )
 
 class VotingSerializer(serializers.HyperlinkedModelSerializer):
     question = QuestionSerializer(many=False)
