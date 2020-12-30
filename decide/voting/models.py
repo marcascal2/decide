@@ -27,16 +27,17 @@ class QuestionOption(models.Model):
     def __str__(self):
         return '{} ({})'.format(self.option, self.number)
 
-class QuestionCandidate(models.Model):
-    political_party = models.TextField()
-
-    def __str__(self):
-        return self.political_party
 
 class Candidate(models.Model):
     name = models.TextField()
-    age = models.PositiveIntegerField()
-
+    age = models.PositiveIntegerField(null=True)
+    PARTIDOS = (('PP', 'Partido popular'),
+        ('PSOE', 'Partido Socialista Obrero Español'),
+        ('UP', 'Unidas Podemos'),
+        ('PACMA', 'PACMA'),
+        ('VOX', 'VOX'),
+        ('CS', 'Ciudadanos')    
+    )
     COMUNIDADES = (('AN', 'Andalucia'),        
         ('AR', 'Aragon'),
         ('AS', 'Asturias'),    
@@ -58,110 +59,15 @@ class Candidate(models.Model):
         ('VA', 'Valencia')) 
     auto_community = models.TextField(choices=COMUNIDADES, default='AN')
     sex = models.TextField(blank=True, null=True, choices=[('H','HOMBRE'),('M','MUJER')])
-    
+    political_party = models.TextField(choices= PARTIDOS, default = 'PACMA')
     def __str__(self):
-         return '{} ({}) - {} - {}'.format(self.name, self.age, self.auto_community, self.sex)
-
-# class VotingCandidate(models.Model):
-#     name = models.CharField(max_length=200)
-#     desc = models.TextField(blank=True, null=True)
-#     candidates = models.ManyToManyField(QuestionCandidate, related_name='voting')
-
-#     start_date = models.DateTimeField(blank=True, null=True)
-#     end_date = models.DateTimeField(blank=True, null=True)
-
-#     pub_key = models.OneToOneField(Key, related_name='voting', blank=True, null=True, on_delete=models.SET_NULL)
-#     auths = models.ManyToManyField(Auth, related_name='votings')
-
-#     tally = JSONField(blank=True, null=True)
-#     postproc = JSONField(blank=True, null=True)
-
-#     def create_pubkey(self):
-#         if self.pub_key or not self.auths.count():
-#             return
-
-#         auth = self.auths.first()
-#         data = {
-#             "voting": self.id,
-#             "auths": [ {"name": a.name, "url": a.url} for a in self.auths.all() ],
-#         }
-#         key = mods.post('mixnet', baseurl=auth.url, json=data)
-#         pk = Key(p=key["p"], g=key["g"], y=key["y"])
-#         pk.save()
-#         self.pub_key = pk
-#         self.save()
-
-#     def get_votes(self, token=''):
-#         # gettings votes from store
-#         votes = mods.get('store', params={'voting_id': self.id}, HTTP_AUTHORIZATION='Token ' + token)
-#         # anon votes
-#         return [[i['a'], i['b']] for i in votes]
-
-#     def tally_votes(self, token=''):
-#         '''
-#         The tally is a shuffle and then a decrypt
-#         '''
-
-#         votes = self.get_votes(token)
-
-#         auth = self.auths.first()
-#         shuffle_url = "/shuffle/{}/".format(self.id)
-#         decrypt_url = "/decrypt/{}/".format(self.id)
-#         auths = [{"name": a.name, "url": a.url} for a in self.auths.all()]
-
-#         # first, we do the shuffle
-#         data = { "msgs": votes }
-#         response = mods.post('mixnet', entry_point=shuffle_url, baseurl=auth.url, json=data,
-#                 response=True)
-#         if response.status_code != 200:
-#             # TODO: manage error
-#             pass
-
-#         # then, we can decrypt that
-#         data = {"msgs": response.json()}
-#         response = mods.post('mixnet', entry_point=decrypt_url, baseurl=auth.url, json=data,
-#                 response=True)
-
-#         if response.status_code != 200:
-#             # TODO: manage error
-#             pass
-
-#         self.tally = response.json()
-#         self.save()
-
-#         self.do_postproc()
-
-#     def do_postproc(self):
-#         tally = self.tally
-#         #options = self.question.options.all()
-
-#         opts = []
-#         for opt in options:
-#             if isinstance(tally, list):
-#                 votes = tally.count(opt.number)
-#             else:
-#                 votes = 0
-#             opts.append({
-#                 'option': opt.option,
-#                 'number': opt.number,
-#                 'votes': votes
-#             })
-
-#         data = { 'type': 'IDENTITY', 'options': opts }
-#         postp = mods.post('postproc', json=data)
-
-#         self.postproc = postp
-#         self.save()
-
-#     def __str__(self):
-#         return self.name
-
+         return '{} ({}) - {} - {} - {}'.format(self.name, self.age, self.auto_community, self.sex, self.political_party)
 
 class Voting(models.Model):
     name = models.CharField(max_length=200)
     desc = models.TextField(blank=True, null=True)
     question = models.ForeignKey(Question, related_name='voting', on_delete=models.CASCADE,null=True)
-    candidates = models.ManyToManyField(QuestionCandidate, related_name='voting')
+    candidates = models.ManyToManyField(Candidate, related_name='votings', null=True, blank = True)
 
     start_date = models.DateTimeField(blank=True, null=True)
     end_date = models.DateTimeField(blank=True, null=True)
@@ -230,6 +136,7 @@ class Voting(models.Model):
     def do_postproc(self):
         tally = self.tally
         options = self.question.options.all()
+        candidates = self.candidates.all()
 
         opts = []
         for opt in options:
@@ -242,8 +149,21 @@ class Voting(models.Model):
                 'number': opt.number,
                 'votes': votes
             })
+        cnds = []
+        for candidate in candidates:
+            if isinstance(tally,list):
+                votes = tally.count(candidate.number)
+            else:
+                votes=0
+            cnds.append({
+                'name': candidate.name,
+                'sex': candidate.sex,
+                'auto_community': candidate.auto_community,
+                'political_party': candidate.political_party,
+                'age': candidate.age
+            })
 
-        data = { 'type': 'IDENTITY', 'options': opts }
+        data = {'type': 'IDENTITY', 'options': opts, 'candidates': cnds}
         postp = mods.post('postproc', json=data)
 
         self.postproc = postp

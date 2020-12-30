@@ -5,8 +5,6 @@ from .models import QuestionOption
 from .models import Question
 from .models import Voting
 from .models import Candidate
-from .models import QuestionCandidate
-# from .models import VotingCandidate
 
 
 from .filters import StartedFilter
@@ -38,12 +36,12 @@ class QuestionOptionInline(admin.TabularInline):
 class QuestionAdmin(admin.ModelAdmin):
     inlines = [QuestionOptionInline]
 
-class CandidateAdmin(admin.ModelAdmin):
-    list_display = ('name', 'sex',)
+# class CandidateAdmin(admin.ModelAdmin):
+#     list_display = ('name', 'sex',)
 
 
-class QuestionCandidateAdmin(admin.ModelAdmin):
-    list_display = ('political_party',)
+# class QuestionCandidateAdmin(admin.ModelAdmin):
+#     list_display = ('political_party',)
 
 class VotingAdmin(admin.ModelAdmin):
     list_display = ('name', 'start_date', 'end_date')
@@ -66,6 +64,7 @@ class VotingAdmin(admin.ModelAdmin):
 
 admin.site.register(Voting, VotingAdmin)
 admin.site.register(Question, QuestionAdmin)
-admin.site.register(Candidate, CandidateAdmin)
+# admin.site.register(Candidate, CandidateAdmin)
+admin.site.register(Candidate)
 # admin.site.register(VotingCandidate, VotingCandidateAdmin)
-admin.site.register(QuestionCandidate,QuestionCandidateAdmin)
+# admin.site.register(QuestionCandidate,QuestionCandidateAdmin)
