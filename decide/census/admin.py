@@ -1,11 +1,11 @@
 from django.contrib import admin
 
-from .models import Census, CensusGroupByVoting
+from .models import Census, CensusGroupByVoting, CensusGroupByVoter
 from voting.models import Voting
 
 class CensusAdmin(admin.ModelAdmin):
     list_display = ('voting', 'voter','adscripcion','date')
-    list_filter = ('voting', 'adscripcion','date','voting__question')
+    list_filter = ('voting', 'voter','adscripcion','date','voting__question')
 
     search_fields = ('voter', 'adscripcion')
 
@@ -13,5 +13,10 @@ class CensusGroupByVotingAdmin(admin.ModelAdmin):
     list_display = ('voting', 'census_number')
     readonly_fields = ('census_number', ) 
 
+class CensusGroupByVoterAdmin(admin.ModelAdmin):
+    list_display = ('voter', 'census_number',)
+    readonly_fields = ('voter','census_number', 'census') 
+
 admin.site.register(Census, CensusAdmin)
 admin.site.register(CensusGroupByVoting, CensusGroupByVotingAdmin)
+admin.site.register(CensusGroupByVoter, CensusGroupByVoterAdmin)

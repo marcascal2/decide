@@ -11,7 +11,7 @@ from rest_framework.status import (
 )
 
 from base.perms import UserIsStaff
-from .models import Census, CensusGroupByVoting
+from .models import Census, CensusGroupByVoting, CensusGroupByVoter
 from voting.models import Voting
 
 
@@ -37,7 +37,7 @@ class CensusCreate(generics.ListCreateAPIView):
         adscripcion = Census.objects.filter(voting=voting).values_list('adscripcion', flat=True)
         date = Census.objects.filter(voting=voting).values_list('date', flat=True)
         question = Voting.objects.filter(voting=voting).values_list('question', flat=True)
-        return Response({'voters': voters, 'adscripcion': adscripcion, 'date': date})
+        return Response({'voter': voters, 'adscripcion': adscripcion, 'date': date})
 
 class CensusDetail(generics.RetrieveDestroyAPIView):
 
@@ -55,6 +55,25 @@ class CensusDetail(generics.RetrieveDestroyAPIView):
         date = request.GET.get('date')
         try:
             Census.objects.get(voting=voting, voter=voter, adscripcion=adscripcion, date=date)
+        except ObjectDoesNotExist:
+            return Response('Invalid voter', status=ST_401)
+        return Response('Valid voter')
+
+class CensusGroupVoter(generics.RetrieveDestroyAPIView):
+
+    def destroy(self, request, census_group_by_voter_id, *args, **kwargs):
+        voter = request.data.get('voter')
+        census = request.data.get('census')
+        group = CensusGroupByVoter.objects.filter(voter=voter,census=census)
+        group.delete()
+        return Response('Voters deleted from census', status=ST_204)
+
+    def retrieve(self, request, census_group_by_voter_id, *args, **kwargs):
+        voter = request.GET.get('voter')
+        num = request.GET.get('census_number')
+        census = request.GET.get('census')
+        try:
+            CensusGroupByVoter.objects.get(voter=voter,census_number=census_number,census=census)
         except ObjectDoesNotExist:
             return Response('Invalid voter', status=ST_401)
         return Response('Valid voter')

@@ -14,6 +14,21 @@ class CensusGroupByVoting(models.Model):
     class Meta:
         unique_together = (('voting'),)
 
+class CensusGroupByVoter(models.Model):
+    voter = models.OneToOneField(User, on_delete=models.CASCADE)
+
+    def census_number(self):
+        census = Census.objects.filter(voter=self.voter).all()
+        return len(census)
+
+    def census(self):
+        census = Census.objects.filter(voter=self.voter).values('voting__name').all()
+
+        return ', '.join(str(item['voting__name']) for item in census)
+
+    class Meta:
+        unique_together = (('voter',),)
+
 class Census(models.Model):
     voting = models.ForeignKey(Voting, on_delete=models.CASCADE)
     voter = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
