@@ -1,5 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from pickle import TRUE, FALSE
 
 
 class PostProcView(APIView):
@@ -15,9 +16,20 @@ class PostProcView(APIView):
 
         out.sort(key=lambda x: -x['postproc'])
         return Response(out)
+
     
     def paridad (self,options):
         out = []
+        escanios = 0
+        candsres = []
+        for opt in options: 
+#            escanios = opt['escanios']
+            for c in opt['candidates']:
+                partidoCand = c['political_party']
+                optionPartido = opt['option']
+                if (partidoCand == optionPartido):
+                    candsres.append(c)
+            break #Solo necesito uno de los escanios. 
         
         for opt in options:
             out.append({
@@ -26,6 +38,7 @@ class PostProcView(APIView):
                 })
             
         for indice in out:
+
             candidatos = indice['dandidates']
             hombre = []
             mujeres = []
@@ -35,6 +48,29 @@ class PostProcView(APIView):
                 elif cand['sex'] == 'M':
                     mujeres.append(cand)
                     
+            hom = 0
+            muj = 0
+            t = 2
+            paridad = True
+            while t > 0:
+                if paridad: 
+                    if muj < len(mujeres):
+                        indice['paridad'].append(mujeres[muj])
+                        muj = muj + 1
+                    else:
+                        indice['paridad'].append(hombres[hom])
+                        hom = hom + 1 
+                    paridad = False
+                else: 
+                    if hom < len(hombres):
+                        indice['paridad'].append(hombres[hom])
+                        hom = hom + 1
+                    else: 
+                        indice['paridad'].append(mujeres[muj])
+                        muj = muj + 1 
+                    paridad = True
+                t -=1
+        return out
     
     def post(self, request):
         """
@@ -54,6 +90,7 @@ class PostProcView(APIView):
         cands = request.data.get('candidates', [])
         print(cands)
         if t == 'IDENTITY':
+            p = self.paridad(opts)
             return self.identity(opts)
 
         return Response({})
