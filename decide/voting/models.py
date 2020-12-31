@@ -116,6 +116,7 @@ class Voting(models.Model):
                     'votes': votes
                 })
             qsts.append({'options': opts})
+            #print(qsts)
 
         data = { 'type': 'IDENTITY', 'questions': qsts }
         postp = mods.post('postproc', json=data)

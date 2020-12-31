@@ -24,7 +24,7 @@
             <div v-else>
                 <h2 class="heading">Resultados:</h2>
                 [[ voting.postproc ]]
-                <table class="table table-bordered table-striped" v-for="que in voting.postproc">
+                <table class="table table-bordered table-striped" v-for="que in voting.questions">
                     <thead>
                         <tr>
                             <th>Opción</th>
@@ -33,7 +33,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="opt in voting.postproc" :key="opt.number">
+                        <tr v-for="opt in que.options" :key="opt.number">
                             <th>[[opt.option]]</th>
                             <td>[[opt.postproc]]</td>
                             <td class="text-muted">[[opt.votes]]</td>

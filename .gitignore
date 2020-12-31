@@ -102,3 +102,4 @@ ENV/
 
 .vagrant
 decide/manage.py
+decide/voting/models.py
