@@ -23,8 +23,8 @@
             <h2 v-else-if="!voting.end_date">Votación en curso</h2>
             <div v-else>
                 <h2 class="heading">Resultados:</h2>
-
-                <table class="table table-bordered table-striped">
+                [[ voting.postproc ]]
+                <table class="table table-bordered table-striped" v-for="que in voting.postproc">
                     <thead>
                         <tr>
                             <th>Opción</th>

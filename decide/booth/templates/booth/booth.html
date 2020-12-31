@@ -51,15 +51,14 @@
 
             <!-- Voting -->
             <div v-if="!signup">
-                
-                <b-form-group v-for="que in voting.questions">
+                <b-form-group v-for="(que, index) in voting.questions">
                     <h2>[[ que.desc ]]</h2>
 
                     <b-form-group v-for="opt in que.options" :key="opt.number">
                         <b-form-radio v-model="selected"
-                                      :id="'q' + opt.number"
+                                      :id="'q' + [[ doMath(index) ]] + opt.number"
                                       name="question"
-                                      :value="opt.number">
+                                      :value="[[ doMath(index) ]] + opt.number">
                             [[ opt.option ]]
                         </b-form-radio>
                     </b-form-group>
@@ -210,6 +209,9 @@
                     this.alertLvl = lvl;
                     this.alertMsg = msg;
                     this.alertShow = true;
+                },
+                doMath: function (index){
+                    return index+1;
                 }
             },
         })
