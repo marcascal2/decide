@@ -11,7 +11,7 @@ class PostProcView(APIView):
             out.append({
                 **opt,
                 'postproc': opt['votes'],
-            });
+            })
 
         out.sort(key=lambda x: -x['postproc'])
         return Response(out)
@@ -55,6 +55,7 @@ class PostProcView(APIView):
                 out[now]['postproc'] = out[now]['postproc'] + 1
                 sea = sea - 1
         return out
+        
     def post(self, request):
         """
          * type: IDENTITY | EQUALITY | WEIGHT | SIMPLE
