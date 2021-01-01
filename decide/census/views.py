@@ -13,7 +13,7 @@ from rest_framework.status import (
 )
 
 from base.perms import UserIsStaff
-from .models import Census, CensusGroupByVoting, CensusGroupByVoter
+from .models import Census
 from voting.models import Voting
 from django.contrib.auth.models import User
 
@@ -22,42 +22,38 @@ class CensusCreate(generics.ListCreateAPIView):
     permission_classes = (UserIsStaff,)
 
     def create(self, request, *args, **kwargs):
-        voting = request.data.get('voting_id')
+        voting_id = request.data.get('voting_id')
         voters = request.data.get('voters')
         adscripcion = request.data.get('adscripcion')
         try:
             for voter in voters:
-                voting_object = Voting.objects.get(id=voting)
-                voter_object = User.objects.get(id=voter)
-                census = Census(voting=voting_object, voter=voter_object, adscripcion=adscripcion)
+                census = Census(voting_id=voting_id, voter_id=voter, adscripcion=adscripcion)
                 census.save()
         except IntegrityError:
             return Response('Error try to create census', status=ST_409)
         return Response('Census created', status=ST_201)
 
     def list(self, request, *args, **kwargs):
-        voting = request.GET.get('voting')
-        voters = Census.objects.filter(voting=voting).values_list('voter', flat=True)
-        adscripcion = Census.objects.filter(voting=voting).values_list('adscripcion', flat=True)
-        date = Census.objects.filter(voting=voting).values_list('date', flat=True)
+        voting_id = request.GET.get('voting_is')
+        voters = Census.objects.filter(voting_id=voting_id).values_list('voter_id', flat=True)
+        adscripcion = Census.objects.filter(voting_id=voting_id).values_list('adscripcion', flat=True)
+        date = Census.objects.filter(voting_id=voting_id).values_list('date', flat=True)
         return Response({'voter': voters, 'adscripcion': adscripcion, 'date': date})
 
 class CensusDetail(generics.RetrieveDestroyAPIView):
 
-    def destroy(self, request, voting, *args, **kwargs):
+    def destroy(self, request, voting_id, *args, **kwargs):
         voters = request.data.get('voters')
         adscripcion = request.data.get('adscripcion')
         date = request.data.get('date')
-        census = Census.objects.filter(voting=voting, voter=voters,adscripcion=adscripcion, date=date)
+        census = Census.objects.filter(voting_id=voting_id, voter=voters,adscripcion=adscripcion, date=date)
         census.delete()
         return Response('Voters deleted from census', status=ST_204)
 
-    def retrieve(self, request, voting, *args, **kwargs):
-        voter = request.GET.get('voter')
-        adscripcion = request.GET.get('adscripcion')
-        date = request.GET.get('date')
+    def retrieve(self, request, voting_id, *args, **kwargs):
+        voter = request.GET.get('voter_id')
         try:
-            Census.objects.get(voting=voting, voter=voter, adscripcion=adscripcion, date=date)
+            Census.objects.get(voting_id=voting_id, voter_id=voter)
         except ObjectDoesNotExist:
             return Response('Invalid voter', status=ST_401)
         return Response('Valid voter')
@@ -65,8 +61,27 @@ class CensusDetail(generics.RetrieveDestroyAPIView):
 def group_by_voter(request):
     if not request.user.is_authenticated:
         return render(request, 'login_error.html')
-    voter_id = request.get('voter_id') 
-    voter = User.objects.get(id = voter_id)
-    census = Census.objects.filter(voter=voter)
-    return render(request, 'manage_census.html', { 'census': census})
+    voters = User.objects.all()
+    return render(request, 'manage_grouping_voter.html', { 'voters': voters})
 
+def voter_census(request, voter_id):
+    if not request.user.is_authenticated:
+        return render(request, 'login_error.html')
+
+    voter = User.objects.get(id = voter_id)
+    census = Census.objects.filter(voter = voter)
+    return render(request, 'voter_census.html', {'census': census, 'voter': voter})
+
+def group_by_voting(request):
+    if not request.user.is_authenticated:
+        return render(request, 'login_error.html')
+    votings = Voting.objects.all()
+    return render(request, 'manage_grouping_voting.html', { 'votings': votings})
+
+def voting_census(request, voting_id):
+    if not request.user.is_authenticated:
+        return render(request, 'login_error.html')
+
+    voting = Voting.objects.get(id = voting_id)
+    census = Census.objects.filter(voting = voting)
+    return render(request, 'voting_census.html', {'census': census, 'voting': voting})
