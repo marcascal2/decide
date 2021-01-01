@@ -22,4 +22,4 @@ deploy:
   strategy: git
   api_key: $HEROKU_TOKEN
   on:
-    branch: despliegue-heroku
+    branch: master
