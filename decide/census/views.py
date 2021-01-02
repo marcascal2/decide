@@ -1,4 +1,5 @@
 from django.db.utils import IntegrityError
+from django.db.models.base import Model 
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import generics
 from django.shortcuts import render
@@ -34,20 +35,25 @@ class CensusCreate(generics.ListCreateAPIView):
         return Response('Census created', status=ST_201)
 
     def list(self, request, *args, **kwargs):
-        voting_id = request.GET.get('voting_is')
+        voting_id = request.GET.get('voting_id')
         voters = Census.objects.filter(voting_id=voting_id).values_list('voter_id', flat=True)
-        adscripcion = Census.objects.filter(voting_id=voting_id).values_list('adscripcion', flat=True)
-        date = Census.objects.filter(voting_id=voting_id).values_list('date', flat=True)
-        return Response({'voter': voters, 'adscripcion': adscripcion, 'date': date})
+        # adscripcion = Census.objects.filter(voting_id=voting_id).values_list('adscripcion', flat=True)
+        # date = Census.objects.filter(voting_id=voting_id).values_list('date', flat=True)
+        return Response({'voters': voters})
 
 class CensusDetail(generics.RetrieveDestroyAPIView):
+    permission_classes = (UserIsStaff,)
 
     def destroy(self, request, voting_id, *args, **kwargs):
         voters = request.data.get('voters')
         adscripcion = request.data.get('adscripcion')
         date = request.data.get('date')
-        census = Census.objects.filter(voting_id=voting_id, voter=voters,adscripcion=adscripcion, date=date)
-        census.delete()
+        try:
+            for voter in voters:
+                census = Census.objects.filter(voting_id=voting_id, voter_id=voter,adscripcion=adscripcion, date=date)
+                census.delete()
+        except IntegrityError:
+            return Response('Error try to delete census', status=ST_409)
         return Response('Voters deleted from census', status=ST_204)
 
     def retrieve(self, request, voting_id, *args, **kwargs):
