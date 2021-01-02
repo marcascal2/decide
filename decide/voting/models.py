@@ -60,7 +60,7 @@ class Candidate(models.Model):
         ('PV', 'País-Vasco'),
         ('VA', 'Valencia')) 
     auto_community = models.TextField(choices=COMUNIDADES, default='AN')
-    sex = models.TextField(blank=True, null=True, choices=[('H','HOMBRE'),('M','MUJER')])
+    sex = models.TextField(default='H', choices=[('H','HOMBRE'),('M','MUJER')])
     political_party = models.TextField(choices= PARTIDOS, default = 'PACMA')
     def __str__(self):
          return '{} ({}) - {} - {} - {}'.format(self.name, self.age, self.auto_community, self.sex, self.political_party)
@@ -70,6 +70,8 @@ class Voting(models.Model):
     desc = models.TextField(blank=True, null=True)
     question = models.ForeignKey(Question, related_name='voting', on_delete=models.CASCADE,null=True)
     candidates = models.ManyToManyField(Candidate, related_name='votings', blank = True)
+    escanios = models.PositiveSmallIntegerField()
+
 
     start_date = models.DateTimeField(blank=True, null=True)
     end_date = models.DateTimeField(blank=True, null=True)
@@ -139,18 +141,7 @@ class Voting(models.Model):
         tally = self.tally
         options = self.question.options.all()
         candidates = self.candidates.all()
-
-        opts = []
-        for opt in options:
-            if isinstance(tally, list):
-                votes = tally.count(opt.number)
-            else:
-                votes = 0
-            opts.append({
-                'option': opt.option,
-                'number': opt.number,
-                'votes': votes
-            })
+        escanios = self.escanios
         cnds = []
         for candidate in candidates:
             if isinstance(tally,list):
@@ -164,7 +155,20 @@ class Voting(models.Model):
                 'age': candidate.age,
                 'political_party': candidate.political_party
             })
-        data = {'type': 'IDENTITY','options': opts, 'candidates': cnds}
+        opts = []
+        for opt in options:
+            if isinstance(tally, list):
+                votes = tally.count(opt.number)
+            else:
+                votes = 0
+            opts.append({
+                'option': opt.option,
+                'number': opt.number,
+                'votes': votes,
+                'candidates':cnds,
+                'escanio':escanios
+            })
+        data = {'type': 'IDENTITY','options': opts}
         postp = mods.post('postproc', json=data)
 
         self.postproc = postp
