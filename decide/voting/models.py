@@ -31,7 +31,7 @@ class QuestionOption(models.Model):
 
 class QuestionPrefer(models.Model):
     question = models.ForeignKey(Question, related_name='prefer_options', on_delete=models.CASCADE)
-    prefer = models.BooleanField(blank=True)
+    prefer = models.TextField(blank=True, choices=[('YES','YES')])
     number = models.PositiveIntegerField(blank=True, null=True)
     option = models.TextField()
 
@@ -146,6 +146,7 @@ class Voting(models.Model):
                 'number': pre.number,
                 'votes': votes
             })
+        print(prefers)
 
         data = { 'type': 'IDENTITY', 'options': opts, 'prefer_options':prefers}
         postp = mods.post('postproc', json=data)
