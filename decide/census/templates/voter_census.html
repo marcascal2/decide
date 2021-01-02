@@ -1,6 +1,6 @@
 <h3>Censos del votante {{voter.username}}</h3>
 <ul>
-  {% for c in census %}
-  <li>Censo de la votación: {{c.voting.name}}</li>
+  {% for voting in votings %}
+  <li>Censo de la votación: {{voting}}</li>
   {% endfor %}
 </ul>

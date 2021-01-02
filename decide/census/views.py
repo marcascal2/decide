@@ -42,7 +42,6 @@ class CensusCreate(generics.ListCreateAPIView):
         return Response({'voters': voters})
 
 class CensusDetail(generics.RetrieveDestroyAPIView):
-    permission_classes = (UserIsStaff,)
 
     def destroy(self, request, voting_id, *args, **kwargs):
         voters = request.data.get('voters')
@@ -68,26 +67,47 @@ def group_by_voter(request):
     if not request.user.is_authenticated:
         return render(request, 'login_error.html')
     voters = User.objects.all()
-    return render(request, 'manage_grouping_voter.html', { 'voters': voters})
+    voters_with_census = []
+    for voter in voters:
+        census = Census.objects.filter(voter_id=voter.id)
+        if len(census) != 0:
+            voters_with_census.append(voter)
+
+    return render(request, 'manage_grouping_voter.html', { 'voters': voters_with_census})
 
 def voter_census(request, voter_id):
     if not request.user.is_authenticated:
         return render(request, 'login_error.html')
-
     voter = User.objects.get(id = voter_id)
-    census = Census.objects.filter(voter = voter)
-    return render(request, 'voter_census.html', {'census': census, 'voter': voter})
+    census = Census.objects.filter(voter_id = voter_id)
+    votings = []
+    for c in census:
+        votings.append(Voting.objects.get(id = c.voting_id))
+    
+    return render(request, 'voter_census.html', {'census': census, 'voter': voter, 'votings': votings})
 
 def group_by_voting(request):
     if not request.user.is_authenticated:
         return render(request, 'login_error.html')
     votings = Voting.objects.all()
-    return render(request, 'manage_grouping_voting.html', { 'votings': votings})
+    votings_with_census = []
+    for voting in votings:
+        census = Census.objects.filter(voting_id = voting.id)
+        if len(census) != 0:
+            votings_with_census.append(voting)
+        
+    return render(request, 'manage_grouping_voting.html', { 'votings': votings_with_census})
 
 def voting_census(request, voting_id):
     if not request.user.is_authenticated:
         return render(request, 'login_error.html')
 
     voting = Voting.objects.get(id = voting_id)
-    census = Census.objects.filter(voting = voting)
-    return render(request, 'voting_census.html', {'census': census, 'voting': voting})
+    census = Census.objects.filter(voting_id = voting_id)
+    voters = []
+    for c in census:  
+        u = User.objects.get(id = c.voter_id)  
+        voters.append(u)
+    return render(request, 'voting_census.html', {'census': census, 'voting': voting, 'voters': voters})
+
+    
