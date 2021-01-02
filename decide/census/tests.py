@@ -22,7 +22,6 @@ class CensusTestCase(BaseTestCase):
         self.census = None
 
     def test_check_vote_permissions(self):
-        self.login()
         response = self.client.get('/census/{}/?voter_id={}'.format(1, 2), format='json')
         self.assertEqual(response.status_code, 401)
         self.assertEqual(response.json(), 'Invalid voter')
@@ -73,7 +72,20 @@ class CensusTestCase(BaseTestCase):
 
     def test_destroy_voter(self): #NO BORRA
         data = {'voters': [1]}
-        self.login()
         response = self.client.delete('/census/{}/'.format(1), data, format='json')
         self.assertEqual(response.status_code, 204)
-        # self.assertEqual(0, Census.objects.count())
+        #self.assertEqual(0, Census.objects.count())
+
+    def test_group_by_voter(self):
+
+        response = self.client.get('/census/group_by_voter/')
+        self.assertContains(response, 'Usuario no logueado')
+
+        # self.login(user='noadmin')
+        # response = self.client.get('/census/group_by_voter/')
+        # self.assertContains(response, 'Listado de votantes')
+
+    # def test_voter_census(self):
+    #     data = {'voter_id': 1}
+    #     response = self.client.delete('/census/group_by_voter/{}/'.format(1), data)
+    #     self.assertContains(response, 'Usuario no logueado')
