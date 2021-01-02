@@ -141,19 +141,7 @@ class Voting(models.Model):
         tally = self.tally
         options = self.question.options.all()
         candidates = self.candidates.all()
-
-        opts = []
-        for opt in options:
-            if isinstance(tally, list):
-                votes = tally.count(opt.number)
-            else:
-                votes = 0
-            opts.append({
-                'option': opt.option,
-                'number': opt.number,
-                'escanios': opt.escanios,
-                'votes': votes
-            })
+        escanios = self.escanios
         cnds = []
         for candidate in candidates:
             if isinstance(tally,list):
@@ -167,7 +155,20 @@ class Voting(models.Model):
                 'age': candidate.age,
                 'political_party': candidate.political_party
             })
-        data = {'type': 'IDENTITY','options': opts, 'candidates': cnds}
+        opts = []
+        for opt in options:
+            if isinstance(tally, list):
+                votes = tally.count(opt.number)
+            else:
+                votes = 0
+            opts.append({
+                'option': opt.option,
+                'number': opt.number,
+                'votes': votes,
+                'candidates':cnds,
+                'escanio':escanios
+            })
+        data = {'type': 'IDENTITY','options': opts}
         postp = mods.post('postproc', json=data)
 
         self.postproc = postp
