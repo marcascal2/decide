@@ -39,7 +39,7 @@ class PostProcView(APIView):
             
         for indice in out:
 
-            candidatos = indice['dandidates']
+            candidatos = indice['candidates']
             hombre = []
             mujeres = []
             for cand in candidatos:
