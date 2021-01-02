@@ -70,6 +70,8 @@ class Voting(models.Model):
     desc = models.TextField(blank=True, null=True)
     question = models.ForeignKey(Question, related_name='voting', on_delete=models.CASCADE,null=True)
     candidates = models.ManyToManyField(Candidate, related_name='votings', blank = True)
+    escanios = models.PositiveSmallIntegerField()
+
 
     start_date = models.DateTimeField(blank=True, null=True)
     end_date = models.DateTimeField(blank=True, null=True)
@@ -149,6 +151,7 @@ class Voting(models.Model):
             opts.append({
                 'option': opt.option,
                 'number': opt.number,
+                'escanios': opt.escanios,
                 'votes': votes
             })
         cnds = []
