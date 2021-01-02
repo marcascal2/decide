@@ -50,9 +50,11 @@ class Voting(models.Model):
     postproc = JSONField(blank=True, null=True)
 
     def save(self):
+        if self.min_age is None or self.max_age is none:
+            return super().save()
         if self.min_age > self.max_age :
             raise ValidationError("Edad máxima debe ser mayor que la edad mínima")
-        return super().save()
+            return super().save()
 
     def create_pubkey(self):
         if self.pub_key or not self.auths.count():
