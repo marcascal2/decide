@@ -60,7 +60,7 @@ class Candidate(models.Model):
         ('PV', 'País-Vasco'),
         ('VA', 'Valencia')) 
     auto_community = models.TextField(choices=COMUNIDADES, default='AN')
-    sex = models.TextField(blank=True, null=True, choices=[('H','HOMBRE'),('M','MUJER')])
+    sex = models.TextField(default='H', choices=[('H','HOMBRE'),('M','MUJER')])
     political_party = models.TextField(choices= PARTIDOS, default = 'PACMA')
     def __str__(self):
          return '{} ({}) - {} - {} - {}'.format(self.name, self.age, self.auto_community, self.sex, self.political_party)
