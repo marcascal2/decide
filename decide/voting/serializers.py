@@ -22,7 +22,7 @@ class QuestionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Question
         fields = ('desc', 'options')
-        fields = ('prefer','desc', 'options')
+        fields = ('prefer_options','desc', 'options')
 
 
 class VotingSerializer(serializers.HyperlinkedModelSerializer):
