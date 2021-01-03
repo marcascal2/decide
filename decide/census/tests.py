@@ -4,17 +4,24 @@ from django.test import TestCase
 from rest_framework.test import APIClient
 
 from .models import Census
-from voting.models import Voting
+from census import views
+from voting.models import Voting, Question
 from base import mods
 from base.tests import BaseTestCase
+from datetime import date
 
 
 class CensusTestCase(BaseTestCase):
 
     def setUp(self):
         super().setUp()
-        self.voting1 = Voting()
-        self.census = Census(voting_id=1, voter_id=1)
+        self.question = Question(desc='desc')
+        self.question.save()
+        self.voting = Voting(id = 1, name='voting_testing', question=self.question)
+        self.voting.save()
+        user1 = User(id=5, username='test', password='test_password')
+        user1.save()
+        self.census = Census(voting_id=1, voter_id=5)
         self.census.save()
 
     def tearDown(self):
@@ -26,7 +33,7 @@ class CensusTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 401)
         self.assertEqual(response.json(), 'Invalid voter')
 
-        response = self.client.get('/census/{}/?voter_id={}'.format(1, 1), format='json')
+        response = self.client.get('/census/{}/?voter_id={}'.format(1, 5), format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), 'Valid voter')
 
@@ -41,10 +48,10 @@ class CensusTestCase(BaseTestCase):
         self.login()
         response = self.client.get('/census/?voting_id={}'.format(1), format='json')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), {'voters': [1]})
+        self.assertEqual(response.json(), {'voters': [5]})
 
     def test_add_new_voters_conflict(self):
-        data = {'voting_id': 1, 'voters': [1]}
+        data = {'voting_id': 1, 'voters': [5]}
         response = self.client.post('/census/', data, format='json')
         self.assertEqual(response.status_code, 401)
 
@@ -76,7 +83,16 @@ class CensusTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 204)
         self.assertEqual(0, len(Census.objects.filter(voter_id=1)))
 
-    def test_voter_census(self):
+    def test_model(self):
+        self.census.adscripcion = 'ads'
+        self.census.date = date.today
+        self.assertEqual(self.census.voting_id, 1)
+        self.assertEqual(self.census.voter_id, 5)
+        self.assertEqual(self.census.adscripcion, 'ads')
+        self.assertEqual(self.census.date, date.today)
+    
+    def test_model_functions(self):
+        self.assertEqual(self.census.voting_name, 'voting_testing')
+        self.assertEqual(self.census.voting_question, 'desc')
+        self.assertEqual(self.census.voter_username, 'test')
         
-        request = request
-        res = views.voter_census(request, 1)

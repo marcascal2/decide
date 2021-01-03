@@ -10,14 +10,20 @@ class Census(models.Model):
     adscripcion = models.CharField(max_length=20, blank=True, null=True)
     date = models.DateField(default=date.today)
 
+    @property
     def voting_name(self):
-        return Voting.objects.get(id = self.voting_id).name
+        name = Voting.objects.get(id = self.voting_id).name
+        return name
     
+    @property
     def voter_username(self):
-        return User.objects.get(id = self.voter_id).username
+        username = User.objects.get(id = self.voter_id).username
+        return username
 
+    @property
     def voting_question(self):
-        return Voting.objects.get(id = self.voting_id).question.desc
+        desc = Voting.objects.get(id = self.voting_id).question.desc
+        return desc
 
     class Meta:
         unique_together = (('voting_id', 'voter_id'),)
