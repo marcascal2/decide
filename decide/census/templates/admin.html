@@ -16,12 +16,16 @@
     <div class="container-fluid"  >
         <a class="navbar-brand" href="#">
             <img src="{% static "census/img/index.png" %}" alt="" width="30" height="24">
-            DECIDE-PART-ZUMETA
+            DECIDE-PART-ZUMETA-CENSUS
           </a>
-        
+          <span class="navbar-text">
+            Bienvenido <br>
+            {{request.user.username}}
+          </span>
+          
+          <a class="btn btn-primary" href="/census/logout" role="button">Logout</a>
     </div>
 </nav>
-
 
 <!--FOOTER-->
 <footer class="bg-light text-center text-lg-start">
