@@ -9,7 +9,12 @@ from .models import Question, QuestionOption, Voting
 from .serializers import SimpleVotingSerializer, VotingSerializer
 from base.perms import UserIsStaff
 from base.models import Auth
+import json
+from django.views.generic import TemplateView
+from django.conf import settings
+from django.http import Http404
 
+from base import mods
 
 class VotingView(generics.ListCreateAPIView):
     queryset = Voting.objects.all()
@@ -29,12 +34,18 @@ class VotingView(generics.ListCreateAPIView):
     def post(self, request, *args, **kwargs):
         self.permission_classes = (UserIsStaff,)
         self.check_permissions(request)
-        for data in ['name', 'desc', 'question', 'question_opt']:
+        tamano = request.data.get('questions').objects.__len__()
+        print (tamano)
+        print ('holaaaaaaaaa')
+        for data in ['name', 'desc', 'questions', 'question_opt']:
             if not data in request.data:
                 return Response({}, status=status.HTTP_400_BAD_REQUEST)
+        for i in range (tamano):
+            ques= self.Question.objects.all()[i].get()
+            question = Question(desc=ques.desc)
+            question.save()
+            print (ques)
 
-        question = Question(desc=request.data.get('question'))
-        question.save()
         for idx, q_opt in enumerate(request.data.get('question_opt')):
             opt = QuestionOption(question=question, option=q_opt, number=idx)
             opt.save()
@@ -99,3 +110,26 @@ class VotingUpdate(generics.RetrieveUpdateDestroyAPIView):
             msg = 'Action not found, try with start, stop or tally'
             st = status.HTTP_400_BAD_REQUEST
         return Response(msg, status=st)
+
+class VotingBooth(TemplateView):
+    template_name = 'voting.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        vid = kwargs.get('voting_id', 0)
+
+        try:
+            r = mods.get('voting', params={'id': vid})
+
+            # Casting numbers to string to manage in javascript with BigInt
+            # and avoid problems with js and big number conversion
+            for k, v in r[0]['pub_key'].items():
+                r[0]['pub_key'][k] = str(v)
+
+            context['voting'] = json.dumps(r[0])
+        except:
+            raise Http404
+
+        context['KEYBITS'] = settings.KEYBITS
+
+        return context
