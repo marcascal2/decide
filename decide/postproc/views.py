@@ -16,7 +16,7 @@ class PostProcView(APIView):
         out.sort(key=lambda x: -x['postproc'])
         return Response(out)
 
-    def mgu(self, options,seats):
+    def mgu(self, options,Totalseats):
         out = []
 
         for o in options:
@@ -27,6 +27,24 @@ class PostProcView(APIView):
             })
         
         out.sort(key=lambda x: -x['votes'])
+
+        mv = out[0]['votes']
+        ng=0
+
+        for element in out:
+            if element['votes']== ng:
+                ng =ng + 1
+            
+        if ng == 1:
+            out[0]['postproc'] = Totalseats
+        else 
+            r = Totalseats % ng
+            if r== 0:
+                c = Totalseats// ng
+                for x in range(0,ng-1):
+                   out[x]['postproc'] = c
+
+            
 
     def post(self, request):
         """
