@@ -49,7 +49,7 @@ class CensusDetail(generics.RetrieveDestroyAPIView):
         date = request.data.get('date')
         try:
             for voter in voters:
-                census = Census.objects.filter(voting_id=voting_id, voter_id=voter,adscripcion=adscripcion, date=date)
+                census = Census.objects.filter(voting_id=voting_id, voter_id=voter)
                 census.delete()
         except IntegrityError:
             return Response('Error try to delete census', status=ST_409)

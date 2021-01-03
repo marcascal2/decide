@@ -70,22 +70,13 @@ class CensusTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(len(data.get('voters')), Census.objects.count() - 1)
 
-    def test_destroy_voter(self): #NO BORRA
+    def test_destroy_voter(self):
         data = {'voters': [1]}
         response = self.client.delete('/census/{}/'.format(1), data, format='json')
         self.assertEqual(response.status_code, 204)
-        #self.assertEqual(0, Census.objects.count())
+        self.assertEqual(0, len(Census.objects.filter(voter_id=1)))
 
-    def test_group_by_voter(self):
-
-        response = self.client.get('/census/group_by_voter/')
-        self.assertContains(response, 'Usuario no logueado')
-
-        # self.login(user='noadmin')
-        # response = self.client.get('/census/group_by_voter/')
-        # self.assertContains(response, 'Listado de votantes')
-
-    # def test_voter_census(self):
-    #     data = {'voter_id': 1}
-    #     response = self.client.delete('/census/group_by_voter/{}/'.format(1), data)
-    #     self.assertContains(response, 'Usuario no logueado')
+    def test_voter_census(self):
+        
+        request = request
+        res = views.voter_census(request, 1)
