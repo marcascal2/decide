@@ -37,8 +37,6 @@ class PostProcView(APIView):
                 mujeres.append(cand)
         
         for indice in out:
-            hombres = random.sample(hombres, len(hombres))
-            mujeres = random.sample(mujeres,len(mujeres))
             escanios = indice['escanio']
             hom = 0
             muj = 0
@@ -79,7 +77,7 @@ class PostProcView(APIView):
         cands = request.data.get('candidates', [])
         print(cands)
         if t == 'IDENTITY':
-            p = self.paridad(opts,cands)
             return self.identity(opts)
-
+        if t == 'PARIDAD':
+            return Response(self.paridad(opts, cands))
         return Response({})
