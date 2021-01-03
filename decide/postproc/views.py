@@ -15,7 +15,9 @@ class PostProcView(APIView):
 
         out.sort(key=lambda x: -x['postproc'])
         return Response(out)
+    def saintelague(self, options, numeroEscanos):
 
+        
     def post(self, request):
         """
          * type: IDENTITY | EQUALITY | WEIGHT
