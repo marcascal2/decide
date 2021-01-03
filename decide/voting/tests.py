@@ -208,3 +208,40 @@ class VotingTestCase(BaseTestCase):
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), 'Voting already tallied')
+
+class QuestionTestCase(BaseTestCase):
+
+    def setUp(self):
+        q=Question(desc="Descripcion")
+        q.save()
+
+        self.v=Voting(name="Votacion", question=q)
+        self.v.save()
+        super().setUp()
+
+    def tearDown(self):
+        super().tearDown()
+        self.v=None
+
+    def testExistQuestionNoOption(self):
+        v = Voting.objects.get(name="Votacion")
+        self.assertEquals(v.question.desc, "Descripcion")
+    def testExistQuestionWithOption(self):
+        q = Question.objects.get(desc="Descripcion")
+        opt1 = QuestionOption(question = q, option="option1")
+        opt1.save()
+        v = Voting.objects.get(name="Votacion")
+        v.question = q
+        v.question_opt = opt1
+        v.save()
+        self.assertEquals(v.question.options.all()[0].option, "option1")
+    def testExistQuestionWithPrefer(self):
+        q = Question.objects.get(desc="Descripcion")
+        opt1 = QuestionPrefer(question = q, prefer = "YES" ,option="option1")
+        opt1.save()
+        v = Voting.objects.get(name="Votacion")
+        v.question = q
+        v.question_pref = opt1
+        v.save()
+        self.assertEquals(v.question.prefer_options.all()[0].option, "option1")
+        self.assertEquals(v.question.prefer_options.all()[0].prefer, "YES")
