@@ -13,7 +13,7 @@ from rest_framework.status import (
 
 from base.perms import UserIsStaff
 from .models import Census
-import logging
+from voting.models import Voting
 
 
 #Auth
@@ -68,26 +68,25 @@ def logout(request):
 def adminView(request):
      # Si estamos identificados devolvemos la portada
     if request.user.is_authenticated:
-        return render(request, "admin.html")
+        queryset = Voting.objects.all()
+        return render(request, "admin.html", {'voting' : queryset})
+
     # En otro caso redireccionamos al login
     return redirect('login')
 
 def login(request):
-    logger = logging.getLogger("django")
+    
     # Creamos el formulario de autenticación vacío
     form = AuthenticationForm()
     if request.method == "POST":
-        # Añadimos los datos recibidos al formulario
-        
-        # Si el formulario es válido...
-        
+       
         # Recuperamos las credenciales validadas
         username = request.POST['username']
         password = request.POST['password']
 
         # Verificamos las credenciales del usuario
         user = authenticate(request,username=username, password=password)
-        logger.info("illo que pasaaanos hemos authenticado")
+        
         # Si existe un usuario con ese nombre y contraseña
         if user is not None:
             # Hacemos el login manualmente

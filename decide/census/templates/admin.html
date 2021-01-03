@@ -27,7 +27,29 @@
     </div>
 </nav>
 
-<!--FOOTER-->
+<div class="card">
+  <div class="card-body">
+   <!--tabla Votings-->
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Voting_ID</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for each in voting %}
+        <tr>
+          <th scope="row">{{each}}</th>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table> 
+  </div>
+</div>
+
+
+
+  <!--FOOTER-->
 <footer class="bg-light text-center text-lg-start">
   <!-- Grid container -->
   <div class="container p-4">
@@ -49,11 +71,11 @@
         <h5 class="text-uppercase">Membership</h5>
 
         <p>
-          Moises Calzado Cobo,
-          Maria Casasola Calzadilla,
-          Emilia Coleto Alcudia,
-          Antonio German Trujillo,
-          Fernando Angulo Moruno.
+          -Moises Calzado Cobo.<br>
+          -Maria Casasola Calzadilla.<br>
+          -Emilia Coleto Alcudia.<br>
+          -Antonio German Trujillo.<br>
+          -Fernando Angulo Moruno.<br>
         </p>
       </div>
       <!--Grid column-->
