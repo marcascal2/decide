@@ -15,30 +15,36 @@ class PostProcTestCase(APITestCase):
     def tearDown(self):
         self.client = None
 
-    def test_identity(self):
+    
+    
+    def test_paridad_3(self):
         data = {
-            'type': 'IDENTITY',
+            'type':'PARIDAD',
             'options': [
-                { 'option': 'Option 1', 'number': 1, 'votes': 5 },
-                { 'option': 'Option 2', 'number': 2, 'votes': 0 },
-                { 'option': 'Option 3', 'number': 3, 'votes': 3 },
-                { 'option': 'Option 4', 'number': 4, 'votes': 2 },
-                { 'option': 'Option 5', 'number': 5, 'votes': 5 },
-                { 'option': 'Option 6', 'number': 6, 'votes': 1 },
+                {'option':'PSOE', 'number':1 , 'votes': 40, 'escanio': 4,'candidates': [
+                {'id': '1', 'sex': 'H',  'edad':23},
+                {'id': '2', 'sex': 'H',  'edad':42},
+                {'id': '3', 'sex': 'H',  'edad':29},
+                {'id': '4', 'sex': 'H',  'edad':26},
+                {'id': '5', 'sex': 'H',  'edad':21},
+                {'id': '6', 'sex': 'H',  'edad':22},
+            ]},
+                {'option':'PACMA', 'number':2 , 'votes': 23, 'escanio': 4,'candidates': [
+                {'id': '1', 'sex': 'H',  'edad':23},
+                {'id': '2', 'sex': 'H',  'edad':42},
+                {'id': '3', 'sex': 'H',  'edad':29},
+                {'id': '4', 'sex': 'H',  'edad':26},
+                {'id': '5', 'sex': 'H',  'edad':21},
+                {'id': '6', 'sex': 'H',  'edad':22},
+            ]},
             ]
         }
-
-        expected_result = [
-            { 'option': 'Option 1', 'number': 1, 'votes': 5, 'postproc': 5 },
-            { 'option': 'Option 5', 'number': 5, 'votes': 5, 'postproc': 5 },
-            { 'option': 'Option 3', 'number': 3, 'votes': 3, 'postproc': 3 },
-            { 'option': 'Option 4', 'number': 4, 'votes': 2, 'postproc': 2 },
-            { 'option': 'Option 6', 'number': 6, 'votes': 1, 'postproc': 1 },
-            { 'option': 'Option 2', 'number': 2, 'votes': 0, 'postproc': 0 },
-        ]
-
+        
+        expected_result = {'message' : 'la diferencia del numero de hombres y mujeres es de más de un 60% - 40%'}
         response = self.client.post('/postproc/', data, format='json')
+     
         self.assertEqual(response.status_code, 200)
-
+                
         values = response.json()
+       
         self.assertEqual(values, expected_result)
