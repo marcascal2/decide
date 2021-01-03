@@ -1,7 +1,8 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from pickle import TRUE, FALSE
-
+from optparse import Option
+import random
 
 class PostProcView(APIView):
 
@@ -18,58 +19,46 @@ class PostProcView(APIView):
         return Response(out)
 
     
-    def paridad (self,options):
+    def paridad (self,options,cands):
         out = []
-        escanios = 0
-        candsres = []
-        for opt in options: 
-#            escanios = opt['escanios']
-            for c in opt['candidates']:
-                partidoCand = c['political_party']
-                optionPartido = opt['option']
-                if (partidoCand == optionPartido):
-                    candsres.append(c)
-            break #Solo necesito uno de los escanios. 
-        
+
         for opt in options:
             out.append({
                 **opt,
                 'paridad': [],
                 })
-            
+        
+        hombres = []
+        mujeres = []
+        for cand in cands:
+            if cand['sex'] == 'H':
+                hombres.append(cand)
+            elif cand['sex'] == 'M':
+                mujeres.append(cand)
+        
         for indice in out:
-
-            candidatos = indice['candidates']
-            hombre = []
-            mujeres = []
-            for cand in candidatos:
-                if cand['sex'] == 'H':
-                    hombre.append(cand)
-                elif cand['sex'] == 'M':
-                    mujeres.append(cand)
-                    
+            hombres = random.sample(hombres, len(hombres))
+            mujeres = random.sample(mujeres,len(mujeres))
+            escanios = indice['escanio']
             hom = 0
             muj = 0
-            t = 2
             paridad = True
-            while t > 0:
+            while escanios > 0:
                 if paridad: 
                     if muj < len(mujeres):
                         indice['paridad'].append(mujeres[muj])
                         muj = muj + 1
-                    else:
-                        indice['paridad'].append(hombres[hom])
-                        hom = hom + 1 
+                        escanios -=1
                     paridad = False
                 else: 
                     if hom < len(hombres):
                         indice['paridad'].append(hombres[hom])
                         hom = hom + 1
-                    else: 
-                        indice['paridad'].append(mujeres[muj])
-                        muj = muj + 1 
+                        escanios -=1
                     paridad = True
-                t -=1
+                if(muj == len(mujeres) and hom == len(hombres)):
+                    escanios = 0
+                    break
         return out
     
     def post(self, request):
@@ -90,7 +79,7 @@ class PostProcView(APIView):
         cands = request.data.get('candidates', [])
         print(cands)
         if t == 'IDENTITY':
-            p = self.paridad(opts)
+            p = self.paridad(opts,cands)
             return self.identity(opts)
 
         return Response({})

@@ -149,11 +149,9 @@ class Voting(models.Model):
             else:
                 votes=0
             cnds.append({
-                'name': candidate.name,
+                'id':candidate.id,
                 'sex': candidate.sex,
-                'auto_community': candidate.auto_community,
                 'age': candidate.age,
-                'political_party': candidate.political_party
             })
         opts = []
         for opt in options:
@@ -165,10 +163,9 @@ class Voting(models.Model):
                 'option': opt.option,
                 'number': opt.number,
                 'votes': votes,
-                'candidates':cnds,
                 'escanio':escanios
             })
-        data = {'type': 'IDENTITY','options': opts}
+        data = {'type': 'IDENTITY','options': opts,'candidates':cnds}
         postp = mods.post('postproc', json=data)
 
         self.postproc = postp
