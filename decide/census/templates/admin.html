@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load i18n static %}
+
+<!-- Este bloque extiende el head -->
+{% block extrahead %}
+<link type="text/css" rel="stylesheet"
+         href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+    <link type="text/css" rel="stylesheet"
+         href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
+    <link type="text/css" rel="stylesheet" href="{% static "census/style.css" %}" />
+{% endblock %}
+
+<!--CONTENIDO-->
+{% block content %}
+<h1>Hola Moi LADRON</h1>
+{% endblock %}
+
+{% block extrabody %}{% endblock %}

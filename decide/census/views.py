@@ -1,6 +1,7 @@
 from django.db.utils import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import generics
+from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.status import (
         HTTP_201_CREATED as ST_201,
@@ -49,3 +50,6 @@ class CensusDetail(generics.RetrieveDestroyAPIView):
         except ObjectDoesNotExist:
             return Response('Invalid voter', status=ST_401)
         return Response('Valid voter')
+
+def adminView(request):
+    return render(request,'admin.html')
