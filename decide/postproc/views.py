@@ -16,6 +16,18 @@ class PostProcView(APIView):
         out.sort(key=lambda x: -x['postproc'])
         return Response(out)
 
+    def mgu(self, options,seats):
+        out = []
+
+        for o in options:
+
+            o.append({
+                **o,
+                'postproc': 0,
+            })
+        
+        out.sort(key=lambda x: -x['votes'])
+
     def post(self, request):
         """
          * type: IDENTITY | EQUALITY | WEIGHT
