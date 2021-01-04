@@ -112,4 +112,40 @@ def voting_census(request, voting_id):
         census_list.append(c)
     return render(request, 'voting_census.html', {'census': census_list, 'voting': voting, 'voters': voters})
 
+def all_census(request):
+    if not request.user.is_authenticated:
+        return render(request, 'login_error.html')
+
+    census = Census.objects.all()
+    votings = []
+    voters = []
+    for c in census:
+        u = User.objects.get(id = c.voter_id)  
+        if u not in voters:
+            voters.append(u)
+        v = Voting.objects.get(id = c.voting_id)  
+        if v not in votings:
+            votings.append(v)
     
+    return render(request,'all_census.html', {'census':census, 'votings':votings, 'voters':voters})
+
+def filter_by_voting(request, voting_id):
+    if not request.user.is_authenticated:
+        return render(request, 'login_error.html')
+
+    voting = Voting.objects.get(id = voting_id)
+    
+    census = Census.objects.filter(voting_id = voting_id)
+    users_in_census = []
+    for censu in census:
+        users_in_census.append(censu.voter_id)
+    voters = User.objects.filter(id__in=users_in_census)
+
+    votings = Voting.objects.all()
+    votings_with_census = []
+    for v in votings:
+        c = Census.objects.filter(voting_id = v.id)
+        if len(c) != 0:
+            votings_with_census.append(v)
+    
+    return render(request,'all_census.html', {'census':census, 'voting':voting, 'voters':voters, 'votings':votings_with_census})
