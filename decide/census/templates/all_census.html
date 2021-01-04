@@ -31,19 +31,36 @@
         </tr>
     {% endfor %}
 </table>
+<br/>
+Todos los censos
+<br/>
+<a href="{% url 'all_census' %}">censos</a>
+<br/><br/>
+Filtro por adscripcion
+<ul>
+    {% for adscripcion in adscripciones %}
+        <li><a href="{% url 'filter_by_adscripcion' adscripcion=adscripcion %}">{{adscripcion}}</a></li>
+    {% endfor %}
+</ul>
 
+<br/><br/>
+Filtro por votación
 <ul>
     {% for voting in votings %}
         <li><a href="{% url 'filter_by_voting' voting_id=voting.id %}">{{voting.name}}</a></li>
     {% endfor %}
 </ul>
 
+<br/><br/>
+Filtro por votante
 <ul>
     {% for voter in voters %}
         <li><a href="{% url 'filter_by_voter' voter_id=voter.id %}">{{voter.username}}</a></li>
     {% endfor %}
 </ul>
 
+<br/><br/>
+Filtro por fecha
 <ul>
     {% for date in dates %}
         <li><a href="{% url 'filter_by_date' date=date %}">{{date}}</a></li>

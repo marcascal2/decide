@@ -118,18 +118,52 @@ def all_census(request):
     votings = []
     voters = []
     dates = [] 
+    adscripciones =[]
+
     for c in census:
         u = User.objects.get(id = c.voter_id)  
         if u not in voters:
             voters.append(u)
+        
         v = Voting.objects.get(id = c.voting_id)  
         if v not in votings:
             votings.append(v)
+
         d = c.date.__str__
         if d not in dates:
             dates.append(d)
+        
+        if c.adscripcion not in adscripciones:
+            adscripciones.append(c.adscripcion)
     
-    return render(request,'all_census.html', {'census':census, 'votings':votings, 'voters':voters, 'dates': dates})
+    return render(request,'all_census.html', {'census':census, 'votings':votings, 'voters':voters, 'dates': dates, 'adscripciones':adscripciones})
+
+def filter_by_adscripcion(request, adscripcion):
+    if not request.user.is_authenticated:
+        return render(request, 'login_error.html')
+
+    census = Census.objects.filter(adscripcion= adscripcion)
+    users_in_census = []
+    for censu in census:
+        users_in_census.append(censu.voter_id)
+    voters = User.objects.filter(id__in=users_in_census)
+
+    votings = Voting.objects.all()
+    votings_with_census = []
+    for v in votings:
+        c = Census.objects.filter(voting_id = v.id)
+        if len(c) != 0:
+            votings_with_census.append(v)
+
+    dates = []
+    adscripciones = []
+    for c in Census.objects.all():
+        dates.append(c.date.__str__)
+
+        if c.adscripcion not in adscripciones:
+            adscripciones.append(c.adscripcion)
+    
+    return render(request,'all_census.html', {'census':census, 'voters':voters, 'votings':votings_with_census, 'adscripciones':adscripciones, 'dates':dates})
 
 def filter_by_voting(request, voting_id):
     if not request.user.is_authenticated:
@@ -151,10 +185,14 @@ def filter_by_voting(request, voting_id):
             votings_with_census.append(v)
     
     dates = []
+    adscripciones = []
     for c in Census.objects.all():
         dates.append(c.date.__str__)
+
+        if c.adscripcion not in adscripciones:
+            adscripciones.append(c.adscripcion)
     
-    return render(request,'all_census.html', {'census':census, 'voting':voting, 'voters':voters, 'votings':votings_with_census, 'dates': dates})
+    return render(request,'all_census.html', {'census':census, 'voting':voting, 'voters':voters, 'votings':votings_with_census, 'dates': dates, 'adscripciones':adscripciones})
 
 def filter_by_voter(request, voter_id):
     if not request.user.is_authenticated:
@@ -176,10 +214,14 @@ def filter_by_voter(request, voter_id):
             voters_with_census.append(v)
     
     dates = []
+    adscripciones = []
     for c in Census.objects.all():
         dates.append(c.date.__str__)
+
+        if c.adscripcion not in adscripciones:
+            adscripciones.append(c.adscripcion)
     
-    return render(request,'all_census.html', {'census':census, 'voter':voter, 'voters':voters_with_census, 'votings':votings, 'dates': dates})
+    return render(request,'all_census.html', {'census':census, 'voter':voter, 'voters':voters_with_census, 'votings':votings, 'dates': dates, 'adscripciones':adscripciones})
 
 def filter_by_date(request, date):
     if not request.user.is_authenticated:
@@ -192,9 +234,12 @@ def filter_by_date(request, date):
     votings = Voting.objects.filter(id__in=votings_in_census)
 
     dates = []
+    adscripciones = []
     for c in Census.objects.all():
         dates.append(c.date.__str__)
-
+        if c.adscripcion not in adscripciones:
+            adscripciones.append(c.adscripcion)
+    
     voters = User.objects.all()
     voters_with_census = []
     for v in voters:
@@ -202,4 +247,4 @@ def filter_by_date(request, date):
         if len(c) != 0:
             voters_with_census.append(v)
     
-    return render(request,'all_census.html', {'census':census, 'dates':dates, 'voters':voters_with_census, 'votings':votings})
+    return render(request,'all_census.html', {'census':census, 'dates':dates, 'voters':voters_with_census, 'votings':votings, 'adscripciones':adscripciones})
