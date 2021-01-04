@@ -36,7 +36,9 @@ class CensusAddUserForm(forms.Form):
                 user = User.objects.get(id=user_to_add)
                 if user.userdata is not None:
                     age = user.userdata.age
-                    if age < voting.min_age or age > voting.max_age:
-                        self.add_error('user_to_add', 'El usuario que quieres agregar al censo no cumple con los límites de edad de la votación')
+                    if voting.min_age is not None and age < voting.min_age:
+                            self.add_error('user_to_add', 'El usuario no cumple con la edad mínima')
+                    if voting.max_age is not None and age > voting.max_age:
+                            self.add_error('user_to_add', 'El usuario no cumple con la edad máxima')
         except User.userdata.RelatedObjectDoesNotExist:
             self.add_error('user_to_add', 'El usuario a agregar no tiene edad registrada')
