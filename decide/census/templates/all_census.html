@@ -33,9 +33,10 @@
 </table>
 <br/>
 Todos los censos
-<br/>
-<a href="{% url 'all_census' %}">censos</a>
-<br/><br/>
+<ul>
+    <li><a href="{% url 'all_census' %}">censos</a></li>
+</ul>
+
 Filtro por adscripcion
 <ul>
     {% for adscripcion in adscripciones %}
@@ -43,10 +44,23 @@ Filtro por adscripcion
     {% endfor %}
 </ul>
 
-<br/><br/>
 Filtro por votación
 <ul>
     {% for voting in votings %}
         <li><a href="{% url 'filter_by_voting' voting_id=voting.id %}">{{voting.name}}</a></li>
+    {% endfor %}
+</ul>
+
+Filtro por votante
+<ul>
+    {% for voter in voters %}
+        <li><a href="{% url 'filter_by_voter' voter_id=voter.id %}">{{voter.username}}</a></li>
+    {% endfor %}
+</ul>
+
+Filtro por fecha
+<ul>
+    {% for date in dates %}
+        <li><a href="{% url 'filter_by_date' date=date %}">{{date}}</a></li>
     {% endfor %}
 </ul>

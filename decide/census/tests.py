@@ -9,6 +9,7 @@ from voting.models import Voting, Question
 from base import mods
 from base.tests import BaseTestCase
 from datetime import date
+from django.test import RequestFactory, TestCase
 
 
 class CensusTestCase(BaseTestCase):
@@ -95,4 +96,31 @@ class CensusTestCase(BaseTestCase):
         self.assertEqual(self.census.voting_name, 'voting_testing')
         self.assertEqual(self.census.voting_question, 'desc')
         self.assertEqual(self.census.voter_username, 'test')
-        
+
+    def test_group_by_voter(self):
+        u = User(username='request_user', password='request_password')
+        u.save()
+        voter = User.objects.get(id = self.census.voter_id)
+        voting = Voting.objects.get(id = self.census.voting_id)
+        rf = RequestFactory()
+        request = rf.get('/census/group_by_voter/')  
+        request.user = u
+        response = views.voter_census(request, 5)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, voter)
+        self.assertContains(response, voting)
+        # self.assertContains(response, self.census)
+    
+    def test_group_by_voting(self):
+        u = User(username='request_user', password='request_password')
+        u.save()
+        voter = User.objects.get(id = self.census.voter_id)
+        voting = Voting.objects.get(id = self.census.voting_id)
+        rf = RequestFactory()
+        request = rf.get('/census/group_by_voting/')  
+        request.user = u
+        response = views.voting_census(request, 1)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, voter)
+        self.assertContains(response, voting)
+        # self.assertContains(response, self.census)
