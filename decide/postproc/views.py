@@ -11,7 +11,7 @@ class PostProcView(APIView):
             out.append({
                 **opt,
                 'postproc': opt['votes'],
-            });
+            })
 
         out.sort(key=lambda x: -x['postproc'])
         return Response(out)
@@ -32,23 +32,36 @@ class PostProcView(APIView):
         ng=0
 
         for element in out:
-            if element['votes']== ng:
+            if element['votes']== mv:
                 ng =ng + 1
             
         if ng == 1:
             out[0]['postproc'] = Totalseats
-        else 
+        else:
             r = Totalseats % ng
+            c = Totalseats// ng
             if r== 0:
-                c = Totalseats// ng
                 for x in range(0,ng-1):
                    out[x]['postproc'] = c
-
+            else:
+                if ng == len(out):
+                    out[0]['postproc'] = c + r
+                    for x in range(1,ng-1):
+                        out[x]['postproc'] = c
+                else:
+                    if ng > Totalseats:
+                        for x in range(0,r-1):
+                          out[x]['postproc'] = 1
+                    else:
+                        for x in range(0,ng-1):
+                            out[x]['postproc'] =c
+                        out[ng]['postproc'] =r
+        return out
             
 
     def post(self, request):
         """
-         * type: IDENTITY | EQUALITY | WEIGHT
+         * type: IDENTITY | EQUALITY | WEIGHT | MGU
          * options: [
             {
              option: str,
@@ -59,10 +72,12 @@ class PostProcView(APIView):
            ]
         """
 
-        t = request.data.get('type', 'IDENTITY')
+        t = request.data.get('type')
         opts = request.data.get('options', [])
+        s = request.data.get('seats')
 
         if t == 'IDENTITY':
             return self.identity(opts)
-
+        elif t == 'MGU':
+            return Response(self.mgu(opts,s))
         return Response({})
