@@ -11,10 +11,31 @@ class PostProcView(APIView):
             out.append({
                 **opt,
                 'postproc': opt['votes'],
-            });
+            })
 
         out.sort(key=lambda x: -x['postproc'])
         return Response(out)
+
+    #Sistema D'Hondt - Metodo de promedio mayor para asignar escaños en sistemas de representación proporcional por listas electorales. Por tanto,
+    # en dicho método trabajaremos con listas de partidos politicos y con un número de escaños que será pasado como parámetro. 
+    #           Fórmula de D'Hondt: cociente = V/S+1    , siendo V: el número total de votosS
+    #                                                            S: el num. de escaños que posee en el momento
+    def dhondt(self, options, nSeats):
+
+        #Salida
+        out = [] 
+
+        #Añadimos a options un parámetro llamado 'seat' que será donde
+        #guardaremos la cantidad de escaños por opción y nuestra 'S' en la fórmula de D'Hondt
+        for opt in options:
+            out.append({
+                **opt, 
+
+                'seat': 0,
+            })
+
+        return Response(out)
+
 
     def post(self, request):
         """
@@ -34,5 +55,5 @@ class PostProcView(APIView):
 
         if t == 'IDENTITY':
             return self.identity(opts)
-
+        
         return Response({})
