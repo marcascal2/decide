@@ -1,0 +1,39 @@
+<h3>Todos los censos</h3>
+<table>
+    <tr>
+        <td>
+            Votación
+        </td>
+        <td>
+            Votante
+        </td>
+        <td>
+            Adscripción
+        </td>
+        <td>
+            Fecha
+        </td>
+    </tr>
+    {% for c in census %}
+        <tr>
+            <td>
+                {{c.voting_name}}
+            </td>
+            <td>
+                {{c.voter_username}}
+            </td>
+            <td>
+                {{c.adscripcion}}
+            </td>
+            <td>
+                {{c.date}}
+            </td>
+        </tr>
+    {% endfor %}
+</table>
+
+<ul>
+    {% for voting in votings %}
+        <li><a href="{% url 'filter_by_voting' voting_id=voting.id %}">{{voting.name}}</a></li>
+    {% endfor %}
+</ul>
