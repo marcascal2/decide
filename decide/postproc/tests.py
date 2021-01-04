@@ -36,6 +36,118 @@ class PostProcTestCase(APITestCase):
             { 'option': 'Option 6', 'number': 6, 'votes': 1, 'postproc': 1 },
             { 'option': 'Option 2', 'number': 2, 'votes': 0, 'postproc': 0 },
         ]
+       
+       
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+        
+    def test_saintelague1(self):
+        data = {
+            'type': 'SAINTELAGUE',
+            'options': [
+                { 'option': 'Option 1', 'number': 1, 'votes': 340000 },
+                { 'option': 'Option 2', 'number': 2, 'votes': 280000 },
+                { 'option': 'Option 3', 'number': 3, 'votes': 160000 },
+                { 'option': 'Option 4', 'number': 4, 'votes': 60000 },
+               
+            ],
+             'nSeats': 7
+        }
+
+        expected_result = [
+            { 'option': 'Option 1', 'number': 1, 'votes': 340000, 'seats': 3},
+            { 'option': 'Option 2', 'number': 2, 'votes': 280000, 'seats': 3 },
+            { 'option': 'Option 3', 'number': 3, 'votes': 160000, 'seats': 1 },
+            { 'option': 'Option 4', 'number': 4, 'votes': 60000, 'seats': 0 },
+
+           
+        ]
+
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+    
+    def test_saintelague2(self):
+        data = {
+            'type': 'SAINTELAGUE',
+            'options': [
+                { 'option': 'Option 1', 'number': 1, 'votes': 50 },
+                { 'option': 'Option 2', 'number': 2, 'votes': 40 },
+                { 'option': 'Option 3', 'number': 3, 'votes': 20 },
+               
+            ],
+             'nSeats': 4
+        }
+
+        expected_result = [
+            { 'option': 'Option 1', 'number': 1, 'votes': 50, 'seats': 2},
+            { 'option': 'Option 2', 'number': 2, 'votes': 40, 'seats': 1 },
+            { 'option': 'Option 3', 'number': 3, 'votes': 20, 'seats': 1 },
+
+           
+        ]
+
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+
+    def test_saintelague3(self):
+        data = {
+            'type': 'SAINTELAGUE',
+            'options': [
+                { 'option': 'Option 1', 'number': 1, 'votes': 50 },
+                { 'option': 'Option 2', 'number': 2, 'votes': 40 },
+                { 'option': 'Option 3', 'number': 3, 'votes': 20 },
+               
+            ],
+             'nSeats': 5
+        }
+
+        expected_result = [
+            { 'option': 'Option 1', 'number': 1, 'votes': 50, 'seats': 2},
+            { 'option': 'Option 2', 'number': 2, 'votes': 40, 'seats': 2 },
+            { 'option': 'Option 3', 'number': 3, 'votes': 20, 'seats': 1 },
+
+           
+        ]
+
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+   
+   
+    def test_saintelague4(self):
+        data = {
+            'type': 'SAINTELAGUE',
+            'options': [
+                { 'option': 'Option 1', 'number': 1, 'votes': 0 },
+                { 'option': 'Option 2', 'number': 2, 'votes': 5 },
+                { 'option': 'Option 3', 'number': 3, 'votes': 2 },
+               
+            ],
+             'nSeats': 2
+        }
+
+        expected_result = [
+            { 'option': 'Option 2', 'number': 2, 'votes': 5, 'seats': 2},
+            { 'option': 'Option 1', 'number': 1, 'votes': 0, 'seats': 0 },
+            { 'option': 'Option 3', 'number': 3, 'votes': 2, 'seats': 0 },
+
+           
+        ]
+
 
         response = self.client.post('/postproc/', data, format='json')
         self.assertEqual(response.status_code, 200)
