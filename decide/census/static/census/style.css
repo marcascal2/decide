@@ -17,10 +17,14 @@
 }
 
 .left-column {
-    width: 80%;
-    margin-right: 5%;
+    width: 78%;
+    margin-right: 2%;
     border-right: 1px solid black;
     min-height: 60vh;
+}
+
+.right-column {
+    width: 20%;
 }
 
 .left-column table {
@@ -29,4 +33,17 @@
 
 thead {
     font-weight: bold;
+}
+
+.filas-tabla td {
+    padding: 10px 0;
+}
+
+.filtro-container li {
+    text-decoration: none;
+    list-style: none;
+}
+
+.filtro-container {
+    padding-left: 0;
 }

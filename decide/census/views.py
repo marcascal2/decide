@@ -114,6 +114,7 @@ def voting_census(request, voting_id):
 
     voting = Voting.objects.get(id = voting_id)
     census = Census.objects.filter(voting_id = voting_id)
+
     voters = []
     for c in census:  
         u = User.objects.get(id = c.voter_id)  
@@ -138,7 +139,7 @@ def adscripcion_census(request, adscripcion):
     if not request.user.is_authenticated:
         return render(request, 'login_error.html')
 
-    census = Census.objects.filter(adscripcion= adscripcion)
+    census = Census.objects.filter(adscripcion=adscripcion)
 
     return render(request, 'adscripcion_census.html', {'adscripcion':adscripcion, 'census':census})
 
@@ -179,7 +180,7 @@ def filter_by_adscripcion(request, adscripcion):
         if q not in questions:
             questions.append(q)
     
-    return render(request,'all_census.html', {'census':census, 'voters':voters, 'votings':votings_with_census, 'adscripciones':adscripciones, 'dates':dates, 'questions':questions})
+    return render(request,'admin.html', {'census':census, 'voters':voters, 'votings':votings_with_census, 'adscripciones':adscripciones, 'dates':dates, 'questions':questions})
 
 def filter_by_voting(request, voting_id):
     if not request.user.is_authenticated:
@@ -218,7 +219,7 @@ def filter_by_voting(request, voting_id):
         if q not in questions:
             questions.append(q)
     
-    return render(request,'all_census.html', {'census':census, 'voters':voters, 'votings':votings_with_census, 'dates': dates, 'adscripciones':adscripciones, 'questions': questions})
+    return render(request,'admin.html', {'census':census, 'voters':voters, 'votings':votings_with_census, 'dates': dates, 'adscripciones':adscripciones, 'questions': questions})
 
 def filter_by_voter(request, voter_id):
     if not request.user.is_authenticated:
@@ -258,7 +259,7 @@ def filter_by_voter(request, voter_id):
             questions.append(q)
     
     
-    return render(request,'all_census.html', {'census':census, 'voters':voters_with_census, 'votings':votings, 'dates': dates, 'adscripciones':adscripciones, 'questions': questions})
+    return render(request,'admin.html', {'census':census, 'voters':voters_with_census, 'votings':votings, 'dates': dates, 'adscripciones':adscripciones, 'questions': questions})
 
 def filter_by_date(request, date):
     if not request.user.is_authenticated:
@@ -297,7 +298,7 @@ def filter_by_date(request, date):
         if len(c) != 0:
             voters_with_census.append(v)
     
-    return render(request,'all_census.html', {'census':census, 'dates':dates, 'voters':voters_with_census, 'votings':votings, 'adscripciones':adscripciones, 'questions':questions})
+    return render(request,'admin.html', {'census':census, 'dates':dates, 'voters':voters_with_census, 'votings':votings, 'adscripciones':adscripciones, 'questions':questions})
 
 def filter_by_question(request, question):
     if not request.user.is_authenticated:
@@ -340,7 +341,7 @@ def filter_by_question(request, question):
         if len(c) != 0:
             voters_with_census.append(v)   
 
-    return render(request,'all_census.html', {'census':census, 'dates':dates, 'voters':voters_with_census, 'votings':votings, 'adscripciones':adscripciones, 'questions':questions})
+    return render(request,'admin.html', {'census':census, 'dates':dates, 'voters':voters_with_census, 'votings':votings, 'adscripciones':adscripciones, 'questions':questions})
 
 def adminView(request):
     if not request.user.is_authenticated:
@@ -374,7 +375,6 @@ def adminView(request):
             questions.append(q)
     
     return render(request, 'admin.html', {'census':census, 'votings':votings, 'voters':voters, 'dates': dates, 'adscripciones':adscripciones, 'questions': questions})
-
 
 def login(request):
     form = AuthenticationForm()
