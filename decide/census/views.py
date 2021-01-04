@@ -110,6 +110,28 @@ def voting_census(request, voting_id):
 
     return render(request, 'voting_census.html', {'census': census, 'voting': voting, 'voters': voters})
 
+def group_by_adscripcion(request):
+    if not request.user.is_authenticated:
+        return render(request, 'login_error.html')
+    
+    census = Census.objects.all()
+    adscripciones = []
+
+    for c in census:
+        if c.adscripcion not in adscripciones:
+            adscripciones.append(c.adscripcion)
+
+    return render(request, 'manage_grouping_adscripcion.html', { 'adscripciones': adscripciones})
+
+def adscripcion_census(request, adscripcion):
+    if not request.user.is_authenticated:
+        return render(request, 'login_error.html')
+
+    census = Census.objects.filter(adscripcion= adscripcion)
+
+    return render(request, 'adscripcion_census.html', {'adscripcion':adscripcion, 'census':census})
+
+
 def all_census(request):
     if not request.user.is_authenticated:
         return render(request, 'login_error.html')
