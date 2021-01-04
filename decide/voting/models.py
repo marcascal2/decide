@@ -6,7 +6,6 @@ from django.dispatch import receiver
 from base import mods
 from base.models import Auth, Key
 
-
 class Question(models.Model):
     desc = models.TextField()
 
@@ -123,8 +122,8 @@ class Voting(models.Model):
         return self.name
 
 class ReadonlyVoting(models.Model):
-    name = models.CharField(max_length=200)
-    desc = models.TextField(blank=True, null=True)
+    name = models.CharField(max_length=50)
+    desc = models.TextField(null=True, max_length=100)
     question = models.ForeignKey(Question, related_name='readonly_voting', on_delete=models.CASCADE)
 
     start_date = models.DateTimeField(blank=True, null=True)

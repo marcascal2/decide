@@ -7,8 +7,6 @@ from .models import Voting, ReadonlyVoting
 
 from .filters import StartedFilter
 
-""" from django.forms import Textarea """
-
 
 def start(modeladmin, request, queryset):
     for v in queryset.all():
@@ -55,13 +53,21 @@ class ReadonlyVotingAdmin(admin.ModelAdmin):
     list_filter = (StartedFilter,)
     search_fields = ('name', )
 
-    actions = [ start, stop, tally ]
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj=None, **kwargs)
 
-""" class Readonly(admin.ModelAdmin):
-    form = ReadonlyForm
+        if obj is not None:
+
+            form.base_fields["desc"].disabled = True
+            form.base_fields["name"].disabled = True
+            form.base_fields["question"].disabled = True
+            form.base_fields["auths"].disabled = True
+
+        return form
+
+    actions = [ start, stop, tally ]
 
 
 admin.site.register(Voting, VotingAdmin)
 admin.site.register(ReadonlyVoting, ReadonlyVotingAdmin)
 admin.site.register(Question, QuestionAdmin)
-admin.site.register(Readonly, ReadonlyAdmin) """

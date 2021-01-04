@@ -121,7 +121,7 @@ class ReadonlyVotingView(generics.ListCreateAPIView):
         for data in ['name', 'desc', 'question', 'question_opt']:
             if not data in request.data:
                 return Response({}, status=status.HTTP_400_BAD_REQUEST)
-
+        
         question = Question(desc=request.data.get('question'))
         question.save()
         for idx, q_opt in enumerate(request.data.get('question_opt')):
