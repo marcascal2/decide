@@ -40,34 +40,34 @@ Todos los censos
 Filtro por adscripcion
 <ul>
     {% for adscripcion in adscripciones %}
-        <li><a href="{% url 'filter_by_adscripcion' adscripcion=adscripcion %}">{{adscripcion}}</a></li>
+        <li><a href="{% url 'group_by_adscripcion' adscripcion=adscripcion %}">{{adscripcion}}</a></li>
     {% endfor %}
 </ul>
 
 Filtro por votación
 <ul>
     {% for voting in votings %}
-        <li><a href="{% url 'filter_by_voting' voting_id=voting.id %}">{{voting.name}}</a></li>
+        <li><a href="{% url 'group_by_voting' voting_id=voting.id %}">{{voting.name}}</a></li>
     {% endfor %}
 </ul>
 
 Filtro por votante
 <ul>
     {% for voter in voters %}
-        <li><a href="{% url 'filter_by_voter' voter_id=voter.id %}">{{voter.username}}</a></li>
+        <li><a href="{% url 'group_by_voter' voter_id=voter.id %}">{{voter.username}}</a></li>
     {% endfor %}
 </ul>
 
 Filtro por fecha
 <ul>
     {% for date in dates %}
-        <li><a href="{% url 'filter_by_date' date=date %}">{{date}}</a></li>
+        <li><a href="{% url 'group_by_date' date=date %}">{{date}}</a></li>
     {% endfor %}
 </ul>
 
 Filtro por pregunta de la votación
 <ul>
     {% for q in questions %}
-        <li><a href="{% url 'filter_by_question' question=q %}">{{q}}</a></li>
+        <li><a href="{% url 'group_by_question' question=q %}">{{q}}</a></li>
     {% endfor %}
 </ul>

@@ -1,6 +1,0 @@
-<h3>Listado de votantes</h3>
-<ul>
-  {% for voter in voters %}
-  <li><a href="{% url 'voter_census' voter_id=voter.id %}">{{voter.username}}</a></li>
-  {% endfor %}
-</ul>

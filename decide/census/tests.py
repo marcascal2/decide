@@ -18,12 +18,28 @@ class CensusTestCase(BaseTestCase):
         super().setUp()
         self.question = Question(desc='desc')
         self.question.save()
-        self.voting = Voting(id = 1, name='voting_testing', question=self.question)
-        self.voting.save()
-        user1 = User(id=5, username='test', password='test_password')
+        
+        v1 = Voting(id = 1, name='voting_testing1', question=self.question)
+        v1.save()
+        
+        v2 = Voting(id = 3, name='voting_testing2', question=self.question)
+        v2.save()
+
+        user1 = User(id=5, username='voter1', password='test_password')
         user1.save()
-        self.census = Census(voting_id=1, voter_id=5)
+        
+        user2 = User(id=6, username='voter2', password='test_password')
+        user2.save()
+
+        self.census = Census(voting_id=1, voter_id=5, adscripcion='Colegio1')
         self.census.save()
+
+        c2 = Census(voting_id=3, voter_id=5, adscripcion='Colegio1')
+        c2.save()
+
+        c3 = Census(voting_id=1, voter_id=6, adscripcion='Colegio2')
+        c3.save()
+
 
     def tearDown(self):
         super().tearDown()
@@ -49,7 +65,7 @@ class CensusTestCase(BaseTestCase):
         self.login()
         response = self.client.get('/census/?voting_id={}'.format(1), format='json')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), {'voters': [5]})
+        self.assertEqual(response.json(), {'voters': [5, 6]})
 
     def test_add_new_voters_conflict(self):
         data = {'voting_id': 1, 'voters': [5]}
@@ -73,10 +89,10 @@ class CensusTestCase(BaseTestCase):
         response = self.client.post('/census/', data, format='json')
         self.assertEqual(response.status_code, 403)
 
-        self.login()
+        self.login(user='admin')
         response = self.client.post('/census/', data, format='json')
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(len(data.get('voters')), Census.objects.count() - 1)
+        self.assertEqual(len(data.get('voters')), 4)
 
     def test_destroy_voter(self):
         data = {'voters': [1]}
@@ -85,42 +101,28 @@ class CensusTestCase(BaseTestCase):
         self.assertEqual(0, len(Census.objects.filter(voter_id=1)))
 
     def test_model(self):
-        self.census.adscripcion = 'ads'
-        self.census.date = date.today
-        self.assertEqual(self.census.voting_id, 1)
-        self.assertEqual(self.census.voter_id, 5)
-        self.assertEqual(self.census.adscripcion, 'ads')
-        self.assertEqual(self.census.date, date.today)
+        c = Census.objects.get(adscripcion = 'Colegio2')
+        c.date = date.today
+        self.assertEqual(c.voting_id, 1)
+        self.assertEqual(c.voter_id, 6)
+        self.assertEqual(c.adscripcion, 'Colegio2')
+        self.assertEqual(c.date, date.today)
     
     def test_model_functions(self):
-        self.assertEqual(self.census.voting_name, 'voting_testing')
-        self.assertEqual(self.census.voting_question, 'desc')
-        self.assertEqual(self.census.voter_username, 'test')
-
-    def test_group_by_voter(self):
-        u = User(username='request_user', password='request_password')
-        u.save()
-        voter = User.objects.get(id = self.census.voter_id)
-        voting = Voting.objects.get(id = self.census.voting_id)
-        rf = RequestFactory()
-        request = rf.get('/census/group_by_voter/')  
-        request.user = u
-        response = views.voter_census(request, 5)
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, voter)
-        self.assertContains(response, voting)
-        # self.assertContains(response, self.census)
+        c = self.census
+        self.assertEqual(c.voting_name, 'voting_testing1')
+        self.assertEqual(c.voting_question, 'desc')
+        self.assertEqual(c.voter_username, 'voter1')
     
-    def test_group_by_voting(self):
+    def test_all_census(self):
         u = User(username='request_user', password='request_password')
         u.save()
-        voter = User.objects.get(id = self.census.voter_id)
-        voting = Voting.objects.get(id = self.census.voting_id)
+        census = Census.objects.all()
+        
         rf = RequestFactory()
-        request = rf.get('/census/group_by_voting/')  
+        request = rf.get('/census/all_census/')  
         request.user = u
-        response = views.voting_census(request, 1)
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, voter)
-        self.assertContains(response, voting)
-        # self.assertContains(response, self.census)
+        response = views.all_census(request)
+        
+        for c in census:
+            self.assertContains(response, c)
