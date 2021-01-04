@@ -1,11 +1,11 @@
-<h3>Censos del votante {{voter.username}}</h3>
+<h3>Censos de la adscripcion {{adscripcion}}</h3>
 <table>
   <tr>
       <td>
           Votación
       </td>
       <td>
-          Adscripción
+          Votante
       </td>
       <td>
           Fecha
@@ -17,11 +17,11 @@
               {{c.voting_name}}
           </td>
           <td>
-              {{c.adscripcion}}
+              {{c.voter_username}}
           </td>
           <td>
-              {{c.date}}
-          </td>
-      </tr>
-  {% endfor %}
+            {{c.date}}
+        </td>
+    </tr>
+{% endfor %}
 </table>
