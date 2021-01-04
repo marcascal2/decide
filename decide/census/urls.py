@@ -13,5 +13,6 @@ urlpatterns = [
     path('filter_by_voting/<int:voting_id>',views.filter_by_voting, name='filter_by_voting'),
     path('filter_by_voter/<int:voter_id>',views.filter_by_voter, name='filter_by_voter'),
     path('filter_by_date/<str:date>',views.filter_by_date, name='filter_by_date'),
-    path('filter_by_adscripcion/<str:adscripcion>',views.filter_by_adscripcion, name='filter_by_adscripcion')
+    path('filter_by_adscripcion/<str:adscripcion>',views.filter_by_adscripcion, name='filter_by_adscripcion'),
+    path('filter_by_question/<str:question>',views.filter_by_question, name='filter_by_question')
 ]

@@ -64,3 +64,10 @@ Filtro por fecha
         <li><a href="{% url 'filter_by_date' date=date %}">{{date}}</a></li>
     {% endfor %}
 </ul>
+
+Filtro por pregunta de la votación
+<ul>
+    {% for q in questions %}
+        <li><a href="{% url 'filter_by_question' question=q %}">{{q}}</a></li>
+    {% endfor %}
+</ul>
