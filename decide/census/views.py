@@ -2,8 +2,7 @@ from django.db.utils import IntegrityError
 from django.db.models.base import Model 
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import generics
-from django.shortcuts import render
-from django.shortcuts import redirect
+from django.shortcuts import render, redirect
 from rest_framework.response import Response
 from rest_framework.status import (
         HTTP_201_CREATED as ST_201,
@@ -18,6 +17,12 @@ from .models import Census
 from voting.models import Voting
 from django.contrib.auth.models import User
 from datetime import date
+
+#Auth
+from django.contrib.auth import logout as do_logout
+from django.contrib.auth import authenticate
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import login as do_login
 
 
 class CensusCreate(generics.ListCreateAPIView):
@@ -62,8 +67,11 @@ class CensusDetail(generics.RetrieveDestroyAPIView):
             return Response('Invalid voter', status=ST_401)
         return Response('Valid voter')
 
-def adminView(request):
-    return render(request,'admin.html')
+def logout(request):
+    # Finalizamos la sesión
+    do_logout(request)
+    # Redireccionamos a la portada
+    return redirect('/census/admin/')
     
 def group_by_voter(request):
     if not request.user.is_authenticated:
@@ -367,3 +375,34 @@ def filter_by_question(request, question):
             voters_with_census.append(v)   
 
     return render(request,'all_census.html', {'census':census, 'dates':dates, 'voters':voters_with_census, 'votings':votings, 'adscripciones':adscripciones, 'questions':questions})
+
+def adminView(request):
+    # Si estamos identificados devolvemos la portada
+    if request.user.is_authenticated:
+        queryset = Voting.objects.all()
+        return render(request, "admin.html", {'voting' : queryset})
+    # En otro caso redireccionamos al login
+    return redirect('login')
+
+def login(request):
+    
+    # Creamos el formulario de autenticación vacío
+    form = AuthenticationForm()
+    if request.method == "POST":
+       
+        # Recuperamos las credenciales validadas
+        username = request.POST['username']
+        password = request.POST['password']
+
+        # Verificamos las credenciales del usuario
+        user = authenticate(request,username=username, password=password)
+        
+        # Si existe un usuario con ese nombre y contraseña
+        if user is not None:
+            # Hacemos el login manualmente
+            do_login(request, user)
+            # Y le redireccionamos a la portada
+            return redirect('/census/admin')
+
+    # Si llegamos al final renderizamos el formulario
+    return render(request, "login.html", {'form': form})
