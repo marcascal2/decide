@@ -83,7 +83,7 @@ def voter_census(request, voter_id):
     votings = []
     for c in census:
         votings.append(Voting.objects.get(id = c.voting_id))
-    
+
     return render(request, 'voter_census.html', {'census': census, 'voter': voter, 'votings': votings})
 
 def group_by_voting(request):
@@ -105,9 +105,11 @@ def voting_census(request, voting_id):
     voting = Voting.objects.get(id = voting_id)
     census = Census.objects.filter(voting_id = voting_id)
     voters = []
+    census_list = []
     for c in census:  
         u = User.objects.get(id = c.voter_id)  
         voters.append(u)
-    return render(request, 'voting_census.html', {'census': census, 'voting': voting, 'voters': voters})
+        census_list.append(c)
+    return render(request, 'voting_census.html', {'census': census_list, 'voting': voting, 'voters': voters})
 
     
