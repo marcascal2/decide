@@ -41,10 +41,17 @@ class PostProcView(APIView):
         #Inicializamos la lista así para que no se cambie por referencia
         puntosPorPart = partidos[:]
         escanosTotales = nSeats 
+        #Dividimos entre 1.4 el primer valor de votos de cada partido para hacer el sainte lague modificado
+        for p in puntosPorPart:
+            index1=puntosPorPart.index(p)
+            puntosPorPart[index1]=p/1.4
+        
+        #Realizamos la iteracion tantas veces como escaños a repartir haya
         i = 0
         while(i<escanosTotales):
             maxVotos = max(puntosPorPart) 
             index = puntosPorPart.index(maxVotos)
+            print(maxVotos)
             if maxVotos != 0:
                 
                 escanos[index] += 1 
@@ -56,7 +63,6 @@ class PostProcView(APIView):
         out.sort(key=lambda x: -x['seats'])
         return Response(out)
 
-        #Me faltaria hacer el saintelague modificado
     def post(self, request):
         """
          * type: IDENTITY | EQUALITY | WEIGHT
