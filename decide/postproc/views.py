@@ -33,6 +33,19 @@ class PostProcView(APIView):
 
                 'seat': 0,
             })
+ 
+        numEscanos = nSeats
+
+        while numEscanos>0:
+            
+            actual = 0
+            
+            for i in range(1, len(out)):
+                valorActual = out[actual]['votes'] / (out[actual]['seat'] + 1)
+                valorComparar = out[i]['votes'] / (out[i]['seat'] + 1)
+
+            
+            numEscanos = numEscanos - 1
 
         return Response(out)
 
