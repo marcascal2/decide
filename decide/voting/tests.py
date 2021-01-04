@@ -13,7 +13,7 @@ from census.models import Census
 from mixnet.mixcrypt import ElGamal
 from mixnet.mixcrypt import MixCrypt
 from mixnet.models import Auth
-from voting.models import Voting, Question, QuestionOption
+from voting.models import Voting, Question, QuestionOption, QuestionOrdering
 
 
 class VotingTestCase(BaseTestCase):
@@ -208,3 +208,100 @@ class VotingTestCase(BaseTestCase):
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), 'Voting already tallied')
+
+
+class VotingOrderingTestCase(BaseTestCase):
+
+    def create_ordering_voting(self):
+        q = Question(desc='Testeo de una order_ question')
+        q.save()
+        for i in range(5):
+            opt = QuestionOrdering(question=q, option='ordering {}'.format(i+1), ordering='{}'.format(i+1))
+            opt.save()
+        v = Voting(name='Testeo de una order_ voting', question=q)
+        v.save()
+
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'test auth'})
+        a.save()
+        v.auths.add(a)
+
+        return v
+    def test_create_ordering_voting_from_api(self):
+        data = {'name': 'Example'}
+
+        self.login()
+        response = mods.post('voting', params=data, response=True)
+        self.assertEqual(response.status_code, 400)
+
+        data = {
+            'name': 'Example',
+            'desc': 'Description example',
+            'question': 'I want a ',
+            'question_opt': [],
+            'question_ordering': [2,1,3]
+        }
+
+        response = self.client.post('/voting/', data, format='json')
+        self.assertEqual(response.status_code, 201)
+
+class QuestionOrderingTestCase(BaseTestCase):
+
+    def setUp(self):
+        q=Question(desc="Descripcion")
+        q.save()
+
+        self.v=Voting(name="Votacion", question=q)
+        self.v.save()
+        super().setUp()
+
+    def tearDown(self):
+        super().tearDown()
+        self.v=None
+ 
+    def testExistQuestionNoOption(self):
+        v = Voting.objects.get(name="Votacion")
+        self.assertEquals(v.question.desc, "Descripcion")
+    
+    def testExistQuestionWithOption(self):
+        q = Question.objects.get(desc="Descripcion")
+        opt1 = QuestionOption(question = q, option="option1")
+        opt1.save()
+        v = Voting.objects.get(name="Votacion")
+        v.question = q
+        v.question_opt = opt1
+        v.save()
+        self.assertEquals(v.question.options.all()[0].option, "option1")
+
+    def testExistQuestionWithOrdering(self):
+        q = Question.objects.get(desc="Descripcion")
+        q.save()
+
+        q_order1 = QuestionOrdering(question=q,option="esta va a salir segunda ",ordering=2)
+        q_order1.save()
+        q_order2 = QuestionOrdering(question=q,option="esta va a salir primera" ,ordering=1)
+        q_order2.save()
+
+        v= Voting(name="Prueba votacion ordenada", question=q)
+        v.save()
+
+        self.assertEquals(v.question.options_ordering.all()[0].ordering, 2)
+        self.assertEquals(v.question.options_ordering.all()[1].ordering, 1)
+
+
+    def testExistQuestionWithFailureOrdering(self):
+        q = Question.objects.get(desc="Descripcion")
+        q.save()
+
+        q_order1 = QuestionOrdering(question=q,option="esta va a salir segunda ",ordering=2)
+        q_order1.save()
+        q_order2 = QuestionOrdering(question=q,option="esta va a salir primera" ,ordering=1)
+        q_order2.save()
+
+        v= Voting(name="Prueba votacion ordenada", question=q)
+        v.save()
+
+        self.assertNotEquals(v.question.options_ordering.all()[0].ordering, 1)
+        self.assertNotEquals(v.question.options_ordering.all()[1].ordering, 2)
+
+    
