@@ -45,7 +45,7 @@ class PostProcView(APIView):
                 for x in range(0,ng):
                    out[x]['postproc'] = c
             else:
-                if ng == len(out):
+                if ng == len(out) and ng < Totalseats:
                     out[0]['postproc'] = c + r
                     for x in range(1,ng):
                         out[x]['postproc'] = c
