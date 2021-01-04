@@ -152,7 +152,7 @@ def all_census(request):
         if v not in votings:
             votings.append(v)
 
-        d = c.date.__str__
+        d = c.date
         if d not in dates:
             dates.append(d)
         
@@ -190,7 +190,7 @@ def filter_by_adscripcion(request, adscripcion):
     questions = []
     
     for c in Census.objects.all():
-        d = c.date.__str__
+        d = c.date
         q = c.voting_question
 
         if d not in dates:
@@ -229,7 +229,7 @@ def filter_by_voting(request, voting_id):
     questions = []
     
     for c in Census.objects.all():
-        d = c.date.__str__
+        d = c.date
         q = c.voting_question
     
         if d not in dates:
@@ -268,7 +268,7 @@ def filter_by_voter(request, voter_id):
     questions = []
     
     for c in Census.objects.all():
-        d = c.date.__str__
+        d = c.date
         q = c.voting_question
     
         if d not in dates:
@@ -299,7 +299,7 @@ def filter_by_date(request, date):
     questions = []
     
     for c in Census.objects.all():
-        d = c.date.__str__
+        d = c.date
         q = c.voting_question
 
         if d not in dates:
@@ -342,7 +342,7 @@ def filter_by_question(request, question):
 
         votings_in_census.append(c.voting_id)
 
-        d = c.date.__str__
+        d = c.date
         q = c.voting_question
         
         if d not in dates:
