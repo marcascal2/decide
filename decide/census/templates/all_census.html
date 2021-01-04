@@ -37,3 +37,15 @@
         <li><a href="{% url 'filter_by_voting' voting_id=voting.id %}">{{voting.name}}</a></li>
     {% endfor %}
 </ul>
+
+<ul>
+    {% for voter in voters %}
+        <li><a href="{% url 'filter_by_voter' voter_id=voter.id %}">{{voter.username}}</a></li>
+    {% endfor %}
+</ul>
+
+<ul>
+    {% for date in dates %}
+        <li><a href="{% url 'filter_by_date' date=date %}">{{date}}</a></li>
+    {% endfor %}
+</ul>
