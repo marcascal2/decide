@@ -12,6 +12,7 @@ from rest_framework.status import (
 
 from base.perms import UserIsStaff
 from .models import Census
+from .utils import *
 
 
 class CensusCreate(generics.ListCreateAPIView):
@@ -49,3 +50,10 @@ class CensusDetail(generics.RetrieveDestroyAPIView):
         except ObjectDoesNotExist:
             return Response('Invalid voter', status=ST_401)
         return Response('Valid voter')
+
+def import_by_voting(request, voting_id):
+    if not request.user.is_authenticated:
+        return render(request, 'login_error.html')
+
+    import_from_csv_by_voting(voting_id)
+    return render(request, 'upload.html', locals())

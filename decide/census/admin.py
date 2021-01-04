@@ -6,14 +6,13 @@ from django.shortcuts import render
 from django.urls import path
 
 from .models import Census
-
-import logging
+from .views import *
 
 
 class CensusAdmin(admin.ModelAdmin):
     change_list_template = "import.html"
     list_display = ('voting_id', 'voter_id')
-    list_filter = ('voting_id', )
+    list_filter = ('voting_id', 'voter_id')
 
     search_fields = ('voter_id', )
 
@@ -47,10 +46,13 @@ class CensusAdmin(admin.ModelAdmin):
 
         def save_import(f):
             for row in f:
-                voting_id = row[1]
-                voter_id = row[2]
-                census = Census(voting_id=voting_id, voter_id=voter_id)
-                census.save()
+                if not row.startswith(b'id'):
+                    cadena = row.decode('utf-8')
+                    ids = cadena.split(',')
+                    voting_id = ids[1]
+                    voter_id = ids[2]
+                    census = Census(voting_id=voting_id, voter_id=voter_id)
+                    census.save()
             f.close()
 
         form = UploadDocumentForm()
