@@ -142,40 +142,6 @@ def adscripcion_census(request, adscripcion):
 
     return render(request, 'adscripcion_census.html', {'adscripcion':adscripcion, 'census':census})
 
-
-def all_census(request):
-    if not request.user.is_authenticated:
-        return render(request, 'login_error.html')
-
-    census = Census.objects.all()
-    votings = []
-    voters = []
-    dates = [] 
-    adscripciones = []
-    questions = []
-
-    for c in census:
-        u = User.objects.get(id = c.voter_id)  
-        if u not in voters:
-            voters.append(u)
-        
-        v = Voting.objects.get(id = c.voting_id)  
-        if v not in votings:
-            votings.append(v)
-
-        d = c.date
-        if d not in dates:
-            dates.append(d)
-        
-        if c.adscripcion not in adscripciones:
-            adscripciones.append(c.adscripcion)
-        
-        q = c.voting_question
-        if q not in questions:
-            questions.append(q)
-    
-    return render(request,'all_census.html', {'census':census, 'votings':votings, 'voters':voters, 'dates': dates, 'adscripciones':adscripciones, 'questions': questions})
-
 def filter_by_adscripcion(request, adscripcion):
     if not request.user.is_authenticated:
         return render(request, 'login_error.html')
@@ -377,32 +343,51 @@ def filter_by_question(request, question):
     return render(request,'all_census.html', {'census':census, 'dates':dates, 'voters':voters_with_census, 'votings':votings, 'adscripciones':adscripciones, 'questions':questions})
 
 def adminView(request):
-    # Si estamos identificados devolvemos la portada
-    if request.user.is_authenticated:
-        queryset = Voting.objects.all()
-        return render(request, "admin.html", {'voting' : queryset})
-    # En otro caso redireccionamos al login
-    return redirect('login')
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    census = Census.objects.all()
+    votings = []
+    voters = []
+    dates = [] 
+    adscripciones = []
+    questions = []
+
+    for c in census:
+        u = User.objects.get(id = c.voter_id)
+        if u not in voters:
+            voters.append(u)
+        
+        v = Voting.objects.get(id = c.voting_id)
+        if v not in votings:
+            votings.append(v)
+
+        d = c.date
+        if d not in dates:
+            dates.append(d)
+        
+        if c.adscripcion not in adscripciones:
+            adscripciones.append(c.adscripcion)
+        
+        q = c.voting_question
+        if q not in questions:
+            questions.append(q)
+    
+    return render(request, 'admin.html', {'census':census, 'votings':votings, 'voters':voters, 'dates': dates, 'adscripciones':adscripciones, 'questions': questions})
+
 
 def login(request):
-    
-    # Creamos el formulario de autenticación vacío
     form = AuthenticationForm()
     if request.method == "POST":
-       
-        # Recuperamos las credenciales validadas
         username = request.POST['username']
         password = request.POST['password']
 
         # Verificamos las credenciales del usuario
         user = authenticate(request,username=username, password=password)
         
-        # Si existe un usuario con ese nombre y contraseña
+        # Si existe un usuario con ese nombre y contraseña logueamos
         if user is not None:
-            # Hacemos el login manualmente
             do_login(request, user)
-            # Y le redireccionamos a la portada
             return redirect('/census/admin')
 
-    # Si llegamos al final renderizamos el formulario
     return render(request, "login.html", {'form': form})
