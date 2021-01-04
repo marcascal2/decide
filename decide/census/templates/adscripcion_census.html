@@ -1,0 +1,27 @@
+<h3>Censos de la adscripcion {{adscripcion}}</h3>
+<table>
+  <tr>
+      <td>
+          Votación
+      </td>
+      <td>
+          Votante
+      </td>
+      <td>
+          Fecha
+      </td>
+  </tr>
+  {% for c in census %}
+      <tr>
+          <td>
+              {{c.voting_name}}
+          </td>
+          <td>
+              {{c.voter_username}}
+          </td>
+          <td>
+            {{c.date}}
+        </td>
+    </tr>
+{% endfor %}
+</table>
