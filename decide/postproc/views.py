@@ -21,7 +21,7 @@ class PostProcView(APIView):
 
         for o in options:
 
-            o.append({
+            out.append({
                 **o,
                 'postproc': 0,
             })
