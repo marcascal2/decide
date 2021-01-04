@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
 from rest_framework.response import Response
 
-from .models import Question, QuestionOption, Voting
+from .models import Question, QuestionOption, Voting, Candidate
 from .serializers import SimpleVotingSerializer, VotingSerializer, CandidateSerializer
 from base.perms import UserIsStaff
 from base.models import Auth
@@ -29,7 +29,7 @@ class VotingView(generics.ListCreateAPIView):
     def post(self, request, *args, **kwargs):
         self.permission_classes = (UserIsStaff,)
         self.check_permissions(request)
-        for data in ['name', 'desc', 'question', 'question_opt']:
+        for data in ['name', 'desc', 'question', 'question_opt', 'escanios']:
             if not data in request.data:
                 return Response({}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -40,10 +40,10 @@ class VotingView(generics.ListCreateAPIView):
             opt.save()
         
         voting = Voting(name=request.data.get('name'), desc=request.data.get('desc'),
-                question=question)
+                question=question,escanios= request.data.get('escanios'))
         voting.save()
         
-        candidate, _ = Candidate.objects.get()
+        candidate, _ = Candidate.objects.get_or_create(name="pepe")
         candidate.save()
         voting.candidates.add(candidate)
         auth, _ = Auth.objects.get_or_create(url=settings.BASEURL,
