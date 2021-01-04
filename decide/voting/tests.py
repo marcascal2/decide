@@ -277,31 +277,37 @@ class QuestionOrderingTestCase(BaseTestCase):
         q = Question.objects.get(desc="Descripcion")
         q.save()
 
-        q_order1 = QuestionOrdering(question=q,option="esta va a salir segunda ",ordering=2)
+        q_order1 = QuestionOrdering(question=q,option="esta va a salir segunda",ordering=1)
         q_order1.save()
-        q_order2 = QuestionOrdering(question=q,option="esta va a salir primera" ,ordering=1)
+        q_order2 = QuestionOrdering(question=q,option="esta va a salir primera" ,ordering=2)
         q_order2.save()
 
         v= Voting(name="Prueba votacion ordenada", question=q)
         v.save()
 
-        self.assertEquals(v.question.options_ordering.all()[0].ordering, 2)
-        self.assertEquals(v.question.options_ordering.all()[1].ordering, 1)
+        q_order1_postgres=Voting.objects.get(name="Prueba votacion ordenada").question.options_ordering.filter(option="esta va a salir segunda").get()
+        q_order2_postgres=Voting.objects.get(name="Prueba votacion ordenada").question.options_ordering.filter(option="esta va a salir primera").get()
+
+        self.assertEquals(q_order1_postgres.ordering, 1)
+        self.assertEquals(q_order2_postgres.ordering, 2)
 
 
     def testExistQuestionWithFailureOrdering(self):
         q = Question.objects.get(desc="Descripcion")
         q.save()
 
-        q_order1 = QuestionOrdering(question=q,option="esta va a salir segunda ",ordering=2)
+        q_order1 = QuestionOrdering(question=q,option="esta va a salir segunda",ordering=1)
         q_order1.save()
-        q_order2 = QuestionOrdering(question=q,option="esta va a salir primera" ,ordering=1)
+        q_order2 = QuestionOrdering(question=q,option="esta va a salir primera" ,ordering=2)
         q_order2.save()
 
         v= Voting(name="Prueba votacion ordenada", question=q)
         v.save()
 
-        self.assertNotEquals(v.question.options_ordering.all()[0].ordering, 1)
-        self.assertNotEquals(v.question.options_ordering.all()[1].ordering, 2)
+        q_order1_postgres=Voting.objects.get(name="Prueba votacion ordenada").question.options_ordering.filter(option="esta va a salir segunda").get()
+        q_order2_postgres=Voting.objects.get(name="Prueba votacion ordenada").question.options_ordering.filter(option="esta va a salir primera").get()
+
+        self.assertNotEquals(q_order1_postgres.ordering, 2)
+        self.assertNotEquals(q_order2_postgres.ordering, 1)
 
     
