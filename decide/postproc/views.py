@@ -19,7 +19,6 @@ class PostProcView(APIView):
 
         out.sort(key=lambda x: -x['postproc'])
         return Response(out)
-<<<<<<< HEAD
       
     def simple(self, options, seats):
         out = []
@@ -105,7 +104,7 @@ class PostProcView(APIView):
                         out[ng]['postproc'] =r
         return out
     
-    def comprobar(self,opts):
+    def comprobar(self,opts,cands):
         comprueba = False   
         out = []
         for opt in opts:
@@ -113,10 +112,9 @@ class PostProcView(APIView):
                 **opt
             })
         for i in out:
-            candidatos=i['candidates'] 
             mujeres =[]
             hombres=[]
-            for c in candidatos:
+            for c in cands:
                 if c['sex'] == 'M':
                     mujeres.append(c)
                 elif c['sex'] == 'H':
@@ -224,45 +222,6 @@ class PostProcView(APIView):
         out.sort(key=lambda x: -x['seats'])
         return Response(out)
     
-    def paridad (self,options,cands):
-        out = []
-        for opt in options:
-            out.append({
-                **opt,
-                'paridad': [],
-                })
-        
-        hombres = []
-        mujeres = []
-        for cand in cands:
-            if cand['sex'] == 'H':
-                hombres.append(cand)
-            elif cand['sex'] == 'M':
-                mujeres.append(cand)
-        
-        for indice in out:
-            escanios = indice['escanio']
-            hom = 0
-            muj = 0
-            paridad = True
-            while escanios > 0:
-                if paridad: 
-                    if muj < len(mujeres):
-                        indice['paridad'].append(mujeres[muj])
-                        muj = muj + 1
-                        escanios -=1
-                    paridad = False
-                else: 
-                    if hom < len(hombres):
-                        indice['paridad'].append(hombres[hom])
-                        hom = hom + 1
-                        escanios -=1
-                    paridad = True
-                if(muj == len(mujeres) and hom == len(hombres)):
-                    escanios = 0
-                    break
-        return out
-    
     def post(self, request):
         """
          * type: IDENTITY | EQUALITY | WEIGHT | MGU
@@ -291,13 +250,13 @@ class PostProcView(APIView):
 
         elif t == 'SAINTELAGUE':
             return self.saintelague(opts,request.data.get('nSeats'))
-            
+
         cands = request.data.get('candidates', [])
         print(cands)
         if t == 'IDENTITY':
             return self.identity(self, opts)
         if t == 'PARIDAD':
-            comprueba= self.comprobar(opts)
+            comprueba= self.comprobar(opts,cands)
             if comprueba:
                 return Response(self.paridad(opts,cands))
             else:

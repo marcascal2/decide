@@ -401,7 +401,6 @@ class PostProcTestCase(APITestCase):
         values = response.json()
         self.assertEqual(values, expected_result)
 
-
     def test_simple5(self):
         data = {
             'type': 'SIMPLE',
@@ -531,7 +530,7 @@ class PostProcTestCase(APITestCase):
         self.assertEqual(response.status_code, 200)
         
         values = response.json()
-        print(values)
+        self.assertEqual(values,res)
 
         
     def test_saintelague1(self):
@@ -548,7 +547,13 @@ class PostProcTestCase(APITestCase):
         }
 
         resultado_esperado = [
-            {>>>>>>> decide-part-zumeta-postproc-feature-saintelague
+            { 'option': 'Option 1', 'number': 1, 'votes': 340000, 'seats': 3},
+            { 'option': 'Option 2', 'number': 2, 'votes': 280000, 'seats': 3 },
+            { 'option': 'Option 3', 'number': 3, 'votes': 160000, 'seats': 1 },
+            { 'option': 'Option 4', 'number': 4, 'votes': 60000, 'seats': 0 },
+
+           
+        ]
 
 
         response = self.client.post('/postproc/', datos, format='json')
