@@ -17,8 +17,8 @@ class Migration(migrations.Migration):
             name='ReadonlyVoting',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=200)),
-                ('desc', models.TextField(blank=True, null=True)),
+                ('name', models.CharField(max_length=50)),
+                ('desc', models.TextField(null=True, max_length=100)),
                 ('start_date', models.DateTimeField(blank=True, null=True)),
                 ('end_date', models.DateTimeField(blank=True, null=True)),
                 ('tally', django.contrib.postgres.fields.jsonb.JSONField(blank=True, null=True)),
