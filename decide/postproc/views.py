@@ -281,7 +281,7 @@ class PostProcView(APIView):
 
         t = request.data.get('type')
         opts = request.data.get('options', [])
-
+        cands = request.data.get('candidates', [])
         s = request.data.get('seats')
 
         if t == 'IDENTITY':
@@ -294,16 +294,10 @@ class PostProcView(APIView):
             return Response(self.mgu(opts,s))
         elif t == 'SAINTELAGUE':
             return self.saintelague(opts,request.data.get('nSeats'))
-
-        cands = request.data.get('candidates', [])
-        print(cands)
-        if t == 'IDENTITY':
-            return self.identity(self, opts)
-        if t == 'PARIDAD':
+        elif t == 'PARIDAD':
             comprueba= self.comprobar(opts,cands)
             if comprueba:
                 return Response(self.paridad(opts,cands))
             else:
-                return Response({'message' : 'la diferencia del numero de hombres y mujeres es de más de un 60% - 40%'})
-        
+                return Response({'message' : 'la diferencia del numero de hombres y mujeres es de más de un 60% - 40%'})        
         return Response({})
