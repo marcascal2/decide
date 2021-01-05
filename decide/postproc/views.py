@@ -1,12 +1,10 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-<<<<<<< HEAD
 import math
-=======
 from pickle import TRUE, FALSE
 from optparse import Option
 import random
->>>>>>> task/feature-paridad
+
 
 class PostProcView(APIView):
 
