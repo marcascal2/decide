@@ -1,10 +1,6 @@
 from rest_framework import serializers
 
-<<<<<<< HEAD
-from .models import Question, QuestionOption, Voting, QuestionPrefer, QuestionOrdering, Candidate, ReadonlyVoting
-=======
-from .models import Question, QuestionOption, Voting, MultipleVoting
->>>>>>> task/011/pedro
+from .models import Question, QuestionOption, Voting, QuestionPrefer, QuestionOrdering, Candidate, ReadonlyVoting, MultipleVoting
 from base.serializers import KeySerializer, AuthSerializer
 
 
