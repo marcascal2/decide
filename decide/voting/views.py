@@ -5,8 +5,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
 from rest_framework.response import Response
 
-from .models import Question, QuestionOption, Voting, QuestionPrefer, QuestionOrdering
-from .serializers import SimpleVotingSerializer, VotingSerializer
+from .models import Question, QuestionOption, Voting, QuestionPrefer, QuestionOrdering, Candidate
+from .serializers import SimpleVotingSerializer, VotingSerializer, CandidateSerializer
 from base.perms import UserIsStaff
 from base.models import Auth
 
@@ -29,7 +29,7 @@ class VotingView(generics.ListCreateAPIView):
     def post(self, request, *args, **kwargs):
         self.permission_classes = (UserIsStaff,)
         self.check_permissions(request)
-        for data in ['name', 'desc', 'question', 'question_opt']:
+        for data in ['name', 'desc', 'question', 'question_opt', 'escanios']:
             if not data in request.data:
                 return Response({}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -49,9 +49,12 @@ class VotingView(generics.ListCreateAPIView):
                 opt.save()
         voting = Voting(name=request.data.get('name'), desc=request.data.get('desc'),
                 question=question, end_date=request.data.get('end_date'), start_date=request.data.get('start_date')
-                , min_age=request.data.get('min_age'), max_age=request.data.get('max_age'))
+                , min_age=request.data.get('min_age'), max_age=request.data.get('max_age'),escanios= request.data.get('escanios'))
         voting.save()
-
+        
+        candidate, _ = Candidate.objects.get_or_create(name="pepe")
+        candidate.save()
+        voting.candidates.add(candidate)
         auth, _ = Auth.objects.get_or_create(url=settings.BASEURL,
                                           defaults={'me': True, 'name': 'test auth'})
         auth.save()

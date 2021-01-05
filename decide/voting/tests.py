@@ -13,7 +13,7 @@ from census.models import Census
 from mixnet.mixcrypt import ElGamal
 from mixnet.mixcrypt import MixCrypt
 from mixnet.models import Auth
-from voting.models import Voting, Question, QuestionOption, QuestionPrefer, QuestionOrdering
+from voting.models import Voting, Question, QuestionOption, QuestionPrefer, QuestionOrdering, Candidate
 
 
 class VotingTestCase(BaseTestCase):
@@ -37,7 +37,7 @@ class VotingTestCase(BaseTestCase):
         for i in range(5):
             opt = QuestionOption(question=q, option='option {}'.format(i+1))
             opt.save()
-        v = Voting(name='test voting', question=q)
+        v = Voting(name='test voting', question=q, escanios =20)
         v.save()
 
         a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
@@ -141,6 +141,7 @@ class VotingTestCase(BaseTestCase):
         data = {
             'name': 'Example',
             'desc': 'Description example',
+            'escanios': 20,
             'question': 'I want a ',
             'question_opt': ['cat', 'dog', 'horse']
         }
@@ -298,6 +299,91 @@ class VotingTestCase(BaseTestCase):
             'question': 'I want a ',
             'question_opt' : [],
             'question_pref': ['CAT', 'DOG', 'HORSE']
+        }
+
+        response = self.client.post('/voting/', data, format='json')
+        self.assertEqual(response.status_code, 201)
+
+    def testVotingCandidateFromApi(self):
+        data = {'name': 'Example'}
+        response = self.client.post('/voting/', data, format='json')
+        self.assertEqual(response.status_code, 401)
+
+        # login with user no admin
+        self.login(user='noadmin')
+        response = mods.post('voting', params=data, response=True)
+        self.assertEqual(response.status_code, 403)
+
+        # login with user admin
+        self.login()
+        response = mods.post('voting', params=data, response=True)
+        self.assertEqual(response.status_code, 400)
+
+        data = {
+            'name': 'Example',
+            'desc': 'Description example',
+            'escanios': 20,
+            'question': 'I want a ',
+            'question_opt': ['cat', 'dog', 'horse'],
+            'candidates' :
+            {
+                'name': 'pepe',
+                'sex': 'H',
+                'auto_community': 'H',
+                'age': 21,
+                'political_party': 'PACMA'
+                
+            }
+        }
+
+        response = self.client.post('/voting/', data, format='json')
+        self.assertEqual(response.status_code, 201)
+
+
+    def testVotingWithManyCandidateFromApi(self):
+        data = {'name': 'Example'}
+        response = self.client.post('/voting/', data, format='json')
+        self.assertEqual(response.status_code, 401)
+
+        # login with user no admin
+        self.login(user='noadmin')
+        response = mods.post('voting', params=data, response=True)
+        self.assertEqual(response.status_code, 403)
+
+        # login with user admin
+        self.login()
+        response = mods.post('voting', params=data, response=True)
+        self.assertEqual(response.status_code, 400)
+
+        data = {
+            'name': 'Example',
+            'desc': 'Description example',
+            'escanios': 20,
+            'question': 'I want a ',
+            'question_opt': ['cat', 'dog', 'horse'],
+            'candidates' :
+            [{
+                'name': 'pepe',
+                'sex': 'H',
+                'auto_community': 'H',
+                'age': 21,
+                'political_party': 'PACMA'
+            },
+            {
+                'name': 'pepe2',
+                'sex': 'H',
+                'auto_community': 'BA',
+                'age': 21,
+                'political_party': 'VOX'  
+            },           
+            { 
+                'name': 'pepe3',
+                'sex': 'M',
+                'auto_community': 'AN',
+                'age': 30,
+                'political_party': 'UP'  
+            }
+            ]
         }
 
         response = self.client.post('/voting/', data, format='json')
@@ -543,3 +629,32 @@ class QuestionOrderingTestCase(BaseTestCase):
 
         self.assertNotEquals(q_order1_postgres.ordering, 2)
         self.assertNotEquals(q_order2_postgres.ordering, 1)
+
+
+
+
+
+class CandidateTestCase(BaseTestCase):
+
+    def setUp(self):
+        c = Candidate(name="pepe")
+        c.save()
+        super().setUp()
+
+    def tearDown(self):
+        super().tearDown()
+        self.v=None 
+
+
+    def testExistCandidate(self):
+        candidate_test= Candidate.objects.get(name="pepe")
+        self.assertEqual(candidate_test.name, "pepe")
+
+    def testExistCompleteCandidate(self):
+        candidate_test = Candidate(name="test", age=21, number=1, auto_community="AN", sex ="H", political_party="PACMA")
+        self.assertEqual(candidate_test.name, "test")
+        self.assertEqual(candidate_test.age, 21)
+        self.assertEqual(candidate_test.number, 1)
+        self.assertEqual(candidate_test.auto_community, "AN")
+        self.assertEqual(candidate_test.sex, "H")
+        self.assertEqual(candidate_test.political_party, "PACMA")
