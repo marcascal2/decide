@@ -99,3 +99,8 @@ class VotingUpdate(generics.RetrieveUpdateDestroyAPIView):
             msg = 'Action not found, try with start, stop or tally'
             st = status.HTTP_400_BAD_REQUEST
         return Response(msg, status=st)
+
+class CustomURLView(generics.RetrieveUpdateDestroyAPIView):
+   queryset = Voting.objects.all()
+   serializer_class= VotingSerializer
+   lookup_field = 'customURL'
