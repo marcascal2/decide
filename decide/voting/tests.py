@@ -217,7 +217,7 @@ class VotingTestCase(BaseTestCase):
         for i in range(3):
             opt = QuestionOption(question=q, option='option {}'.format(i+1))
             opt.save()
-        v = ReadonlyVoting(name='readonly test voting', question=q)
+        v = ReadonlyVoting(name='readonly test voting', question=q, desc='example question')
         v.save()
 
         a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
