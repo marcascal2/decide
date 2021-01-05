@@ -40,14 +40,14 @@ class PostProcTestCase(APITestCase):
             ]
         }
         
-        expected_result = {'message' : 'la diferencia del numero de hombres y mujeres es de más de un 60% - 40%'}
+        result = {'message' : 'la diferencia del numero de hombres y mujeres es de más de un 60% - 40%'}
         response = self.client.post('/postproc/', data, format='json')
      
         self.assertEqual(response.status_code, 200)
                 
         values = response.json()
        
-        self.assertEqual(values, expected_result)
+        self.assertEqual(values, result)
         
     def test_genero_2(self):
         data = {
@@ -72,11 +72,11 @@ class PostProcTestCase(APITestCase):
             ]
         }
         
-        expected_result = {'message' : 'la diferencia del numero de hombres y mujeres es de más de un 60% - 40%'}
+        result = {'message' : 'la diferencia del numero de hombres y mujeres es de más de un 60% - 40%'}
         response = self.client.post('/postproc/', data, format='json')
      
         self.assertEqual(response.status_code, 200)
                 
         values = response.json()
        
-        self.assertEqual(values, expected_result)
+        self.assertEqual(values, result)
