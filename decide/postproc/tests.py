@@ -45,7 +45,7 @@ class PostProcTestCase(APITestCase):
         self.assertEqual(values, expected_result)
         
     def test_saintelague1(self):
-        data = {
+        datos = {
             'type': 'SAINTELAGUE',
             'options': [
                 { 'option': 'Option 1', 'number': 1, 'votes': 340000 },
@@ -57,7 +57,7 @@ class PostProcTestCase(APITestCase):
              'nSeats': 7
         }
 
-        expected_result = [
+        resultado_esperado = [
             { 'option': 'Option 1', 'number': 1, 'votes': 340000, 'seats': 3},
             { 'option': 'Option 2', 'number': 2, 'votes': 280000, 'seats': 3 },
             { 'option': 'Option 3', 'number': 3, 'votes': 160000, 'seats': 1 },
@@ -67,14 +67,14 @@ class PostProcTestCase(APITestCase):
         ]
 
 
-        response = self.client.post('/postproc/', data, format='json')
+        response = self.client.post('/postproc/', datos, format='json')
         self.assertEqual(response.status_code, 200)
 
         values = response.json()
-        self.assertEqual(values, expected_result)
+        self.assertEqual(values, resultado_esperado)
     
     def test_saintelague2(self):
-        data = {
+        datos = {
             'type': 'SAINTELAGUE',
             'options': [
                 { 'option': 'Option 1', 'number': 1, 'votes': 50 },
@@ -85,7 +85,7 @@ class PostProcTestCase(APITestCase):
              'nSeats': 4
         }
 
-        expected_result = [
+        resultado_esperado = [
             { 'option': 'Option 1', 'number': 1, 'votes': 50, 'seats': 2},
             { 'option': 'Option 2', 'number': 2, 'votes': 40, 'seats': 1 },
             { 'option': 'Option 3', 'number': 3, 'votes': 20, 'seats': 1 },
@@ -94,14 +94,14 @@ class PostProcTestCase(APITestCase):
         ]
 
 
-        response = self.client.post('/postproc/', data, format='json')
+        response = self.client.post('/postproc/', datos, format='json')
         self.assertEqual(response.status_code, 200)
 
         values = response.json()
-        self.assertEqual(values, expected_result)
+        self.assertEqual(values, resultado_esperado)
 
     def test_saintelague3(self):
-        data = {
+        datos = {
             'type': 'SAINTELAGUE',
             'options': [
                 { 'option': 'Option 1', 'number': 1, 'votes': 50 },
@@ -112,7 +112,7 @@ class PostProcTestCase(APITestCase):
              'nSeats': 5
         }
 
-        expected_result = [
+        resultado_esperado = [
             { 'option': 'Option 1', 'number': 1, 'votes': 50, 'seats': 2},
             { 'option': 'Option 2', 'number': 2, 'votes': 40, 'seats': 2 },
             { 'option': 'Option 3', 'number': 3, 'votes': 20, 'seats': 1 },
@@ -121,15 +121,15 @@ class PostProcTestCase(APITestCase):
         ]
 
 
-        response = self.client.post('/postproc/', data, format='json')
+        response = self.client.post('/postproc/', datos, format='json')
         self.assertEqual(response.status_code, 200)
 
         values = response.json()
-        self.assertEqual(values, expected_result)
+        self.assertEqual(values, resultado_esperado)
    
    
     def test_saintelague4(self):
-        data = {
+        datos = {
             'type': 'SAINTELAGUE',
             'options': [
                 { 'option': 'Option 1', 'number': 1, 'votes': 0 },
@@ -140,7 +140,7 @@ class PostProcTestCase(APITestCase):
              'nSeats': 2
         }
 
-        expected_result = [
+        resultado_esperado = [
             { 'option': 'Option 2', 'number': 2, 'votes': 5, 'seats': 2},
             { 'option': 'Option 1', 'number': 1, 'votes': 0, 'seats': 0 },
             { 'option': 'Option 3', 'number': 3, 'votes': 2, 'seats': 0 },
@@ -149,8 +149,8 @@ class PostProcTestCase(APITestCase):
         ]
 
 
-        response = self.client.post('/postproc/', data, format='json')
+        response = self.client.post('/postproc/', datos, format='json')
         self.assertEqual(response.status_code, 200)
 
         values = response.json()
-        self.assertEqual(values, expected_result)
+        self.assertEqual(values, resultado_esperado)
