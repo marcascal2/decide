@@ -54,14 +54,15 @@ class CensusDetail(generics.RetrieveDestroyAPIView):
             return Response('Invalid voter', status=ST_401)
         return Response('Valid voter')
 
-def import_by_voting(request, voting_id):
+def import_by_voting(request):
     if not request.user.is_authenticated:
         return render(request, 'login_error.html')
 
     class UploadDocumentForm(forms.Form):
         file = forms.FileField()
+        voting_id = forms.CharField()
 
-    def save_import(f):
+    def save_import(f, voting_id):
         for row in f:
             if not row.startswith(b'voter_id'):
                 cadena = row.decode('utf-8')
@@ -75,10 +76,11 @@ def import_by_voting(request, voting_id):
     if request.method == 'POST':
         form = UploadDocumentForm(request.POST, request.FILES)
         if form.is_valid():
-            save_import(request.FILES['file'])
+            save_import(request.FILES['file'], request.POST.get('voting_id', ''))
+            return render(request, 'succes.html', locals())
     else:
         form = UploadDocumentForm()
-
+    
     return render(request, 'upload.html', {'form': form})
 
 def export_by_voting(request, voting_id):

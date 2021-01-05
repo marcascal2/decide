@@ -6,10 +6,9 @@
             {{ form.as_p }}
             {% csrf_token %}
 
-            <button type="submit">Upload CSV</button>
-            <button onClick="javascript:history.go(-1);">Return</button>
+            <input type="submit" value="Submit">
+            <input type="button" onclick="javascript:history.go(-1);" value="Return">
         </form>
     </div>
     <br />
-
 {% endblock %}

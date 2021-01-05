@@ -60,6 +60,7 @@ class CensusAdmin(admin.ModelAdmin):
             form = UploadDocumentForm(request.POST, request.FILES)
             if form.is_valid():
                 save_import(request.FILES['file'])
+                return render(request, 'succes.html', locals())
         else:
             form = UploadDocumentForm()
 
