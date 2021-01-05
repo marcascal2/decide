@@ -209,7 +209,7 @@ class VotingTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), 'Voting already tallied')
 
-class readOnlyTests(BaseTestCase):
+class ReadOnlyVotingTests(BaseTestCase):
 
     def setUp(self):
         q=Question(desc="Descripcion")
@@ -229,24 +229,7 @@ class readOnlyTests(BaseTestCase):
         super().tearDown()
         self.v = None
 
-    # CREATE READONLY VOTING
-    def create_readonly_voting(self):
-        q = Question(desc='readonly test question')
-        q.save()
-        for i in range(3):
-            opt = QuestionOption(question=q, option='option {}'.format(i+1))
-            opt.save()
-        v = ReadonlyVoting(name='readonly test voting', question=q, desc='example question')
-        v.save()
-
-        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
-                                          defaults={'me': True, 'name': 'test auth'})
-        a.save()
-        v.auths.add(a)
-
-        return v
-
-    def testExistReadOnlyVoting(self):
+    def testExistReadonlyVoting(self):
         v = ReadonlyVoting.objects.get(name="Votacion")
         self.assertEquals(v.question.desc, "Descripcion")
         self.assertEquals(v.desc, "example")
