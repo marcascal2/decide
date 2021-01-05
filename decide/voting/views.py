@@ -44,7 +44,8 @@ class VotingView(generics.ListCreateAPIView):
                 pref.save()
 
         voting = Voting(name=request.data.get('name'), desc=request.data.get('desc'),
-                question=question, end_date=request.data.get('end_date'), start_date=request.data.get('start_date'))
+                question=question, end_date=request.data.get('end_date'), start_date=request.data.get('start_date')
+                , min_age=request.data.get('min_age'), max_age=request.data.get('max_age'))
         voting.save()
 
         auth, _ = Auth.objects.get_or_create(url=settings.BASEURL,

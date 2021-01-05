@@ -53,6 +53,9 @@ class QuestionPrefer(models.Model):
     def __str__(self):
         return '{} ({})'.format(self.option, self.number)
         
+def validate_age(value):
+    if value == 0 or value > 125:
+        raise ValidationError("La edad debe ser mayor que 0 y menor que 125")
 
 
 class Voting(models.Model):
@@ -63,6 +66,9 @@ class Voting(models.Model):
     start_date = models.DateTimeField(blank=True, null=True, validators=[validate_start_date])
     end_date = models.DateTimeField(validators=[validate_end_date],blank=True, null=True)
 
+    min_age = models.PositiveIntegerField(blank=True, null=True, validators=[validate_age])
+    max_age = models.PositiveIntegerField(blank=True, null=True, validators=[validate_age])
+    
     pub_key = models.OneToOneField(Key, related_name='voting', blank=True, null=True, on_delete=models.SET_NULL)
     auths = models.ManyToManyField(Auth, related_name='votings')
 
@@ -74,6 +80,11 @@ class Voting(models.Model):
             return super().save()
         elif self.start_date > self.end_date :
             raise ValidationError("La fecha de inicio no puede ser anterior a la de fin")
+            return super().save()
+        if self.min_age is None or self.max_age is None:
+            return super().save()
+        elif self.min_age > self.max_age :
+            raise ValidationError("Edad máxima debe ser mayor que la edad mínima")
             return super().save()
         else: 
             return super().save()

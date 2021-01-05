@@ -365,3 +365,81 @@ class QuestionTestCase(BaseTestCase):
         self.assertEqual(v.question.prefer_options.all()[0].option , "opcionTest")
         self.assertEqual(v.question.prefer_options.all()[0].prefer, "YES")
         self.assertEqual(v.question.prefer_options.all().count(),1)
+
+class AgeTestCase(BaseTestCase):
+
+    def setUp(self):
+        q=Question(desc="Descripcion")
+        q.save()
+
+        opt1 = QuestionOption(question = q, option = "option1")
+        opt1.save()
+
+        opt2 = QuestionOption(question = q, option = "option2")
+        opt2.save()
+
+        self.v=Voting(name="Votacion", question=q)
+        self.v.save()
+        super().setUp()
+
+    def tearDown(self):
+        super().tearDown()
+        self.v = None
+
+    def create_wrong_voting(self):
+        
+        q = Question(desc='test question')
+        q.save()
+        for i in range(5):
+            opt = QuestionOption(question=q, option='option {}'.format(i+1))
+            opt.save()
+        v = Voting(name='test voting', question=q, min_age = "0", max_age = "354")
+        v.save()
+
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'test auth'})
+        a.save()
+        v.auths.add(a)
+
+        return v
+
+    def testExistWithoutAges(self):
+        v = Voting.objects.get(name="Votacion")
+        self.assertEquals(v.question.desc, "Descripcion")
+        self.assertEquals(v.question.options.all()[0].option, "option1")
+        self.assertEquals(v.question.options.all()[1].option, "option2")
+    
+    def testExistWithMinAge(self):
+        v = Voting.objects.get(name = "Votacion")
+        v.min_age = 4
+        self.assertEquals(v.min_age, 4)
+    
+    def testExistWithMaxAge(self):
+        v = Voting.objects.get(name = "Votacion")
+        v.max_age = 30
+        self.assertEquals(v.max_age, 30)
+
+    def testExistWithBoth(self):
+        v = Voting.objects.get(name = "Votacion")
+        v.min_age = 5
+        v.max_age = 82
+        self.assertEquals(v.min_age, 5)
+        self.assertEquals(v.max_age, 82)
+
+    def testSaveMinAge(self):
+        v = Voting.objects.get(name = "Votacion")
+        self.assertEquals(v.min_age, None)
+
+        v.min_age = 2
+        v.save()
+
+        self.assertEquals(v.min_age, 2)
+    
+    def testSaveMaxAge(self):
+        v = Voting.objects.get(name = "Votacion")
+        self.assertEquals(v.max_age, None)
+
+        v.max_age = 23
+        v.save()
+
+        self.assertEquals(v.max_age, 23)

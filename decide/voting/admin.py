@@ -40,7 +40,7 @@ class QuestionAdmin(admin.ModelAdmin):
 
 
 class VotingAdmin(admin.ModelAdmin):
-    list_display = ('name', 'start_date', 'end_date')
+    list_display = ('name', 'start_date', 'end_date', 'min_age', 'max_age')
     readonly_fields = ('pub_key', 'tally', 'postproc')
     date_hierarchy = 'start_date'
     list_filter = (StartedFilter,)
