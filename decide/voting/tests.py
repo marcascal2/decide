@@ -211,6 +211,65 @@ class VotingTestCase(BaseTestCase):
         self.assertEqual(response.json(), 'Voting already tallied')
 
 
+    def testVotingCandidateFromApi(self):
+        data = {'name': 'Example'}
+        response = self.client.post('/voting/', data, format='json')
+        self.assertEqual(response.status_code, 401)
 
+        # login with user no admin
+        self.login(user='noadmin')
+        response = mods.post('voting', params=data, response=True)
+        self.assertEqual(response.status_code, 403)
+
+        # login with user admin
+        self.login()
+        response = mods.post('voting', params=data, response=True)
+        self.assertEqual(response.status_code, 400)
+
+        data = {
+            'name': 'Example',
+            'desc': 'Description example',
+            'escanios': 20,
+            'question': 'I want a ',
+            'question_opt': ['cat', 'dog', 'horse'],
+            'candidates' :
+            {
+                'name': 'pepe',
+                'sex': 'H',
+                'auto_community': 'H',
+                'age': 21,
+                'political_party': 'PACMA'
+                
+            }
+        }
+
+        response = self.client.post('/voting/', data, format='json')
+        self.assertEqual(response.status_code, 201)
+
+
+class CandidateTestCase(BaseTestCase):
+
+    def setUp(self):
+        c = Candidate(name="pepe")
+        c.save()
+        super().setUp()
+
+    def tearDown(self):
+        super().tearDown()
+        self.v=None 
+
+
+    def testExistCandidate(self):
+        candidate_test= Candidate.objects.get(name="pepe")
+        self.assertEqual(candidate_test.name, "pepe")
+
+    def testExistCompleteCandidate(self):
+        candidate_test = Candidate(name="test", age=21, number=1, auto_community="AN", sex ="H", political_party="PACMA")
+        self.assertEqual(candidate_test.name, "test")
+        self.assertEqual(candidate_test.age, 21)
+        self.assertEqual(candidate_test.number, 1)
+        self.assertEqual(candidate_test.auto_community, "AN")
+        self.assertEqual(candidate_test.sex, "H")
+        self.assertEqual(candidate_test.political_party, "PACMA")
 
     
