@@ -14,27 +14,441 @@ class PostProcTestCase(APITestCase):
 
     def tearDown(self):
         self.client = None
-
-    def test_identity(self):
+        
+    def test_genero_1(self):
         data = {
-            'type': 'IDENTITY',
+            'type':'PARIDAD',
             'options': [
-                { 'option': 'Option 1', 'number': 1, 'votes': 5 },
-                { 'option': 'Option 2', 'number': 2, 'votes': 0 },
-                { 'option': 'Option 3', 'number': 3, 'votes': 3 },
+                {'option':'PSOE', 'number':1 , 'votes': 40, 'escanio': 4,'candidates': [
+                {'id': '1', 'sex': 'H',  'edad':23},
+                {'id': '2', 'sex': 'H',  'edad':42},
+                {'id': '3', 'sex': 'H',  'edad':29},
+                {'id': '4', 'sex': 'H',  'edad':26},
+                {'id': '5', 'sex': 'H',  'edad':21},
+                {'id': '6', 'sex': 'H',  'edad':22},
+            ]},
+                {'option':'PACMA', 'number':2 , 'votes': 23, 'escanio': 4,'candidates': [
+                {'id': '1', 'sex': 'H',  'edad':23},
+                {'id': '2', 'sex': 'H',  'edad':42},
+                {'id': '3', 'sex': 'H',  'edad':29},
+                {'id': '4', 'sex': 'H',  'edad':26},
+                {'id': '5', 'sex': 'H',  'edad':21},
+                {'id': '6', 'sex': 'H',  'edad':22},
+            ]},
+            ]
+        }
+        
+        result = {'message' : 'la diferencia del numero de hombres y mujeres es de más de un 60% - 40%'}
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+                
+        values = response.json()
+        self.assertEqual(values, result)
+        
+    def test_genero_2(self):
+        data = {
+            'type':'PARIDAD',
+            'options': [
+                {'option':'PSOE', 'number':1 , 'votes': 40, 'escanio': 4,'candidates': [
+                {'id': '1', 'sex': 'H',  'edad':23},
+                {'id': '2', 'sex': 'H',  'edad':42},
+                {'id': '3', 'sex': 'M',  'edad':29},
+                {'id': '4', 'sex': 'M',  'edad':26},
+                {'id': '5', 'sex': 'H',  'edad':21},
+                {'id': '6', 'sex': 'H',  'edad':22},
+            ]},
+                {'option':'PACMA', 'number':2 , 'votes': 23, 'escanio': 4,'candidates': [
+                {'id': '1', 'sex': 'M',  'edad':23},
+                {'id': '2', 'sex': 'H',  'edad':42},
+                {'id': '3', 'sex': 'H',  'edad':29},
+                {'id': '4', 'sex': 'M',  'edad':26},
+                {'id': '5', 'sex': 'M',  'edad':21},
+                {'id': '6', 'sex': 'H',  'edad':22},
+            ]},
+            ]
+        }
+        
+        result = {'message' : 'la diferencia del numero de hombres y mujeres es de más de un 60% - 40%'}
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+                
+        values = response.json()
+        self.assertEqual(values, result)
+
+    def test_simple(self):
+        data = {
+            'type': 'SIMPLE',
+            'seats': 7,
+            'options': [
+                { 'option': 'Option 1', 'number': 1, 'votes': 5 }, 
+                { 'option': 'Option 2', 'number': 2, 'votes': 2 },
+                { 'option': 'Option 3', 'number': 3, 'votes': 5 },
                 { 'option': 'Option 4', 'number': 4, 'votes': 2 },
                 { 'option': 'Option 5', 'number': 5, 'votes': 5 },
                 { 'option': 'Option 6', 'number': 6, 'votes': 1 },
             ]
+        } 
+        
+        expect_result = [
+            { 'option': 'Option 1', 'number': 1, 'votes': 5, 'postproc': 2 },
+            { 'option': 'Option 3', 'number': 3, 'votes': 5, 'postproc': 2 },
+            { 'option': 'Option 5', 'number': 5, 'votes': 5, 'postproc': 2 },
+            { 'option': 'Option 2', 'number': 2, 'votes': 2, 'postproc': 1 },
+            { 'option': 'Option 4', 'number': 4, 'votes': 2, 'postproc': 0 },
+            { 'option': 'Option 6', 'number': 6, 'votes': 1, 'postproc': 0 },
+            ]
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expect_result)
+
+    def test_mgu_un_gandor(self):
+        data = {
+            'type': 'MGU',
+            'seats': 10,
+            'options': [
+                { 'option': 'Option 1', 'number': 1, 'votes': 7 },
+                { 'option': 'Option 2', 'number': 2, 'votes': 4 },
+                { 'option': 'Option 3', 'number': 3, 'votes': 19 },
+                { 'option': 'Option 4', 'number': 4, 'votes': 2 },
+                { 'option': 'Option 5', 'number': 5, 'votes': 10 },
+                { 'option': 'Option 6', 'number': 6, 'votes': 9 },
+
+            ]
+        }
+        expected_result = [
+            { 'option': 'Option 3', 'number': 3, 'votes': 19, 'postproc': 10 },
+            { 'option': 'Option 5', 'number': 5, 'votes': 10, 'postproc': 0 },
+            { 'option': 'Option 6', 'number': 6, 'votes': 9, 'postproc': 0 },
+            { 'option': 'Option 1', 'number': 1, 'votes': 7, 'postproc': 0 },
+            { 'option': 'Option 2', 'number': 2, 'votes': 4, 'postproc': 0 },
+            { 'option': 'Option 4', 'number': 4, 'votes': 2 , 'postproc': 0 }
+        ]
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+
+    def test_simple1(self):
+        data = {
+            'type': 'SIMPLE',
+            'seats':40,
+            'options': [
+                { 'option': 'Option 1', 'number': 1, 'votes': 10 },
+                { 'option': 'Option 2', 'number': 2, 'votes': 8 },
+                { 'option': 'Option 3', 'number': 3, 'votes': 1 },
+                { 'option': 'Option 4', 'number': 4, 'votes': 2 },
+                { 'option': 'Option 5', 'number': 5, 'votes': 4 },
+                { 'option': 'Option 6', 'number': 6, 'votes': 5 },
+            ]
+        }
+        expected_result = [
+            { 'option': 'Option 1', 'number': 1, 'votes': 10, 'postproc': 13 },
+            { 'option': 'Option 2', 'number': 2, 'votes': 8, 'postproc': 11 },
+            { 'option': 'Option 6', 'number': 6, 'votes': 5, 'postproc': 7 },
+            { 'option': 'Option 5', 'number': 5, 'votes': 4, 'postproc': 5 },
+            { 'option': 'Option 4', 'number': 4, 'votes': 2, 'postproc': 3 },
+            { 'option': 'Option 3', 'number': 3, 'votes': 1, 'postproc': 1 },
+        ]
+
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+
+    def test_mgu_varios_ganadores_reparto_equitativo(self):
+        data = {
+            'type': 'MGU',
+            'seats': 20,
+            'options': [
+                { 'option': 'Option 1', 'number': 1, 'votes': 6 },
+                { 'option': 'Option 2', 'number': 2, 'votes': 5 },
+                { 'option': 'Option 3', 'number': 3, 'votes': 10 },
+                { 'option': 'Option 4', 'number': 4, 'votes': 0 },
+                { 'option': 'Option 5', 'number': 5, 'votes': 10 },
+                { 'option': 'Option 6', 'number': 6, 'votes': 9 },
+            ]
         }
 
         expected_result = [
-            { 'option': 'Option 1', 'number': 1, 'votes': 5, 'postproc': 5 },
-            { 'option': 'Option 5', 'number': 5, 'votes': 5, 'postproc': 5 },
-            { 'option': 'Option 3', 'number': 3, 'votes': 3, 'postproc': 3 },
-            { 'option': 'Option 4', 'number': 4, 'votes': 2, 'postproc': 2 },
-            { 'option': 'Option 6', 'number': 6, 'votes': 1, 'postproc': 1 },
-            { 'option': 'Option 2', 'number': 2, 'votes': 0, 'postproc': 0 },
+            { 'option': 'Option 3', 'number': 3, 'votes': 10, 'postproc': 10 },
+            { 'option': 'Option 5', 'number': 5, 'votes': 10, 'postproc': 10 },
+            { 'option': 'Option 6', 'number': 6, 'votes': 9, 'postproc': 0 },
+            { 'option': 'Option 1', 'number': 1, 'votes': 6, 'postproc': 0 },
+            { 'option': 'Option 2', 'number': 2, 'votes': 5, 'postproc': 0 },
+            { 'option': 'Option 4', 'number': 4, 'votes': 0 , 'postproc': 0 },
+        ]
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+
+    def test_simple2(self):
+        data = {
+            'type': 'SIMPLE',
+            'seats':70,
+            'options': [
+                { 'option': 'Option 1', 'number': 1, 'votes': 50 },
+                { 'option': 'Option 2', 'number': 2, 'votes': 11 },
+                { 'option': 'Option 3', 'number': 3, 'votes': 10},
+                { 'option': 'Option 4', 'number': 4, 'votes': 1 },
+                { 'option': 'Option 5', 'number': 5, 'votes': 6 },
+                { 'option': 'Option 6', 'number': 6, 'votes': 4 },
+            ]
+        }
+        expected_result = [
+            { 'option': 'Option 1', 'number': 1, 'votes': 50, 'postproc':  43},
+            { 'option': 'Option 2', 'number': 2, 'votes': 11, 'postproc':  9},
+            { 'option': 'Option 3', 'number': 3, 'votes': 10, 'postproc': 9},
+            { 'option': 'Option 5', 'number': 5, 'votes': 6, 'postproc': 5},
+            { 'option': 'Option 6', 'number': 6, 'votes': 4, 'postproc': 3},
+            { 'option': 'Option 4', 'number': 4, 'votes': 1, 'postproc': 1},
+        ]
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+
+    def test_mgu_varios_ganadores_reparto_no_equitativo(self):
+        data = {
+            'type': 'MGU',
+            'seats': 32,
+            'options': [
+                { 'option': 'Option 1', 'number': 1, 'votes': 6 },
+                { 'option': 'Option 2', 'number': 2, 'votes': 5 },
+                { 'option': 'Option 3', 'number': 3, 'votes': 15 },
+                { 'option': 'Option 4', 'number': 4, 'votes': 15 },
+                { 'option': 'Option 5', 'number': 5, 'votes': 15 },
+                { 'option': 'Option 6', 'number': 6, 'votes': 9 },
+            ]
+        }
+        expected_result = [
+            { 'option': 'Option 3', 'number': 3, 'votes': 15, 'postproc': 10 },
+            { 'option': 'Option 4', 'number': 4, 'votes': 15 , 'postproc': 10 },
+            { 'option': 'Option 5', 'number': 5, 'votes': 15, 'postproc': 10 },
+            { 'option': 'Option 6', 'number': 6, 'votes': 9, 'postproc': 2 },
+            { 'option': 'Option 1', 'number': 1, 'votes': 6, 'postproc': 0 },
+            { 'option': 'Option 2', 'number': 2, 'votes': 5, 'postproc': 0 },
+        ]
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+
+    def test_paridad_1(self):
+        data = {
+            'type':'PARIDAD',
+            'options': [
+                {'option':'PSOE', 'number':1 , 'votes': 40, 'escanio': 4},
+                {'option':'PACMA', 'number':2 , 'votes': 23, 'escanio': 4},
+            ],
+            'candidates': [
+                {'id': '1', 'sex': 'H',  'edad':23},
+                {'id': '2', 'sex': 'H',  'edad':42},
+                {'id': '3', 'sex': 'M',  'edad':29},
+                {'id': '4', 'sex': 'M',  'edad':26},
+                {'id': '5', 'sex': 'H',  'edad':21},
+                {'id': '6', 'sex': 'M',  'edad':22},
+            ],
+        }
+
+        res = [
+            {'option':'PSOE', 'number':1 , 'votes': 40, 'escanio': 4, 'paridad': [
+                {'id': '3', 'sex': 'M', 'edad': 29}, 
+                {'id': '1', 'sex': 'H', 'edad': 23}, 
+                {'id': '4', 'sex': 'M', 'edad': 26}, 
+                {'id': '2', 'sex': 'H', 'edad': 42}
+                ]
+            },
+            {'option':'PACMA', 'number':2 , 'votes': 23, 'escanio': 4, 'paridad': [
+                {'id': '3', 'sex': 'M', 'edad': 29}, 
+                {'id': '1', 'sex': 'H', 'edad': 23}, 
+                {'id': '4', 'sex': 'M', 'edad': 26}, 
+                {'id': '2', 'sex': 'H', 'edad': 42}
+                ]
+            },
+        ]
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, res)
+
+
+    def test_simple3(self):
+        data = {
+            'type': 'SIMPLE',
+            'seats':100,
+            'options': [
+                { 'option': 'Option 1', 'number': 1, 'votes': 40 },
+                { 'option': 'Option 2', 'number': 2, 'votes': 30 },
+                { 'option': 'Option 3', 'number': 3, 'votes': 1},
+                { 'option': 'Option 4', 'number': 4, 'votes': 14},
+                { 'option': 'Option 5', 'number': 5, 'votes': 2 },
+                { 'option': 'Option 6', 'number': 6, 'votes': 15 },
+            ]
+        }
+        expected_result = [
+            { 'option': 'Option 1', 'number': 1, 'votes': 40, 'postproc':  39},
+            { 'option': 'Option 2', 'number': 2, 'votes': 30, 'postproc':  29},
+            { 'option': 'Option 6', 'number': 6, 'votes': 15, 'postproc': 15},
+            { 'option': 'Option 4', 'number': 4, 'votes': 14, 'postproc': 14},
+            { 'option': 'Option 5', 'number': 5, 'votes': 2, 'postproc': 2},
+            { 'option': 'Option 3', 'number': 3, 'votes': 1, 'postproc': 1},
+        ]
+        
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+
+    def test_mgu_todos_ganadores(self):
+        data = {
+            'type': 'MGU',
+            'seats': 15,
+            'options': [
+                { 'option': 'Option 1', 'number': 1, 'votes': 8 },
+                { 'option': 'Option 2', 'number': 2, 'votes': 8 },
+                { 'option': 'Option 3', 'number': 3, 'votes': 8 },
+                { 'option': 'Option 4', 'number': 4, 'votes': 8 },
+                { 'option': 'Option 5', 'number': 5, 'votes': 8 },
+                { 'option': 'Option 6', 'number': 6, 'votes': 8 },
+            ]
+        }
+
+        expected_result = [
+            { 'option': 'Option 1', 'number': 1, 'votes': 8, 'postproc': 5 },
+            { 'option': 'Option 2', 'number': 2, 'votes': 8 , 'postproc': 2 },
+            { 'option': 'Option 3', 'number': 3, 'votes': 8, 'postproc': 2 },
+            { 'option': 'Option 4', 'number': 4, 'votes': 8, 'postproc': 2 },
+            { 'option': 'Option 5', 'number': 5, 'votes': 8, 'postproc': 2 },
+            { 'option': 'Option 6', 'number': 6, 'votes': 8, 'postproc': 2 },
+        ]
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+
+    def test_simple4(self):
+        data = {
+            'type': 'SIMPLE',
+            'seats':20,
+            'options': [
+                { 'option': 'Option 1', 'number': 1, 'votes': 5 },
+                { 'option': 'Option 2', 'number': 2, 'votes': 3 },
+                { 'option': 'Option 3', 'number': 3, 'votes': 1},
+                { 'option': 'Option 4', 'number': 4, 'votes': 4},
+                { 'option': 'Option 5', 'number': 5, 'votes': 2 },
+                { 'option': 'Option 6', 'number': 6, 'votes': 1 },
+            ]
+        }
+        expected_result = [
+            { 'option': 'Option 1', 'number': 1, 'votes': 5, 'postproc':  6},
+            { 'option': 'Option 4', 'number': 4, 'votes': 4, 'postproc':  5},
+            { 'option': 'Option 2', 'number': 2, 'votes': 3, 'postproc': 4},
+            { 'option': 'Option 5', 'number': 5, 'votes': 2, 'postproc': 3},
+            { 'option': 'Option 3', 'number': 3, 'votes': 1, 'postproc': 1},
+            { 'option': 'Option 6', 'number': 6, 'votes': 1, 'postproc': 1},
+        ]
+        
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+
+    def test_mgu_mas_ganadores_que_seats(self):
+        data = {
+            'type': 'MGU',
+            'seats': 5,
+            'options': [
+                { 'option': 'Option 1', 'number': 1, 'votes': 8 },
+                { 'option': 'Option 2', 'number': 2, 'votes': 8 },
+                { 'option': 'Option 3', 'number': 3, 'votes': 8 },
+                { 'option': 'Option 4', 'number': 4, 'votes': 8 },
+                { 'option': 'Option 5', 'number': 5, 'votes': 8 },
+                { 'option': 'Option 6', 'number': 6, 'votes': 8 },
+            ]
+        }
+
+        expected_result = [
+            { 'option': 'Option 1', 'number': 1, 'votes': 8, 'postproc': 1 },
+            { 'option': 'Option 2', 'number': 2, 'votes': 8 , 'postproc': 1 },
+            { 'option': 'Option 3', 'number': 3, 'votes': 8, 'postproc': 1 },
+            { 'option': 'Option 4', 'number': 4, 'votes': 8, 'postproc': 1 },
+            { 'option': 'Option 5', 'number': 5, 'votes': 8, 'postproc': 1 },
+            { 'option': 'Option 6', 'number': 6, 'votes': 8, 'postproc': 0 },
+        ]
+       
+       
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+
+    def test_simple5(self):
+        data = {
+            'type': 'SIMPLE',
+            'seats':30,
+            'options': [
+                { 'option': 'Option 1', 'number': 1, 'votes': 15 },
+                { 'option': 'Option 2', 'number': 2, 'votes': 10 },
+                { 'option': 'Option 3', 'number': 3, 'votes': 14},
+                { 'option': 'Option 4', 'number': 4, 'votes': 5},
+                { 'option': 'Option 5', 'number': 5, 'votes': 2 },
+                { 'option': 'Option 6', 'number': 6, 'votes': 1},
+            ]
+        }
+        expected_result = [
+            { 'option': 'Option 1', 'number': 1, 'votes': 15, 'postproc':  10},
+            { 'option': 'Option 3', 'number': 3, 'votes': 14, 'postproc':  9},
+            { 'option': 'Option 2', 'number': 2, 'votes': 10, 'postproc': 6},
+            { 'option': 'Option 4', 'number': 4, 'votes': 5, 'postproc': 3},
+            { 'option': 'Option 5', 'number': 5, 'votes': 2, 'postproc': 1},
+            { 'option': 'Option 6', 'number': 6, 'votes': 1, 'postproc': 1},
+        ]
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+    
+    def test_mgu_varios_ganadores_reparto_no_equitativo2(self):
+        data = {
+            'type': 'MGU',
+            'seats': 43,
+            'options': [
+                { 'option': 'Option 1', 'number': 1, 'votes': 6 },
+                { 'option': 'Option 2', 'number': 2, 'votes': 5 },
+                { 'option': 'Option 3', 'number': 3, 'votes': 15 },
+                { 'option': 'Option 4', 'number': 4, 'votes': 15 },
+                { 'option': 'Option 5', 'number': 5, 'votes': 15 },
+                { 'option': 'Option 6', 'number': 6, 'votes': 15 },
+            ]
+        }
+
+        expected_result = [
+            { 'option': 'Option 3', 'number': 3, 'votes': 15, 'postproc': 10 },
+            { 'option': 'Option 4', 'number': 4, 'votes': 15 , 'postproc': 10 },
+            { 'option': 'Option 5', 'number': 5, 'votes': 15, 'postproc': 10 },
+            { 'option': 'Option 6', 'number': 6, 'votes': 15, 'postproc': 10 },
+            { 'option': 'Option 1', 'number': 1, 'votes': 6, 'postproc': 3 },
+            { 'option': 'Option 2', 'number': 2, 'votes': 5, 'postproc': 0 },
         ]
 
         response = self.client.post('/postproc/', data, format='json')
@@ -62,13 +476,14 @@ class PostProcTestCase(APITestCase):
             {'option': 'Option 3', 'number': 3, 'votes': 50000, 'seat': 1},
             {'option': 'Option 4', 'number': 4, 'votes': 25000, 'seat': 0},
         ]
-
+        
         response = self.client.post('/postproc/', data, format='json')
         self.assertEqual(response.status_code, 200)
 
         values = response.json()
         self.assertEqual(values, expected_result1)
 
+    
     #Test con valores correctos
     def test_dhondt2(self):
         data = {
@@ -145,4 +560,191 @@ class PostProcTestCase(APITestCase):
         values = response.json()
         self.assertNotEqual(values, expected_result4)
 
+  
+
+    def test_paridad_2(self):
+        data = {
+            'type':'PARIDAD',
+            'options': [
+                {'option':'PSOE', 'number':1 , 'votes': 240, 'escanio': 13},
+                {'option':'PACMA', 'number':2 , 'votes': 123, 'escanio': 8},
+                {'option':'PP', 'number':3 , 'votes': 233, 'escanio': 12},
+            ],
+            'candidates': [
+                {'id': '1', 'sex': 'H',  'edad':23},
+                {'id': '2', 'sex': 'H',  'edad':42},
+                {'id': '3', 'sex': 'M',  'edad':29},
+                {'id': '4', 'sex': 'H',  'edad':26},
+                {'id': '5', 'sex': 'H',  'edad':21},
+                {'id': '6', 'sex': 'M',  'edad':22},
+                {'id': '7', 'sex': 'M',  'edad':28},
+                {'id': '8', 'sex': 'H',  'edad':39},
+                {'id': '9', 'sex': 'M',  'edad':19},
+                {'id': '10', 'sex': 'M',  'edad':24},
+                {'id': '11', 'sex': 'H',  'edad':27},
+                {'id': '12', 'sex': 'M',  'edad':20},
+            ],
+        }
+ 
+        res = [
+            {'option': 'PSOE', 'number': 1, 'votes': 240, 'escanio': 13,'paridad': [
+                {'id': '3', 'sex': 'M', 'edad': 29}, 
+                {'id': '1', 'sex': 'H', 'edad': 23}, 
+                {'id': '6', 'sex': 'M', 'edad': 22},
+                {'id': '2', 'sex': 'H', 'edad': 42}, 
+                {'id': '7', 'sex': 'M', 'edad': 28},
+                {'id': '4', 'sex': 'H', 'edad': 26}, 
+                {'id': '9', 'sex': 'M', 'edad': 19}, 
+                {'id': '5', 'sex': 'H', 'edad': 21}, 
+                {'id': '10', 'sex': 'M', 'edad': 24}, 
+                {'id': '8', 'sex': 'H', 'edad': 39}, 
+                {'id': '12', 'sex': 'M', 'edad': 20},
+                {'id': '11', 'sex': 'H', 'edad': 27} 
+                ]
+            },
+            {'option': 'PACMA', 'number': 2, 'votes': 123, 'escanio': 8, 'paridad': [
+                {'id': '3', 'sex': 'M', 'edad': 29}, 
+                {'id': '1', 'sex': 'H', 'edad': 23}, 
+                {'id': '6', 'sex': 'M', 'edad': 22}, 
+                {'id': '2', 'sex': 'H', 'edad': 42}, 
+                {'id': '7', 'sex': 'M', 'edad': 28}, 
+                {'id': '4', 'sex': 'H', 'edad': 26}, 
+                {'id': '9', 'sex': 'M', 'edad': 19}, 
+                {'id': '5', 'sex': 'H', 'edad': 21}
+                ]
+            },
+            {'option': 'PP', 'number': 3, 'votes': 233, 'escanio': 12, 'paridad': [
+                {'id': '3', 'sex': 'M', 'edad': 29}, 
+                {'id': '1', 'sex': 'H', 'edad': 23}, 
+                {'id': '6', 'sex': 'M', 'edad': 22},
+                {'id': '2', 'sex': 'H', 'edad': 42}, 
+                {'id': '7', 'sex': 'M', 'edad': 28},
+                {'id': '4', 'sex': 'H', 'edad': 26}, 
+                {'id': '9', 'sex': 'M', 'edad': 19}, 
+                {'id': '5', 'sex': 'H', 'edad': 21}, 
+                {'id': '10', 'sex': 'M', 'edad': 24}, 
+                {'id': '8', 'sex': 'H', 'edad': 39}, 
+                {'id': '12', 'sex': 'M', 'edad': 20},
+                {'id': '11', 'sex': 'H', 'edad': 27} 
+                ]}
+        ]
+        
+        
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+        
+        values = response.json()
+        self.assertEqual(values,res)
+
+        
+    def test_saintelague1(self):
+        datos = {
+            'type': 'SAINTELAGUE',
+            'options': [
+                { 'option': 'Option 1', 'number': 1, 'votes': 340000 },
+                { 'option': 'Option 2', 'number': 2, 'votes': 280000 },
+                { 'option': 'Option 3', 'number': 3, 'votes': 160000 },
+                { 'option': 'Option 4', 'number': 4, 'votes': 60000 },
+               
+            ],
+             'nSeats': 7
+        }
+
+        resultado_esperado = [
+            { 'option': 'Option 1', 'number': 1, 'votes': 340000, 'seats': 3},
+            { 'option': 'Option 2', 'number': 2, 'votes': 280000, 'seats': 3 },
+            { 'option': 'Option 3', 'number': 3, 'votes': 160000, 'seats': 1 },
+            { 'option': 'Option 4', 'number': 4, 'votes': 60000, 'seats': 0 },
+
+           
+        ]
+
+
+        response = self.client.post('/postproc/', datos, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, resultado_esperado)
     
+    def test_saintelague2(self):
+        datos = {
+            'type': 'SAINTELAGUE',
+            'options': [
+                { 'option': 'Option 1', 'number': 1, 'votes': 50 },
+                { 'option': 'Option 2', 'number': 2, 'votes': 40 },
+                { 'option': 'Option 3', 'number': 3, 'votes': 20 },
+               
+            ],
+             'nSeats': 4
+        }
+
+        resultado_esperado = [
+            { 'option': 'Option 1', 'number': 1, 'votes': 50, 'seats': 2},
+            { 'option': 'Option 2', 'number': 2, 'votes': 40, 'seats': 1 },
+            { 'option': 'Option 3', 'number': 3, 'votes': 20, 'seats': 1 },
+
+           
+        ]
+
+
+        response = self.client.post('/postproc/', datos, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, resultado_esperado)
+
+    def test_saintelague3(self):
+        datos = {
+            'type': 'SAINTELAGUE',
+            'options': [
+                { 'option': 'Option 1', 'number': 1, 'votes': 50 },
+                { 'option': 'Option 2', 'number': 2, 'votes': 40 },
+                { 'option': 'Option 3', 'number': 3, 'votes': 20 },
+               
+            ],
+             'nSeats': 5
+        }
+
+        resultado_esperado = [
+            { 'option': 'Option 1', 'number': 1, 'votes': 50, 'seats': 2},
+            { 'option': 'Option 2', 'number': 2, 'votes': 40, 'seats': 2 },
+            { 'option': 'Option 3', 'number': 3, 'votes': 20, 'seats': 1 },
+
+           
+        ]
+
+
+        response = self.client.post('/postproc/', datos, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, resultado_esperado)
+   
+   
+    def test_saintelague4(self):
+        datos = {
+            'type': 'SAINTELAGUE',
+            'options': [
+                { 'option': 'Option 1', 'number': 1, 'votes': 0 },
+                { 'option': 'Option 2', 'number': 2, 'votes': 5 },
+                { 'option': 'Option 3', 'number': 3, 'votes': 2 },
+               
+            ],
+             'nSeats': 2
+        }
+
+        resultado_esperado = [
+            { 'option': 'Option 2', 'number': 2, 'votes': 5, 'seats': 2},
+            { 'option': 'Option 1', 'number': 1, 'votes': 0, 'seats': 0 },
+            { 'option': 'Option 3', 'number': 3, 'votes': 2, 'seats': 0 },
+
+           
+        ]
+
+
+        response = self.client.post('/postproc/', datos, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, resultado_esperado)
+
