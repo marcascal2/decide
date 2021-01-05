@@ -209,6 +209,25 @@ class VotingTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), 'Voting already tallied')
 
+class readOnlyTests(BaseTestCase):
+
+    def setUp(self):
+        q=Question(desc="Descripcion")
+        q.save()
+
+        opt1 = QuestionOption(question = q, option = "option1")
+        opt1.save()
+
+        opt2 = QuestionOption(question = q, option = "option2")
+        opt2.save()
+
+        self.v=ReadonlyVoting(name="Votacion", question=q, desc = "example")
+        self.v.save()
+        super().setUp()
+
+    def tearDown(self):
+        super().tearDown()
+        self.v = None
 
     # CREATE READONLY VOTING
     def create_readonly_voting(self):
@@ -227,111 +246,9 @@ class VotingTestCase(BaseTestCase):
 
         return v
 
-    # TEST COMPLETE READONLY VOTING
-    def test_complete_readonly_voting(self):
-        v = self.create_readonly_voting()
-        self.create_voters(v)
-
-        v.create_pubkey()
-        v.start_date = timezone.now()
-        v.save()
-
-        clear = self.store_votes(v)
-
-        self.login()  # set token
-        v.tally_votes(self.token)
-
-        tally = v.tally
-        tally.sort()
-        tally = {k: len(list(x)) for k, x in itertools.groupby(tally)}
-
-        for q in v.question.options.all():
-            self.assertEqual(tally.get(q.number, 0), clear.get(q.number, 0))
-
-        for q in v.postproc:
-            self.assertEqual(tally.get(q["number"], 0), q["votes"])
-
-    # TEST COMPLETE UPDATE READONLY VOTING
-    def test_update_readonly_voting(self):
-        voting = self.create_readonly_voting()
-
-        data = {'action': 'start'}
-        #response = self.client.post('/voting/{}/'.format(voting.pk), data, format='json')
-        #self.assertEqual(response.status_code, 401)
-
-        # login with user no admin
-        self.login(user='noadmin')
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 403)
-
-        # login with user admin
-        self.login()
-        data = {'action': 'bad'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 400)
-
-        # STATUS VOTING: not started
-        for action in ['stop', 'tally']:
-            data = {'action': action}
-            response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-            self.assertEqual(response.status_code, 400)
-            self.assertEqual(response.json(), 'Voting is not started')
-
-        data = {'action': 'start'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), 'Voting started')
-
-        # STATUS VOTING: started
-        data = {'action': 'start'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), 'Voting already started')
-
-        data = {'action': 'tally'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), 'Voting is not stopped')
-
-        data = {'action': 'stop'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), 'Voting stopped')
-
-        # STATUS VOTING: stopped
-        data = {'action': 'start'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), 'Voting already started')
-
-        data = {'action': 'stop'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), 'Voting already stopped')
-
-        data = {'action': 'tally'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), 'Voting tallied')
-
-        # STATUS VOTING: tallied
-        data = {'action': 'start'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), 'Voting already started')
-
-        data = {'action': 'stop'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), 'Voting already stopped')
-
-        data = {'action': 'tally'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), 'Voting already tallied')
-
-    # TEST TRYING TO CHANGE SOMETHING
-    def test_update_fields_readonly_voting(self):
-        voting = self.create_readonly_voting()
-        voting.desc('No se puede cambiar')
-        self.assertNotEqual('No se puede cambiar', voting.desc)
+    def testExistReadOnlyVoting(self):
+        v = ReadonlyVoting.objects.get(name="Votacion")
+        self.assertEquals(v.question.desc, "Descripcion")
+        self.assertEquals(v.desc, "example")
+        self.assertEquals(v.question.options.all()[0].option, "option1")
+        self.assertEquals(v.question.options.all()[1].option, "option2")
