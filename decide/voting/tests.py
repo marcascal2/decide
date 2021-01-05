@@ -209,126 +209,76 @@ class VotingTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), 'Voting already tallied')
 
-    # CREATE MULTIPLE VOTING
-    def create_multiple_voting(self):
+class MultipleVotingTests(BaseTestCase):
+
+    def setUp(self):
         q = Question(desc='multiple test question')
         q2 = Question(desc='multiple test question 2')
-        qsts = [q, q2]
+        q3 = Question(desc='multiple test question 3')
+        q.save()
+        q2.save()
+        q3.save()
         for i in range(3):
             opt = QuestionOption(question=q, option='option {}'.format(i+1))
             opt.save()
-        for i in range(3):
+        for i in range(4):
             opt = QuestionOption(question=q2, option='option {}'.format(i+1))
             opt.save()
-        v = MultipleVoting(name='multiple test voting', question=qsts)
-        v.save()
+        for i in range(5):
+            opt = QuestionOption(question=q3, option='option {}'.format(i+1))
+            opt.save()
+    
+        self.v=MultipleVoting(name="Votacion", desc = "example")
+        self.v.save()
+        self.v.question.add(q)
+        self.v.question.add(q2)
+        self.v.save()
 
-        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
-                                          defaults={'me': True, 'name': 'test auth'})
-        a.save()
-        v.auths.add(a)
+        self.v=MultipleVoting(name="Votacion2", desc = "example2")
+        self.v.save()
+        self.v.question.add(q)
+        self.v.save()
 
-        return v
+        super().setUp()
 
-    # TEST COMPLETE READONLY VOTING
-    def test_complete_multiple_voting(self):
-        v = self.create_multiple_voting()
-        self.create_voters(v)
+    def tearDown(self):
+        super().tearDown()
+        self.v = None
 
-        v.create_pubkey()
-        v.start_date = timezone.now()
-        v.save()
+    def testCreateMultipleVotingWithTwoQuestions(self):
+        v = MultipleVoting.objects.get(name="Votacion")
+        self.assertEquals(v.desc, "example")
+        self.assertEquals(v.question.all()[0].desc, "multiple test question")
+        self.assertEquals(v.question.all()[1].desc, "multiple test question 2")
 
-        clear = self.store_votes(v)
+    def testCreateMultipleVotingWithOneQuestion(self):
+        v = MultipleVoting.objects.get(name="Votacion2")
+        self.assertEquals(v.desc, "example2")
+        self.assertEquals(v.question.all()[0].desc, "multiple test question")
+        with self.assertRaises(IndexError): v.question.all()[1].desc
 
-        self.login()  # set token
-        v.tally_votes(self.token)
+    def testUpdateMultipleVotingWithTwoQuestions(self):
+        v = MultipleVoting.objects.get(name="Votacion")
+        v.desc = "cambio"
+        v.question.add(Question.objects.get(desc="multiple test question 3"))
+        self.assertEquals(v.desc, "cambio")
+        self.assertEquals(v.question.all()[0].desc, "multiple test question")
+        self.assertEquals(v.question.all()[1].desc, "multiple test question 2")
+        self.assertEquals(v.question.all()[2].desc, "multiple test question 3")
 
-        tally = v.tally
-        tally.sort()
-        tally = {k: len(list(x)) for k, x in itertools.groupby(tally)}
+    def testUpdateMultipleVotingWithOneQuestion(self):
+        v = MultipleVoting.objects.get(name="Votacion2")
+        v.desc = "cambio"
+        v.question.add(Question.objects.get(desc="multiple test question 2"))
+        self.assertEquals(v.desc, "cambio")
+        self.assertEquals(v.question.all()[0].desc, "multiple test question")
+        self.assertEquals(v.question.all()[1].desc, "multiple test question 2")
 
-        for q in v.question.options.all():
-            self.assertEqual(tally.get(q.number, 0), clear.get(q.number, 0))
+    def testUpdateMultipleVotingRemoveQuestion(self):
+        v = MultipleVoting.objects.get(name="Votacion2")
+        v.question.remove(Question.objects.get(desc="multiple test question 2"))
+        self.assertEquals(v.desc, "example2")
+        self.assertEquals(v.question.all()[0].desc, "multiple test question")
+        with self.assertRaises(IndexError): v.question.all()[1].desc
 
-        for q in v.postproc:
-            self.assertEqual(tally.get(q["number"], 0), q["votes"])
-
-    # TEST COMPLETE UPDATE READONLY VOTING
-    def test_update_multiple_voting(self):
-        voting = self.create_multiple_voting()
-
-        data = {'action': 'start'}
-        #response = self.client.post('/voting/{}/'.format(voting.pk), data, format='json')
-        #self.assertEqual(response.status_code, 401)
-
-        # login with user no admin
-        self.login(user='noadmin')
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 403)
-
-        # login with user admin
-        self.login()
-        data = {'action': 'bad'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 400)
-
-        # STATUS VOTING: not started
-        for action in ['stop', 'tally']:
-            data = {'action': action}
-            response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-            self.assertEqual(response.status_code, 400)
-            self.assertEqual(response.json(), 'Voting is not started')
-
-        data = {'action': 'start'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), 'Voting started')
-
-        # STATUS VOTING: started
-        data = {'action': 'start'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), 'Voting already started')
-
-        data = {'action': 'tally'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), 'Voting is not stopped')
-
-        data = {'action': 'stop'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), 'Voting stopped')
-
-        # STATUS VOTING: stopped
-        data = {'action': 'start'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), 'Voting already started')
-
-        data = {'action': 'stop'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), 'Voting already stopped')
-
-        data = {'action': 'tally'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), 'Voting tallied')
-
-        # STATUS VOTING: tallied
-        data = {'action': 'start'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), 'Voting already started')
-
-        data = {'action': 'stop'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), 'Voting already stopped')
-
-        data = {'action': 'tally'}
-        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), 'Voting already tallied')
+    
