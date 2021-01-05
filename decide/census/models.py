@@ -27,3 +27,6 @@ class Census(models.Model):
 
     class Meta:
         unique_together = (('voting_id', 'voter_id'),)
+
+    def __str__(self):
+        return str(self.voting_id)
