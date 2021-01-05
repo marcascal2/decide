@@ -5,7 +5,7 @@ from .models import QuestionOption
 from .models import QuestionPrefer
 from .models import QuestionOrdering
 from .models import Question
-from .models import Voting
+from .models import Voting, ReadonlyVoting
 from .models import Candidate
 
 
@@ -59,6 +59,28 @@ class VotingAdmin(admin.ModelAdmin):
     list_filter = (StartedFilter,)
     search_fields = ('name', )
 
+    actions = [ start, stop, tally ]  
+
+class ReadonlyVotingAdmin(admin.ModelAdmin):
+    list_display = ('name', 'start_date', 'end_date')
+    readonly_fields = ('start_date', 'end_date', 'pub_key',
+                       'tally', 'postproc')
+    date_hierarchy = 'start_date'
+    list_filter = (StartedFilter,)
+    search_fields = ('name', )
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj=None, **kwargs)
+
+        if obj is not None:
+
+            form.base_fields["desc"].disabled = True
+            form.base_fields["name"].disabled = True
+            form.base_fields["question"].disabled = True
+            form.base_fields["auths"].disabled = True
+
+        return form
+
     actions = [ start, stop, tally ]
 # class VotingCandidateAdmin(admin.ModelAdmin):
 #     list_display = ('name', 'start_date', 'end_date')
@@ -71,6 +93,7 @@ class VotingAdmin(admin.ModelAdmin):
 #     actions = [ start, stop, tally ]
 
 admin.site.register(Voting, VotingAdmin)
+admin.site.register(ReadonlyVoting, ReadonlyVotingAdmin)
 admin.site.register(Question, QuestionAdmin)
 # admin.site.register(Candidate, CandidateAdmin)
 admin.site.register(Candidate)

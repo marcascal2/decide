@@ -13,7 +13,7 @@ from census.models import Census
 from mixnet.mixcrypt import ElGamal
 from mixnet.mixcrypt import MixCrypt
 from mixnet.models import Auth
-from voting.models import Voting, Question, QuestionOption, QuestionPrefer, QuestionOrdering, Candidate
+from voting.models import Voting, Question, QuestionOption, QuestionPrefer, QuestionOrdering, Candidate, ReadonlyVoting
 
 
 class VotingTestCase(BaseTestCase):
@@ -630,10 +630,6 @@ class QuestionOrderingTestCase(BaseTestCase):
         self.assertNotEquals(q_order1_postgres.ordering, 2)
         self.assertNotEquals(q_order2_postgres.ordering, 1)
 
-
-
-
-
 class CandidateTestCase(BaseTestCase):
 
     def setUp(self):
@@ -658,3 +654,30 @@ class CandidateTestCase(BaseTestCase):
         self.assertEqual(candidate_test.auto_community, "AN")
         self.assertEqual(candidate_test.sex, "H")
         self.assertEqual(candidate_test.political_party, "PACMA")
+
+class ReadOnlyVotingTests(BaseTestCase):
+
+    def setUp(self):
+        q=Question(desc="Descripcion")
+        q.save()
+
+        opt1 = QuestionOption(question = q, option = "option1")
+        opt1.save()
+
+        opt2 = QuestionOption(question = q, option = "option2")
+        opt2.save()
+
+        self.v=ReadonlyVoting(name="Votacion", question=q, desc = "example")
+        self.v.save()
+        super().setUp()
+
+    def tearDown(self):
+        super().tearDown()
+        self.v = None
+
+    def testExistReadonlyVoting(self):
+        v = ReadonlyVoting.objects.get(name="Votacion")
+        self.assertEquals(v.question.desc, "Descripcion")
+        self.assertEquals(v.desc, "example")
+        self.assertEquals(v.question.options.all()[0].option, "option1")
+        self.assertEquals(v.question.options.all()[1].option, "option2")
