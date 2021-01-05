@@ -13,7 +13,7 @@ from census.models import Census
 from mixnet.mixcrypt import ElGamal
 from mixnet.mixcrypt import MixCrypt
 from mixnet.models import Auth
-from voting.models import Voting, Question, QuestionOption, QuestionPrefer, QuestionOrdering, Candidate, ReadonlyVoting
+from voting.models import Voting, Question, QuestionOption, QuestionPrefer, QuestionOrdering, Candidate, ReadonlyVoting, MultipleVoting
 
 
 class VotingTestCase(BaseTestCase):
@@ -681,3 +681,75 @@ class ReadOnlyVotingTests(BaseTestCase):
         self.assertEquals(v.desc, "example")
         self.assertEquals(v.question.options.all()[0].option, "option1")
         self.assertEquals(v.question.options.all()[1].option, "option2")
+
+class MultipleVotingTests(BaseTestCase):
+
+    def setUp(self):
+        q = Question(desc='multiple test question')
+        q2 = Question(desc='multiple test question 2')
+        q3 = Question(desc='multiple test question 3')
+        q.save()
+        q2.save()
+        q3.save()
+        for i in range(3):
+            opt = QuestionOption(question=q, option='option {}'.format(i+1))
+            opt.save()
+        for i in range(4):
+            opt = QuestionOption(question=q2, option='option {}'.format(i+1))
+            opt.save()
+        for i in range(5):
+            opt = QuestionOption(question=q3, option='option {}'.format(i+1))
+            opt.save()
+    
+        self.v=MultipleVoting(name="Votacion", desc = "example")
+        self.v.save()
+        self.v.question.add(q)
+        self.v.question.add(q2)
+        self.v.save()
+
+        self.v=MultipleVoting(name="Votacion2", desc = "example2")
+        self.v.save()
+        self.v.question.add(q)
+        self.v.save()
+
+        super().setUp()
+
+    def tearDown(self):
+        super().tearDown()
+        self.v = None
+
+    def testCreateMultipleVotingWithTwoQuestions(self):
+        v = MultipleVoting.objects.get(name="Votacion")
+        self.assertEquals(v.desc, "example")
+        self.assertEquals(v.question.all()[0].desc, "multiple test question")
+        self.assertEquals(v.question.all()[1].desc, "multiple test question 2")
+
+    def testCreateMultipleVotingWithOneQuestion(self):
+        v = MultipleVoting.objects.get(name="Votacion2")
+        self.assertEquals(v.desc, "example2")
+        self.assertEquals(v.question.all()[0].desc, "multiple test question")
+        with self.assertRaises(IndexError): v.question.all()[1].desc
+
+    def testUpdateMultipleVotingWithTwoQuestions(self):
+        v = MultipleVoting.objects.get(name="Votacion")
+        v.desc = "cambio"
+        v.question.add(Question.objects.get(desc="multiple test question 3"))
+        self.assertEquals(v.desc, "cambio")
+        self.assertEquals(v.question.all()[0].desc, "multiple test question")
+        self.assertEquals(v.question.all()[1].desc, "multiple test question 2")
+        self.assertEquals(v.question.all()[2].desc, "multiple test question 3")
+
+    def testUpdateMultipleVotingWithOneQuestion(self):
+        v = MultipleVoting.objects.get(name="Votacion2")
+        v.desc = "cambio"
+        v.question.add(Question.objects.get(desc="multiple test question 2"))
+        self.assertEquals(v.desc, "cambio")
+        self.assertEquals(v.question.all()[0].desc, "multiple test question")
+        self.assertEquals(v.question.all()[1].desc, "multiple test question 2")
+
+    def testUpdateMultipleVotingRemoveQuestion(self):
+        v = MultipleVoting.objects.get(name="Votacion2")
+        v.question.remove(Question.objects.get(desc="multiple test question 2"))
+        self.assertEquals(v.desc, "example2")
+        self.assertEquals(v.question.all()[0].desc, "multiple test question")
+        with self.assertRaises(IndexError): v.question.all()[1].desc
