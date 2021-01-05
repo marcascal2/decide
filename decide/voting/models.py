@@ -1,8 +1,12 @@
 from django.db import models
+from django.core.files import File
 from django.contrib.postgres.fields import JSONField
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-
+from django.core.files.storage import default_storage
+from datetime import datetime
+import zipfile
+import json
 from base import mods
 from base.models import Auth, Key
 
@@ -91,11 +95,21 @@ class Voting(models.Model):
         if response.status_code != 200:
             # TODO: manage error
             pass
-
+        
         self.tally = response.json()
         self.save()
+        #Aqui hacemos el guardado del Tally
+        _datetime = datetime.now()
+        datetime_str = _datetime.strftime("%Y-%m-%d-%H-%M-%S")
+        with open ('archivosGuardados/tally','w') as f:
+             for tallys in json.dumps(self.tally):
+                 json.dump(tallys,f)
 
         self.do_postproc()
+        #Aqui comprimo
+        with zipfile.ZipFile('archivosGuardados/'+datetime_str+'.zip', 'w') as zf:
+            zf.write('archivosGuardados/tally')
+            zf.write('archivosGuardados/postproc')
 
     def do_postproc(self):
         tally = self.tally
@@ -118,6 +132,10 @@ class Voting(models.Model):
 
         self.postproc = postp
         self.save()
-
+        #Aqui hacemos el guardado del postproc
+        with open ('archivosGuardados/postproc','w') as f:
+             for postprocs in json.dumps(self.postproc):
+                 json.dump(postprocs,f)
+        #default_storage.save('archivosGuardados/postproc', postp)
     def __str__(self):
         return self.name
