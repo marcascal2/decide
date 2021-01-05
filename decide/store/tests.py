@@ -26,6 +26,7 @@ class StoreTextCase(BaseTestCase):
         self.voting = Voting(pk=5001,
                              name='voting example',
                              question=self.question,
+                             escanios = 3,
                              start_date=timezone.now(),
         )
         self.voting.save()
@@ -34,7 +35,7 @@ class StoreTextCase(BaseTestCase):
         super().tearDown()
 
     def gen_voting(self, pk):
-        voting = Voting(pk=pk, name='v1', question=self.question, start_date=timezone.now(),
+        voting = Voting(pk=pk, name='v1', question=self.question, start_date=timezone.now(), escanios = 3,
                 end_date=timezone.now() + datetime.timedelta(days=1))
         voting.save()
 
@@ -60,6 +61,7 @@ class StoreTextCase(BaseTestCase):
             data = {
                 "voting": v,
                 "voter": random_user,
+                "escanios": 2,
                 "vote": { "a": a, "b": b }
             }
             response = self.client.post('/store/', data, format='json')
@@ -72,6 +74,7 @@ class StoreTextCase(BaseTestCase):
         data = {
             "voting": 1,
             "voter": 1,
+            "escanios":3,
             "vote": { "a": 1, "b": 1 }
         }
         response = self.client.post('/store/', data, format='json')
@@ -87,6 +90,7 @@ class StoreTextCase(BaseTestCase):
         data = {
             "voting": VOTING_PK,
             "voter": 1,
+            "escanios":3,
             "vote": { "a": CTE_A, "b": CTE_B }
         }
         user = self.get_or_create_user(1)
@@ -168,6 +172,7 @@ class StoreTextCase(BaseTestCase):
         data = {
             "voting": 5001,
             "voter": 1,
+            "escanios":4,
             "vote": { "a": 30, "b": 55 }
         }
         census = Census(voting_id=5001, voter_id=1)
