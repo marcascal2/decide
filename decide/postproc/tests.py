@@ -56,7 +56,7 @@ class PostProcTestCase(APITestCase):
             'nSeats': 5
         }
 
-        expected_result = [
+        expected_result1 = [
             {'option': 'Option 1', 'number': 1, 'votes': 100000, 'seat': 2},
             {'option': 'Option 2', 'number': 2, 'votes': 75000, 'seat': 2},
             {'option': 'Option 3', 'number': 3, 'votes': 50000, 'seat': 1},
@@ -67,7 +67,7 @@ class PostProcTestCase(APITestCase):
         self.assertEqual(response.status_code, 200)
 
         values = response.json()
-        self.assertEqual(values, expected_result)
+        self.assertEqual(values, expected_result1)
 
     #Test con valores correctos
     def test_dhondt2(self):
@@ -83,7 +83,7 @@ class PostProcTestCase(APITestCase):
             'nSeats': 7
         }
 
-        expected_result = [
+        expected_result2 = [
             {'option': 'Option 1', 'number': 1, 'votes': 510, 'seat': 3},
             {'option': 'Option 3', 'number': 3, 'votes': 450, 'seat': 2},
             {'option': 'Option 2', 'number': 2, 'votes': 250, 'seat': 1}, 
@@ -95,7 +95,7 @@ class PostProcTestCase(APITestCase):
         self.assertEqual(response.status_code, 200)
 
         values = response.json()
-        self.assertEqual(values, expected_result)
+        self.assertEqual(values, expected_result2)
 
     #Test con valores correctos
     def test_dhondt3(self):
@@ -109,7 +109,7 @@ class PostProcTestCase(APITestCase):
             'nSeats': 5
         }
 
-        expected_result = [
+        expected_result3 = [
             {'option': 'Option 3', 'number': 3, 'votes': 58, 'seat': 3},
             {'option': 'Option 1', 'number': 1, 'votes': 32, 'seat': 1},
             {'option': 'Option 2', 'number': 2, 'votes': 20, 'seat': 1},
@@ -119,7 +119,7 @@ class PostProcTestCase(APITestCase):
         self.assertEqual(response.status_code, 200)
 
         values = response.json()
-        self.assertEqual(values, expected_result)
+        self.assertEqual(values, expected_result3)
 
     # Test con valores esperados erróneos
     def test_dhondt4(self):
@@ -133,7 +133,7 @@ class PostProcTestCase(APITestCase):
             'nSeats': 6
         }
 
-        expected_result = [
+        expected_result4 = [
             {'option': 'Option 3', 'number': 3, 'votes': 58, 'seat': 3},
             {'option': 'Option 1', 'number': 1, 'votes': 32, 'seat': 1},
             {'option': 'Option 2', 'number': 2, 'votes': 20, 'seat': 1},
@@ -143,6 +143,6 @@ class PostProcTestCase(APITestCase):
         self.assertEqual(response.status_code, 200)
 
         values = response.json()
-        self.assertNotEqual(values, expected_result)
+        self.assertNotEqual(values, expected_result4)
 
     
