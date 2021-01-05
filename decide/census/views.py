@@ -98,7 +98,10 @@ def group_by_adscripcion(request, adscripcion):
     if not request.user.is_authenticated:
         return render(request, 'login_error.html')
 
-    census = Census.objects.filter(adscripcion = adscripcion)
+    if adscripcion=='None':
+        census = Census.objects.filter(adscripcion= None)
+    else:
+        census = Census.objects.filter(adscripcion= adscripcion)
 
     all_votings = Voting.objects.all()
     votings = []
