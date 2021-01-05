@@ -43,7 +43,7 @@ class PostProcTestCase(APITestCase):
         values = response.json()
         self.assertEqual(values, expected_result)
 
-    def test_mgu(self):
+    def test_mgu_un_gandor(self):
         data = {
             'type': 'MGU',
             'seats': 10,
@@ -72,7 +72,7 @@ class PostProcTestCase(APITestCase):
         values = response.json()
         self.assertEqual(values, expected_result)
 
-    def test_mgu2(self):
+    def test_mgu_varios_ganadores_reparto_equitativo(self):
         data = {
             'type': 'MGU',
             'seats': 20,
@@ -101,7 +101,7 @@ class PostProcTestCase(APITestCase):
         values = response.json()
         self.assertEqual(values, expected_result)
 
-    def test_mgu3(self):
+    def test_mgu_varios_ganadores_reparto_no_equitativo(self):
         data = {
             'type': 'MGU',
             'seats': 32,
@@ -130,7 +130,7 @@ class PostProcTestCase(APITestCase):
         values = response.json()
         self.assertEqual(values, expected_result)
 
-    def test_mgu4(self):
+    def test_mgu_todos_ganadores(self):
         data = {
             'type': 'MGU',
             'seats': 15,
@@ -159,7 +159,7 @@ class PostProcTestCase(APITestCase):
         values = response.json()
         self.assertEqual(values, expected_result)
 
-    def test_mgu5(self):
+    def test_mgu_mas_ganadores_que_seats(self):
         data = {
             'type': 'MGU',
             'seats': 5,
@@ -188,7 +188,7 @@ class PostProcTestCase(APITestCase):
         values = response.json()
         self.assertEqual(values, expected_result)
 
-    def test_mgu6(self):
+    def test_mgu_varios_ganadores_reparto_no_equitativo2(self):
         data = {
             'type': 'MGU',
             'seats': 43,
