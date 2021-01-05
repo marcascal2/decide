@@ -31,13 +31,17 @@ class QuestionOption(models.Model):
 def validate_end_date(value):
     if value < timezone.now():
         raise ValidationError("La fecha de fin no puede anterior a este momento")
+def validate_start_date(value):
+    #end_date = 
+    if value < timezone.now():
+        raise ValidationError("La fecha introducida es inadecuada")
 
 class Voting(models.Model):
     name = models.CharField(max_length=200)
     desc = models.TextField(blank=True, null=True)
     question = models.ForeignKey(Question, related_name='voting', on_delete=models.CASCADE)
 
-    start_date = models.DateTimeField(blank=True, null=True)
+    start_date = models.DateTimeField(blank=True, null=True, validators=[validate_start_date])
     end_date = models.DateTimeField(validators=[validate_end_date],blank=True, null=True)
 
     pub_key = models.OneToOneField(Key, related_name='voting', blank=True, null=True, on_delete=models.SET_NULL)
@@ -45,6 +49,15 @@ class Voting(models.Model):
 
     tally = JSONField(blank=True, null=True)
     postproc = JSONField(blank=True, null=True)
+
+    def save(self):
+        if self.start_date is None or self.end_date is None:
+            return super().save()
+        elif self.start_date > self.end_date :
+            raise ValidationError("La fecha de inicio no puede ser anterior a la de fin")
+            return super().save()
+        else: 
+            return super().save()
 
     def create_pubkey(self):
         if self.pub_key or not self.auths.count():
