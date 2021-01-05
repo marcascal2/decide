@@ -33,19 +33,31 @@ class PostProcView(APIView):
 
                 'seat': 0,
             })
- 
+
+        #Igualamos numEscanos al numero total de escaños a repartir
         numEscanos = nSeats
 
+        #Mientras no se repartan todos los escaños hacemos lo siguiente
         while numEscanos>0:
             
             actual = 0
             
+            #Comparamos todas las opciones posibles
             for i in range(1, len(out)):
                 valorActual = out[actual]['votes'] / (out[actual]['seat'] + 1)
                 valorComparar = out[i]['votes'] / (out[i]['seat'] + 1)
 
+                #Si el valor a comparar es mayor que el valor actual mayor se cambian
+                if(valorActual<valorComparar):
+                    actual = i
             
+            #Al final de recorrer todos, la opcion cuyo indice es actual es el que posee más votos y,
+            #por tanto, se le añade un escaño
+            out[actual]['seat'] = out[actual]['seat'] + 1
             numEscanos = numEscanos - 1
+        
+        #Ordenamos las diferentes opciones por su número total de escaños obtenidos durante el método
+        out.sort(key = lambda x: -x['seat'])
 
         return Response(out)
 
