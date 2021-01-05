@@ -49,9 +49,11 @@ class PostProcView(APIView):
         #Realizamos la iteracion tantas veces como escaños a repartir haya
         i = 0
         while(i<escanosTotales):
+        #Sacamos el partido con más votos ahora mismo
             maxVotos = max(puntosPorPart) 
+        #Lo localizamos en index
             index = puntosPorPart.index(maxVotos)
-            print(maxVotos)
+        #Si es distinto a 0 le aplicamos sante lague a ese partido y recalculamos sus votos
             if maxVotos != 0:
                 
                 escanos[index] += 1 
