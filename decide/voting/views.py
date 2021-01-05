@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
 from rest_framework.response import Response
 
-from .models import Question, QuestionOption, Voting, QuestionPrefer
+from .models import Question, QuestionOption, Voting, QuestionPrefer, QuestionOrdering
 from .serializers import SimpleVotingSerializer, VotingSerializer
 from base.perms import UserIsStaff
 from base.models import Auth
@@ -43,6 +43,10 @@ class VotingView(generics.ListCreateAPIView):
                 pref = QuestionPrefer(question=question, option=q_opt, prefer= q_pref)
                 pref.save()
 
+        if request.data.get('question_ordering') !=None:
+            for idx2, q_opt2 in enumerate(request.data.get('question_ordering')):
+                opt = QuestionOrdering(question=question, ordering=q_opt2, number=idx2)
+                opt.save()
         voting = Voting(name=request.data.get('name'), desc=request.data.get('desc'),
                 question=question, end_date=request.data.get('end_date'), start_date=request.data.get('start_date')
                 , min_age=request.data.get('min_age'), max_age=request.data.get('max_age'))

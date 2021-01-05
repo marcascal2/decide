@@ -3,6 +3,7 @@ from django.utils import timezone
 
 from .models import QuestionOption
 from .models import QuestionPrefer
+from .models import QuestionOrdering
 from .models import Question
 from .models import Voting
 
@@ -33,10 +34,14 @@ class QuestionOptionInline(admin.TabularInline):
 
 class QuestionPreferInLine(admin.TabularInline):
     model= QuestionPrefer
+
+class QuestionOrderingInline(admin.TabularInline):
+    model = QuestionOrdering
    
 class QuestionAdmin(admin.ModelAdmin):
     inlines = [QuestionOptionInline]
-    inlines = [QuestionOptionInline, QuestionPreferInLine]
+    inlines = [QuestionOptionInline, QuestionPreferInLine, QuestionOrderingInline]
+
 
 
 class VotingAdmin(admin.ModelAdmin):
