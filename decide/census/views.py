@@ -18,7 +18,7 @@ from .models import Census
 from voting.models import Voting
 from django.contrib.auth.models import User
 from datetime import date
-
+from django.db.models import Q
 
 class CensusCreate(generics.ListCreateAPIView):
     permission_classes = (UserIsStaff,)
@@ -295,3 +295,72 @@ def group_by_question(request, question):
             questions.append(q)
     
     return render(request,'all_census.html', {'census':census, 'dates':dates, 'voters':voters, 'votings':votings, 'adscripciones':adscripciones, 'questions':questions})
+
+def filter_by(request):
+    if not request.user.is_authenticated:
+        return render(request, 'login_error.html')
+
+    q = request.POST.get('q', '')
+    q = q.lower()
+
+    census = Census.objects.all()
+    votaciones = Voting.objects.all()
+    users = User.objects.all()
+
+    res = []
+
+    for c in census:
+        if c.adscripcion != None:
+            if q in c.adscripcion.lower():
+                res.append(c)
+
+        if q in str(c.date) and c not in res:
+            res.append(c)
+
+    for v in votaciones:
+        if q in v.name.lower():
+            cs = Census.objects.filter(voting_id=v.id)
+            for c in cs:
+                if c not in res:
+                    res.append(c)
+
+    for u in users:
+        if q in u.username.lower():
+            cs = Census.objects.filter(voter_id=u.id)
+            for c in cs:
+                if c not in res:
+                    res.append(c)
+    
+    all_voters = User.objects.all()
+    voters = []
+    for v in all_voters:
+        c = Census.objects.filter(voter_id = v.id)
+        if len(c) != 0:
+            voters.append(v)
+
+    all_votings = Voting.objects.all()
+    votings = []
+    for v in all_votings:
+        c = Census.objects.filter(voting_id = v.id)
+        if len(c) != 0:
+            votings.append(v)
+
+    dates = []
+    adscripciones = []
+    questions = []
+
+    for c in census:
+
+        d = c.date
+        q = c.voting_question
+        
+        if d not in dates:
+            dates.append(d)
+    
+        if c.adscripcion not in adscripciones:
+            adscripciones.append(c.adscripcion)
+
+        if q not in questions:
+            questions.append(q)
+
+    return render(request,'all_census.html', {'census':res, 'dates':dates, 'voters':voters, 'votings':votings, 'adscripciones':adscripciones, 'questions':questions})
