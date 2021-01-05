@@ -1,3 +1,10 @@
+<form action="{% url 'filter_by' %}" method="post">
+    {% csrf_token %}
+    <p>
+      Búsqueda entre nuestros censos: <input id="q" name="q" type="text" placeholder="Escriba la palabra por la que desea filtrar">
+      <input type="submit" value="Buscar">
+    </p>
+</form>
 <h3>Todos los censos</h3>
 <table>
     <tr>
