@@ -81,7 +81,7 @@ class ReadonlyVotingAdmin(admin.ModelAdmin):
 
         return form
 
-    actions = [ start, stop, tally ]
+    actions = [ start, stop ]
 # class VotingCandidateAdmin(admin.ModelAdmin):
 #     list_display = ('name', 'start_date', 'end_date')
 #     readonly_fields = ('start_date', 'end_date', 'pub_key',
@@ -98,7 +98,7 @@ class MultipleVotingAdmin(admin.ModelAdmin):
     list_filter = (StartedFilter,)
     search_fields = ('name', )
 
-    actions = [ start, stop, tally ]
+    actions = [ start, stop ]
 
 
 admin.site.register(Voting, VotingAdmin)
