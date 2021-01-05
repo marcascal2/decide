@@ -1,6 +1,12 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
+<<<<<<< HEAD
 import math
+=======
+from pickle import TRUE, FALSE
+from optparse import Option
+import random
+>>>>>>> task/feature-paridad
 
 class PostProcView(APIView):
 
@@ -170,6 +176,47 @@ class PostProcView(APIView):
                     break
         return out
 
+    
+    def paridad (self,options,cands):
+        out = []
+
+        for opt in options:
+            out.append({
+                **opt,
+                'paridad': [],
+                })
+        
+        hombres = []
+        mujeres = []
+        for cand in cands:
+            if cand['sex'] == 'H':
+                hombres.append(cand)
+            elif cand['sex'] == 'M':
+                mujeres.append(cand)
+        
+        for indice in out:
+            escanios = indice['escanio']
+            hom = 0
+            muj = 0
+            paridad = True
+            while escanios > 0:
+                if paridad: 
+                    if muj < len(mujeres):
+                        indice['paridad'].append(mujeres[muj])
+                        muj = muj + 1
+                        escanios -=1
+                    paridad = False
+                else: 
+                    if hom < len(hombres):
+                        indice['paridad'].append(hombres[hom])
+                        hom = hom + 1
+                        escanios -=1
+                    paridad = True
+                if(muj == len(mujeres) and hom == len(hombres)):
+                    escanios = 0
+                    break
+        return out
+    
     def post(self, request):
         """
          * type: IDENTITY | EQUALITY | WEIGHT | MGU
