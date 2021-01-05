@@ -13,7 +13,7 @@ from census.models import Census
 from mixnet.mixcrypt import ElGamal
 from mixnet.mixcrypt import MixCrypt
 from mixnet.models import Auth
-from voting.models import Voting, Question, QuestionOption
+from voting.models import Voting, Question, QuestionOption, QuestionPrefer
 
 
 class VotingTestCase(BaseTestCase):
@@ -36,6 +36,23 @@ class VotingTestCase(BaseTestCase):
         q.save()
         for i in range(5):
             opt = QuestionOption(question=q, option='option {}'.format(i+1))
+            opt.save()
+        v = Voting(name='test voting', question=q)
+        v.save()
+
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'test auth'})
+        a.save()
+        v.auths.add(a)
+
+        return v
+
+
+    def create_voting_prefer(self):
+        q = Question(desc='test question')
+        q.save()
+        for i in range(5):
+            opt = QuestionPrefer(question=q, prefer = 'YES',option='option {}'.format(i+1))
             opt.save()
         v = Voting(name='test voting', question=q)
         v.save()
@@ -235,3 +252,116 @@ class VotingTestCase(BaseTestCase):
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), 'Voting already tallied')
+
+    def test_complete_voting_prefer(self):
+        v = self.create_voting_prefer()
+        self.create_voters(v)
+
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
+
+        clear = self.store_votes(v)
+
+        self.login()  # set token
+        v.tally_votes(self.token)
+
+        tally = v.tally
+        tally.sort()
+        tally = {k: len(list(x)) for k, x in itertools.groupby(tally)}
+
+        for q in v.question.options.all():
+            self.assertEqual(tally.get(q.number, 0), clear.get(q.number, 0))
+
+        for q in v.postproc:
+            self.assertEqual(tally.get(q["number"], 0), q["votes"])
+
+
+    def test_create_voting_prefer_from_api(self):
+        data = {'name': 'Example'}
+        response = self.client.post('/voting/', data, format='json')
+        self.assertEqual(response.status_code, 401)
+
+        # login with user no admin
+        self.login(user='noadmin')
+        response = mods.post('voting', params=data, response=True)
+        self.assertEqual(response.status_code, 403)
+
+        # login with user admin
+        self.login()
+        response = mods.post('voting', params=data, response=True)
+        self.assertEqual(response.status_code, 400)
+
+        data = {
+            'name': 'Example',
+            'desc': 'Description example',
+            'question': 'I want a ',
+            'question_opt' : [],
+            'question_pref': ['CAT', 'DOG', 'HORSE']
+        }
+
+        response = self.client.post('/voting/', data, format='json')
+        self.assertEqual(response.status_code, 201)
+
+class QuestionTestCase(BaseTestCase):
+
+    def setUp(self):
+        q=Question(desc="Descripcion")
+        q.save()
+
+        self.v=Voting(name="Votacion", question=q)
+        self.v.save()
+        super().setUp()
+
+    def tearDown(self):
+        super().tearDown()
+        self.v=None
+
+    def testExistQuestionNoOption(self):
+        v = Voting.objects.get(name="Votacion")
+        self.assertEqual(v.question.desc, "Descripcion")
+    def testExistQuestionWithOption(self):
+        q = Question.objects.get(desc="Descripcion")
+        opt1 = QuestionOption(question = q, option="option1")
+        opt1.save()
+        v = Voting.objects.get(name="Votacion")
+        v.question = q
+        v.question_opt = opt1
+        v.save()
+        self.assertEqual(v.question.options.all()[0].option, "option1")
+    def testExistQuestionWithPrefer(self):
+        q = Question.objects.get(desc="Descripcion")
+        opt1 = QuestionPrefer(question = q, prefer = "YES" ,option="option1")
+        opt1.save()
+        v = Voting.objects.get(name="Votacion")
+        v.question = q
+        v.question_pref = opt1
+        v.save()
+        self.assertEqual(v.question.prefer_options.all()[0].option, "option1")
+        self.assertEqual(v.question.prefer_options.all()[0].prefer, "YES")
+    def testAddOption(self):
+        v = Voting.objects.get(name="Votacion")
+        q = v.question
+
+        self.assertEqual(v.question.options.all().count(),0)
+
+        opt = QuestionOption(question=q, option="opcionTest")
+        opt.save()
+        v.save()
+
+        self.assertEqual(v.question.options.all()[0].option , "opcionTest")
+        self.assertEqual(v.question.options.all().count(),1)
+
+    def testAddOptionPrefer(self):
+        v = Voting.objects.get(name="Votacion")
+        q = v.question
+
+        self.assertEqual(v.question.prefer_options.all().count(),0)
+
+        opt = QuestionPrefer(question=q, prefer = 'YES', option="opcionTest")
+        opt.save()
+        v.save()
+
+        self.assertEqual(v.question.prefer_options.all()[0].option , "opcionTest")
+        self.assertEqual(v.question.prefer_options.all()[0].prefer, "YES")
+        self.assertEqual(v.question.prefer_options.all().count(),1)

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Question, QuestionOption, Voting
+from .models import Question, QuestionOption, Voting, QuestionPrefer
 from base.serializers import KeySerializer, AuthSerializer
 
 
@@ -10,11 +10,19 @@ class QuestionOptionSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('number', 'option')
 
 
+class QuestionPreferSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = QuestionPrefer
+        fields = ('prefer','number', 'option')
+
+
 class QuestionSerializer(serializers.HyperlinkedModelSerializer):
     options = QuestionOptionSerializer(many=True)
+    prefer_options = QuestionPreferSerializer(many=True)
     class Meta:
         model = Question
         fields = ('desc', 'options')
+        fields = ('prefer_options','desc', 'options')
 
 
 class VotingSerializer(serializers.HyperlinkedModelSerializer):
