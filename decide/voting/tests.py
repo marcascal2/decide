@@ -247,6 +247,66 @@ class VotingTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 201)
 
 
+    def testVotingWithManyCandidateFromApi(self):
+        data = {'name': 'Example'}
+        response = self.client.post('/voting/', data, format='json')
+        self.assertEqual(response.status_code, 401)
+
+        # login with user no admin
+        self.login(user='noadmin')
+        response = mods.post('voting', params=data, response=True)
+        self.assertEqual(response.status_code, 403)
+
+        # login with user admin
+        self.login()
+        response = mods.post('voting', params=data, response=True)
+        self.assertEqual(response.status_code, 400)
+
+        data = {
+            'name': 'Example',
+            'desc': 'Description example',
+            'escanios': 20,
+            'question': 'I want a ',
+            'question_opt': ['cat', 'dog', 'horse'],
+            'candidates' :
+            [{
+                'name': 'pepe',
+                'sex': 'H',
+                'auto_community': 'H',
+                'age': 21,
+                'political_party': 'PACMA'
+            },
+
+            {
+    
+                'name': 'pepe2',
+                'sex': 'H',
+                'auto_community': 'BA',
+                'age': 21,
+                'political_party': 'VOX'  
+            },
+
+            
+            {
+    
+                'name': 'pepe3',
+                'sex': 'M',
+                'auto_community': 'AN',
+                'age': 30,
+                'political_party': 'UP'  
+            }
+            ]
+        }
+
+        response = self.client.post('/voting/', data, format='json')
+        self.assertEqual(response.status_code, 201)
+
+
+
+
+
+
+
 class CandidateTestCase(BaseTestCase):
 
     def setUp(self):
