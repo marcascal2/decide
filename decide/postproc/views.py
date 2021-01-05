@@ -81,4 +81,8 @@ class PostProcView(APIView):
         if t == 'IDENTITY':
             return self.identity(opts)
         
+        elif t == 'DHONDT':
+            return self.dhondt(opts, request.data.get('nSeats'))
+
         return Response({})
+
