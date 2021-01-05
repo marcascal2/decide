@@ -31,15 +31,14 @@ class CensusTestCase(BaseTestCase):
         user2 = User(id=6, username='voter2', password='test_password')
         user2.save()
 
-        self.census = Census(voting_id=1, voter_id=5, adscripcion='Colegio1')
+        self.census = Census(id=21, voting_id=1, voter_id=5, adscripcion='Colegio1', date=date.today())
         self.census.save()
 
-        c2 = Census(voting_id=3, voter_id=5, adscripcion='Colegio1')
+        c2 = Census(id=22,voting_id=3, voter_id=5, adscripcion='Colegio1', date=date.today())
         c2.save()
 
-        c3 = Census(voting_id=1, voter_id=6, adscripcion='Colegio2')
+        c3 = Census(id=23, voting_id=1, voter_id=6, adscripcion='Colegio2', date=date.today())
         c3.save()
-
 
     def tearDown(self):
         super().tearDown()
@@ -126,3 +125,72 @@ class CensusTestCase(BaseTestCase):
         
         for c in census:
             self.assertContains(response, c)
+
+    def test_group_by_adscripcion(self):
+        u = User(username='request_user', password='request_password')
+        u.save()
+        c1 = Census.objects.get(id=21)
+        c2 = Census.objects.get(id=22)
+        rf = RequestFactory()
+        request = rf.get('/census/group_by_adscripcion/')  
+        request.user = u
+        response = views.group_by_adscripcion(request,'Colegio1')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, c1)
+        self.assertContains(response, c2)
+
+    def test_group_by_voting(self):
+        u = User(username='request_user', password='request_password')
+        u.save()
+        c1 = Census.objects.get(id=21)
+        c2 = Census.objects.get(id=23)
+        rf = RequestFactory()
+        request = rf.get('/census/group_by_voting/')  
+        request.user = u
+        response = views.group_by_voting(request,1)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, c1)
+        self.assertContains(response, c2)
+
+    def test_group_by_voter(self):
+        u = User(username='request_user', password='request_password')
+        u.save()
+        c1 = Census.objects.get(id=21)
+        c2 = Census.objects.get(id=22)
+        rf = RequestFactory()
+        request = rf.get('/census/group_by_voter/')  
+        request.user = u
+        response = views.group_by_voter(request,5)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, c1)
+        self.assertContains(response, c2)
+
+    def test_group_by_date(self):
+        u = User(username='request_user', password='request_password')
+        u.save()
+        c1 = Census.objects.get(id=21)
+        c2 = Census.objects.get(id=22)
+        c3 = Census.objects.get(id=23)
+        rf = RequestFactory()
+        request = rf.get('/census/group_by_date/')  
+        request.user = u
+        response = views.group_by_date(request,str(date.today()))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, c1)
+        self.assertContains(response, c2)
+        self.assertContains(response, c3)
+
+    def test_group_by_question(self):
+        u = User(username='request_user', password='request_password')
+        u.save()
+        c1 = Census.objects.get(id=21)
+        c2 = Census.objects.get(id=22)
+        c3 = Census.objects.get(id=23)
+        rf = RequestFactory()
+        request = rf.get('/census/group_by_question/')  
+        request.user = u
+        response = views.group_by_question(request,'desc')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, c1)
+        self.assertContains(response, c2)
+        self.assertContains(response, c3)
