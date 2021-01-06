@@ -108,7 +108,7 @@ def all_census(request):
         if q not in questions:
             questions.append(q)
     
-    return render(request,'all_census.html', {'census':census, 'votings':votings, 'voters':voters, 'adscripciones':adscripciones, 'dates': dates, 'questions': questions})
+    return render(request,'admin.html', {'census':census, 'votings':votings, 'voters':voters, 'adscripciones':adscripciones, 'dates': dates, 'questions': questions})
 
 def group_by_adscripcion(request, adscripcion):
     if not request.user.is_authenticated:
@@ -151,7 +151,7 @@ def group_by_adscripcion(request, adscripcion):
         if q not in questions:
             questions.append(q)
     
-    return render(request,'all_census.html', {'census':census, 'voters':voters, 'votings':votings, 'adscripciones':adscripciones, 'dates':dates, 'questions':questions})
+    return render(request,'admin.html', {'census':census, 'voters':voters, 'votings':votings, 'adscripciones':adscripciones, 'dates':dates, 'questions':questions})
 
 def group_by_voting(request, voting_id):
     if not request.user.is_authenticated:
@@ -191,7 +191,7 @@ def group_by_voting(request, voting_id):
         if q not in questions:
             questions.append(q)
     
-    return render(request,'all_census.html', {'census':census, 'voters':voters, 'votings':votings, 'dates': dates, 'adscripciones':adscripciones, 'questions': questions})
+    return render(request,'admin.html', {'census':census, 'voters':voters, 'votings':votings, 'dates': dates, 'adscripciones':adscripciones, 'questions': questions})
 
 def group_by_voter(request, voter_id):
     if not request.user.is_authenticated:
@@ -232,7 +232,7 @@ def group_by_voter(request, voter_id):
             questions.append(q)
     
     
-    return render(request,'all_census.html', {'census':census, 'voters':voters, 'votings':votings, 'dates': dates, 'adscripciones':adscripciones, 'questions': questions})
+    return render(request,'admin.html', {'census':census, 'voters':voters, 'votings':votings, 'dates': dates, 'adscripciones':adscripciones, 'questions': questions})
 
 def group_by_date(request, date):
     if not request.user.is_authenticated:
@@ -272,7 +272,7 @@ def group_by_date(request, date):
         if q not in questions:
             questions.append(q)
     
-    return render(request,'all_census.html', {'census':census, 'dates':dates, 'voters':voters, 'votings':votings, 'adscripciones':adscripciones, 'questions':questions})
+    return render(request,'admin.html', {'census':census, 'dates':dates, 'voters':voters, 'votings':votings, 'adscripciones':adscripciones, 'questions':questions})
 
 def group_by_question(request, question):
     if not request.user.is_authenticated:
@@ -313,7 +313,7 @@ def group_by_question(request, question):
         if q not in questions:
             questions.append(q)
     
-    return render(request,'all_census.html', {'census':census, 'dates':dates, 'voters':voters, 'votings':votings, 'adscripciones':adscripciones, 'questions':questions})
+    return render(request,'admin.html', {'census':census, 'dates':dates, 'voters':voters, 'votings':votings, 'adscripciones':adscripciones, 'questions':questions})
 
 def filter_by(request):
     if not request.user.is_authenticated:
@@ -382,10 +382,7 @@ def filter_by(request):
         if q not in questions:
             questions.append(q)
 
-    return render(request,'all_census.html', {'census':res, 'dates':dates, 'voters':voters, 'votings':votings, 'adscripciones':adscripciones, 'questions':questions})
-
-def adminView(request):
-    return render(request, 'admin.html')
+    return render(request,'admin.html', {'census':res, 'dates':dates, 'voters':voters, 'votings':votings, 'adscripciones':adscripciones, 'questions':questions})
 
 def login(request):
     form = AuthenticationForm()
@@ -402,7 +399,8 @@ def login(request):
             return redirect('/census/admin')
 
     return render(request, "login.html", {'form': form})
-    
+
+#TODO: Frontend
 def import_by_voting(request):
     if not request.user.is_authenticated:
         return render(request, 'login_error.html')
@@ -436,6 +434,7 @@ def import_by_voting(request):
     
     return render(request, 'upload.html', {'form': form})
 
+#TODO: Frontend
 def export_by_voting(request, voting_id):
     meta = Census._meta
     field_names = [field.name for field in meta.fields]
