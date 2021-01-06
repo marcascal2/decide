@@ -21,8 +21,7 @@ from base.perms import UserIsStaff
 from .models import Census
 from voting.models import Voting
 from django.contrib.auth.models import User
-from datetime import date
-from django.db.models import Q
+from datetime import date, datetime
 
 class CensusCreate(generics.ListCreateAPIView):
     permission_classes = (UserIsStaff,)
@@ -386,7 +385,11 @@ def import_by_voting(request):
                 cadena = row.decode('utf-8')
                 ids = cadena.split(',')
                 voter_id = ids[0]
-                census = Census(voting_id=voting_id, voter_id=voter_id)
+                adscripcion = ids[1]
+                if adscripcion == '': adscripcion=None
+                dat = ids[2]
+                objDate = datetime.strptime(dat, '%Y-%m-%d')
+                census = Census(voting_id=voting_id, voter_id=voter_id, adscripcion=adscripcion, date=objDate)
                 census.save()
         f.close()
 
@@ -402,15 +405,17 @@ def import_by_voting(request):
     return render(request, 'upload.html', {'form': form})
 
 def export_by_voting(request, voting_id):
-    field = Census._meta.get_field('voter_id')
+    meta = Census._meta
+    field_names = [field.name for field in meta.fields]
+    field_names.remove('id')
+    field_names.remove('voting_id')
     voter_set = Census.objects.filter(voting_id=voting_id)
-
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename={}.csv'.format(field)
+    response['Content-Disposition'] = 'attachment; filename={}.csv'.format(meta)
     writer = csv.writer(response)
-    writer.writerow([field.name])
+    writer.writerow(field_names)
 
     for obj in voter_set:
-        row = writer.writerow([getattr(obj, field.name)])
+        row = writer.writerow([getattr(obj, field) for field in field_names] + [''])
     return response
 

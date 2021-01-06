@@ -7,6 +7,7 @@ from django.urls import path
 
 from .models import Census
 from voting.models import Voting
+from datetime import datetime
 
 class CensusAdmin(admin.ModelAdmin):
 
@@ -29,7 +30,7 @@ class CensusAdmin(admin.ModelAdmin):
         writer.writerow(field_names)
 
         for obj in queryset:
-            row = writer.writerow([getattr(obj, field) for field in field_names])
+            row = writer.writerow([getattr(obj, field) for field in field_names]+[''])
         return response
 
     export_as_csv.short_description = 'Export as CSV'
@@ -52,7 +53,10 @@ class CensusAdmin(admin.ModelAdmin):
                     ids = cadena.split(',')
                     voting_id = ids[1]
                     voter_id = ids[2]
-                    census = Census(voting_id=voting_id, voter_id=voter_id)
+                    adscripcion = ids[3]
+                    dat = ids[4]
+                    objDate = datetime.strptime(dat, '%Y-%m-%d')
+                    census = Census(voting_id=voting_id, voter_id=voter_id, adscripcion=adscripcion, date=objDate)
                     census.save()
             f.close()
 
