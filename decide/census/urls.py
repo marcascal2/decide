@@ -11,5 +11,7 @@ urlpatterns = [
     path('group_by_date/<str:date>',views.group_by_date, name='group_by_date'),
     path('group_by_adscripcion/<str:adscripcion>',views.group_by_adscripcion, name='group_by_adscripcion'),
     path('group_by_question/<str:question>',views.group_by_question, name='group_by_question'),
-    path('all_census/search/',views.filter_by, name='filter_by')
+    path('all_census/search/',views.filter_by, name='filter_by'),
+    path('import_by_voting/', views.import_by_voting, name="import_by_voting"),
+    path('export_by_voting/<int:voting_id>', views.export_by_voting, name="export_by_voting")
 ]
