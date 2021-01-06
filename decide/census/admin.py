@@ -6,7 +6,6 @@ from django.shortcuts import render
 from django.urls import path
 
 from .models import Census
-from .views import *
 
 
 class CensusAdmin(admin.ModelAdmin):
