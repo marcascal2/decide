@@ -129,18 +129,13 @@ class Voting(models.Model):
     postproc = JSONField(blank=True, null=True)
 
     def save(self):
-        if self.start_date is None or self.end_date is None:
-            return super().save()
-        elif self.start_date > self.end_date :
-            raise ValidationError("La fecha de inicio no puede ser anterior a la de fin")
-            return super().save()
-        if self.min_age is None or self.max_age is None:
-            return super().save()
-        elif self.min_age > self.max_age :
-            raise ValidationError("Edad máxima debe ser mayor que la edad mínima")
-            return super().save()
-        else: 
-            return super().save()
+        if self.start_date is not None and self.end_date is not None:
+            if self.start_date > self.end_date :
+                raise ValidationError("La fecha de inicio no puede ser anterior a la de fin")
+        if self.min_age is not None and self.max_age is not None:
+            if self.min_age > self.max_age :
+                raise ValidationError("Edad máxima debe ser mayor que la edad mínima")
+        return super().save()
 
     def create_pubkey(self):
         if self.pub_key or not self.auths.count():

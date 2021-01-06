@@ -7,10 +7,18 @@ from .models import QuestionOrdering
 from .models import Question
 from .models import Voting, ReadonlyVoting, MultipleVoting
 from .models import Candidate
+from django.core.exceptions import ValidationError
 
 
 from .filters import StartedFilter
 
+def confirm_date(modeladmin, request, queryset):
+    for v in queryset.all():
+        if v.start_date < timezone.now():
+            raise ValidationError("La fecha no puede ser anterior a ahora")
+        else:
+            v.create_pubkey()
+            v.save()
 
 def start(modeladmin, request, queryset):
     for v in queryset.all():
@@ -59,7 +67,7 @@ class VotingAdmin(admin.ModelAdmin):
     list_filter = (StartedFilter,)
     search_fields = ('name', )
 
-    actions = [ start, stop, tally ]  
+    actions = [ start, stop, tally ,confirm_date ]  
 
 class ReadonlyVotingAdmin(admin.ModelAdmin):
     list_display = ('name', 'start_date', 'end_date')
