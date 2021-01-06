@@ -20,7 +20,7 @@ class PostProcView(APIView):
         out.sort(key=lambda x: -x['postproc'])
         return Response(out)
       
-    def simple(self, options, seats):
+    def simple(self, options, escanio):
         out = []
         for simp in options:
             out.append({
@@ -29,7 +29,7 @@ class PostProcView(APIView):
             })
         out.sort(key=lambda x: -x['votes'])
 
-        sea = seats
+        sea = escanio
         n = 0
 
         for votes in out:
@@ -40,9 +40,9 @@ class PostProcView(APIView):
         n1 = 0
         while sea > 0:
             if n1 < len(out):
-                seats_ = math.trunc(out[n1]['votes']/valEs) 
-                out[n1]['postproc'] = seats_
-                sea = sea - seats_
+                escanio_ = math.trunc(out[n1]['votes']/valEs) 
+                out[n1]['postproc'] = escanio_
+                sea = sea - escanio_
                 n1 = n1+1
             else:
                 now = 0
@@ -63,7 +63,7 @@ class PostProcView(APIView):
     # en dicho método trabajaremos con listas de partidos politicos y con un número de escaños que será pasado como parámetro. 
     #           Fórmula de D'Hondt: cociente = V/S+1    , siendo V: el número total de votosS
     #                                                            S: el num. de escaños que posee en el momento
-    def dhondt(self, options, nSeats):
+    def dhondt(self, options, escanio):
 
         #Salida
         out = [] 
@@ -78,7 +78,7 @@ class PostProcView(APIView):
             })
 
         #Igualamos numEscanos al numero total de escaños a repartir
-        numEscanos = nSeats
+        numEscanos = escanio
 
         #Mientras no se repartan todos los escaños hacemos lo siguiente
         while numEscanos>0:
@@ -217,7 +217,7 @@ class PostProcView(APIView):
                     break
         return out
       
-    def saintelague(self, options, nSeats):
+    def saintelague(self, options, escanio):
         
         #Definimos las variables
 
@@ -236,12 +236,12 @@ class PostProcView(APIView):
             partidos.append(opt['votes']) 
             out.append({
                 **opt,
-                'seats': 0,
+                'escanio': 0,
                 })
 
         #Inicializamos la lista así para que no se cambie por referencia
         puntosPorPart = partidos[:]
-        escanosTotales = nSeats 
+        escanosTotales = escanio 
         #Dividimos entre 1.4 el primer valor de votos de cada partido para hacer el sainte lague modificado
         for p in puntosPorPart:
             index1=puntosPorPart.index(p)
@@ -258,12 +258,12 @@ class PostProcView(APIView):
             if maxVotos != 0:
                 
                 escanos[index] += 1 
-                out[index]['seats'] += 1 
+                out[index]['escanio'] += 1 
                 puntosPorPart[index] = partidos[index] / ((2*escanos[index])+1) 
 
             i=i+1
             
-        out.sort(key=lambda x: -x['seats'])
+        out.sort(key=lambda x: -x['escanio'])
         return Response(out)
     
     def post(self, request):
@@ -282,18 +282,18 @@ class PostProcView(APIView):
         t = request.data.get('type')
         opts = request.data.get('options', [])
         cands = request.data.get('candidates', [])
-        s = request.data.get('seats')
+        s = request.data.get('escanio')
 
         if t == 'IDENTITY':
             return self.identity(opts)
         elif t == 'DHONDT':
-            return self.dhondt(opts, request.data.get('nSeats'))
+            return self.dhondt(opts, request.data.get('escanio'))
         elif t == 'SIMPLE':
             return Response(self.simple(opts,s))
         elif t == 'MGU':
             return Response(self.mgu(opts,s))
         elif t == 'SAINTELAGUE':
-            return self.saintelague(opts,request.data.get('nSeats'))
+            return self.saintelague(opts,request.data.get('escanio'))
         elif t == 'PARIDAD':
             comprueba= self.comprobar(opts,cands)
             if comprueba:

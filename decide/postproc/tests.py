@@ -109,7 +109,7 @@ class PostProcTestCase(APITestCase):
     def test_simple(self):
         data = {
             'type': 'SIMPLE',
-            'seats': 7,
+            'escanio': 7,
             'options': [
                 { 'option': 'Option 1', 'number': 1, 'votes': 5 }, 
                 { 'option': 'Option 2', 'number': 2, 'votes': 2 },
@@ -138,7 +138,7 @@ class PostProcTestCase(APITestCase):
     def test_mgu_un_gandor(self):
         data = {
             'type': 'MGU',
-            'seats': 10,
+            'escanio': 10,
             'options': [
                 { 'option': 'Option 1', 'number': 1, 'votes': 7 },
                 { 'option': 'Option 2', 'number': 2, 'votes': 4 },
@@ -167,7 +167,7 @@ class PostProcTestCase(APITestCase):
     def test_simple1(self):
         data = {
             'type': 'SIMPLE',
-            'seats':40,
+            'escanio':40,
             'options': [
                 { 'option': 'Option 1', 'number': 1, 'votes': 10 },
                 { 'option': 'Option 2', 'number': 2, 'votes': 8 },
@@ -196,7 +196,7 @@ class PostProcTestCase(APITestCase):
     def test_mgu_varios_ganadores_reparto_equitativo(self):
         data = {
             'type': 'MGU',
-            'seats': 20,
+            'escanio': 20,
             'options': [
                 { 'option': 'Option 1', 'number': 1, 'votes': 6 },
                 { 'option': 'Option 2', 'number': 2, 'votes': 5 },
@@ -225,7 +225,7 @@ class PostProcTestCase(APITestCase):
     def test_simple2(self):
         data = {
             'type': 'SIMPLE',
-            'seats':70,
+            'escanio':70,
             'options': [
                 { 'option': 'Option 1', 'number': 1, 'votes': 50 },
                 { 'option': 'Option 2', 'number': 2, 'votes': 11 },
@@ -252,7 +252,7 @@ class PostProcTestCase(APITestCase):
     def test_mgu_varios_ganadores_reparto_no_equitativo(self):
         data = {
             'type': 'MGU',
-            'seats': 32,
+            'escanio': 32,
             'options': [
                 { 'option': 'Option 1', 'number': 1, 'votes': 6 },
                 { 'option': 'Option 2', 'number': 2, 'votes': 5 },
@@ -320,7 +320,7 @@ class PostProcTestCase(APITestCase):
     def test_simple3(self):
         data = {
             'type': 'SIMPLE',
-            'seats':100,
+            'escanio':100,
             'options': [
                 { 'option': 'Option 1', 'number': 1, 'votes': 40 },
                 { 'option': 'Option 2', 'number': 2, 'votes': 30 },
@@ -348,7 +348,7 @@ class PostProcTestCase(APITestCase):
     def test_mgu_todos_ganadores(self):
         data = {
             'type': 'MGU',
-            'seats': 15,
+            'escanio': 15,
             'options': [
                 { 'option': 'Option 1', 'number': 1, 'votes': 8 },
                 { 'option': 'Option 2', 'number': 2, 'votes': 8 },
@@ -377,7 +377,7 @@ class PostProcTestCase(APITestCase):
     def test_simple4(self):
         data = {
             'type': 'SIMPLE',
-            'seats':20,
+            'escanio':20,
             'options': [
                 { 'option': 'Option 1', 'number': 1, 'votes': 5 },
                 { 'option': 'Option 2', 'number': 2, 'votes': 3 },
@@ -405,7 +405,7 @@ class PostProcTestCase(APITestCase):
     def test_mgu_mas_ganadores_que_seats(self):
         data = {
             'type': 'MGU',
-            'seats': 5,
+            'escanio': 5,
             'options': [
                 { 'option': 'Option 1', 'number': 1, 'votes': 8 },
                 { 'option': 'Option 2', 'number': 2, 'votes': 8 },
@@ -435,7 +435,7 @@ class PostProcTestCase(APITestCase):
     def test_simple5(self):
         data = {
             'type': 'SIMPLE',
-            'seats':30,
+            'escanio':30,
             'options': [
                 { 'option': 'Option 1', 'number': 1, 'votes': 15 },
                 { 'option': 'Option 2', 'number': 2, 'votes': 10 },
@@ -462,7 +462,7 @@ class PostProcTestCase(APITestCase):
     def test_mgu_varios_ganadores_reparto_no_equitativo2(self):
         data = {
             'type': 'MGU',
-            'seats': 43,
+            'escanio': 43,
             'options': [
                 { 'option': 'Option 1', 'number': 1, 'votes': 6 },
                 { 'option': 'Option 2', 'number': 2, 'votes': 5 },
@@ -498,7 +498,7 @@ class PostProcTestCase(APITestCase):
                 {'option': 'Option 3', 'number': 3, 'votes': 50000},
                 {'option': 'Option 4', 'number': 4, 'votes': 25000},
             ],
-            'nSeats': 5
+            'escanio': 5
         }
 
         expected_result1 = [
@@ -526,7 +526,7 @@ class PostProcTestCase(APITestCase):
                 {'option': 'Option 4', 'number': 4, 'votes': 300},
                 {'option': 'Option 5', 'number': 5, 'votes': 150},
             ],
-            'nSeats': 7
+            'escanio': 7
         }
 
         expected_result2 = [
@@ -552,7 +552,7 @@ class PostProcTestCase(APITestCase):
                 {'option': 'Option 2', 'number': 2, 'votes': 20},
                 {'option': 'Option 3', 'number': 3, 'votes': 58},
             ],
-            'nSeats': 5
+            'escanio': 5
         }
 
         expected_result3 = [
@@ -576,7 +576,7 @@ class PostProcTestCase(APITestCase):
                 {'option': 'Option 2', 'number': 2, 'votes': 36},
                 {'option': 'Option 3', 'number': 3, 'votes': 84},
             ],
-            'nSeats': 6
+            'escanio': 6
         }
 
         expected_result4 = [
@@ -678,14 +678,14 @@ class PostProcTestCase(APITestCase):
                 { 'option': 'Option 4', 'number': 4, 'votes': 60000 },
                
             ],
-             'nSeats': 7
+             'escanio': 7
         }
 
         resultado_esperado = [
-            { 'option': 'Option 1', 'number': 1, 'votes': 340000, 'seats': 3},
-            { 'option': 'Option 2', 'number': 2, 'votes': 280000, 'seats': 3 },
-            { 'option': 'Option 3', 'number': 3, 'votes': 160000, 'seats': 1 },
-            { 'option': 'Option 4', 'number': 4, 'votes': 60000, 'seats': 0 },
+            { 'option': 'Option 1', 'number': 1, 'votes': 340000, 'escanio': 3},
+            { 'option': 'Option 2', 'number': 2, 'votes': 280000, 'escanio': 3 },
+            { 'option': 'Option 3', 'number': 3, 'votes': 160000, 'escanio': 1 },
+            { 'option': 'Option 4', 'number': 4, 'votes': 60000, 'escanio': 0 },
 
            
         ]
@@ -706,13 +706,13 @@ class PostProcTestCase(APITestCase):
                 { 'option': 'Option 3', 'number': 3, 'votes': 20 },
                
             ],
-             'nSeats': 4
+             'escanio': 4
         }
 
         resultado_esperado = [
-            { 'option': 'Option 1', 'number': 1, 'votes': 50, 'seats': 2},
-            { 'option': 'Option 2', 'number': 2, 'votes': 40, 'seats': 1 },
-            { 'option': 'Option 3', 'number': 3, 'votes': 20, 'seats': 1 },
+            { 'option': 'Option 1', 'number': 1, 'votes': 50, 'escanio': 2},
+            { 'option': 'Option 2', 'number': 2, 'votes': 40, 'escanio': 1 },
+            { 'option': 'Option 3', 'number': 3, 'votes': 20, 'escanio': 1 },
 
            
         ]
@@ -733,13 +733,13 @@ class PostProcTestCase(APITestCase):
                 { 'option': 'Option 3', 'number': 3, 'votes': 20 },
                
             ],
-             'nSeats': 5
+             'escanio': 5
         }
 
         resultado_esperado = [
-            { 'option': 'Option 1', 'number': 1, 'votes': 50, 'seats': 2},
-            { 'option': 'Option 2', 'number': 2, 'votes': 40, 'seats': 2 },
-            { 'option': 'Option 3', 'number': 3, 'votes': 20, 'seats': 1 },
+            { 'option': 'Option 1', 'number': 1, 'votes': 50, 'escanio': 2},
+            { 'option': 'Option 2', 'number': 2, 'votes': 40, 'escanio': 2 },
+            { 'option': 'Option 3', 'number': 3, 'votes': 20, 'escanio': 1 },
 
            
         ]
@@ -761,13 +761,13 @@ class PostProcTestCase(APITestCase):
                 { 'option': 'Option 3', 'number': 3, 'votes': 2 },
                
             ],
-             'nSeats': 2
+             'escanio': 2
         }
 
         resultado_esperado = [
-            { 'option': 'Option 2', 'number': 2, 'votes': 5, 'seats': 2},
-            { 'option': 'Option 1', 'number': 1, 'votes': 0, 'seats': 0 },
-            { 'option': 'Option 3', 'number': 3, 'votes': 2, 'seats': 0 },
+            { 'option': 'Option 2', 'number': 2, 'votes': 5, 'escanio': 2},
+            { 'option': 'Option 1', 'number': 1, 'votes': 0, 'escanio': 0 },
+            { 'option': 'Option 3', 'number': 3, 'votes': 2, 'escanio': 0 },
 
            
         ]
