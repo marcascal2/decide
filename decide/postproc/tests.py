@@ -129,6 +129,48 @@ class PostProcTestCase(APITestCase):
                 
         values = response.json()
         self.assertEqual(values, result)
+    def test_genero_3(self):
+        data = {
+            'type':'PARIDAD',
+            'options': [
+                {'option':'PACMA', 'number':1 , 'votes': 40, 'escanio': 4},
+                {'option':'PSOE', 'number':2 , 'votes': 23, 'escanio': 4},
+            ],
+            'candidates': [
+                {'id': '1', 'sex': 'H',  'edad':23},
+                {'id': '2', 'sex': 'M',  'edad':42},
+                {'id': '3', 'sex': 'M',  'edad':29},
+                {'id': '4', 'sex': 'M',  'edad':26},
+                {'id': '5', 'sex': 'M',  'edad':21},
+                {'id': '6', 'sex': 'M',  'edad':22},
+            ],
+        }
+
+        res = [
+            {'option':'PSOE', 'number':1 , 'votes': 40, 'escanio': 4, 'paridad': [
+                {'id': '3', 'sex': 'H', 'edad': 29}, 
+                {'id': '1', 'sex': 'H', 'edad': 23}, 
+                {'id': '4', 'sex': 'H', 'edad': 26}, 
+                {'id': '2', 'sex': 'H', 'edad': 42}
+                ]
+            },
+            {'option':'PACMA', 'number':2 , 'votes': 23, 'escanio': 4, 'paridad': [
+                {'id': '3', 'sex': 'H', 'edad': 29}, 
+                {'id': '1', 'sex': 'H', 'edad': 23}, 
+                {'id': '4', 'sex': 'H', 'edad': 26}, 
+                {'id': '2', 'sex': 'H', 'edad': 42}
+                ]
+            },
+        ]
+
+        
+        result = {'message' : 'la diferencia del numero de hombres y mujeres es de más de un 60% - 40%'}
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+                
+        values = response.json()
+        self.assertEqual(values, result)
+
 
     def test_simple(self):
         data = {
