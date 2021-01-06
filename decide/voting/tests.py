@@ -169,6 +169,7 @@ class VotingTestCase(BaseTestCase):
             'name': 'Example',
             'desc': 'Description example',
             'question': 'I want a ',
+            'escanios': 20,
             'question_opt': ['cat', 'dog', 'horse'],
             'end_date': '2024-12-21T11:33:23Z'
         }
@@ -323,6 +324,7 @@ class VotingTestCase(BaseTestCase):
             'name': 'Example',
             'desc': 'Description example',
             'question': 'I want a ',
+            'escanios': 20,
             'question_opt' : [],
             'question_pref': ['CAT', 'DOG', 'HORSE']
         }
@@ -584,6 +586,7 @@ class VotingOrderingTestCase(BaseTestCase):
             'name': 'Example',
             'desc': 'Description example',
             'question': 'I want a ',
+            'escanios': 20,
             'question_opt': [],
             'question_ordering': [2,1,3]
         }
