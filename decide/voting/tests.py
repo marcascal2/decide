@@ -196,6 +196,7 @@ class VotingTestCase(BaseTestCase):
             'name': 'Example',
             'desc': 'Description example',
             'question': 'I want a ',
+            'escanios': 10,
             'question_opt': ['cat', 'dog', 'horse'],
             'start_date': '2021-10-18T10:28:19Z'
         }
