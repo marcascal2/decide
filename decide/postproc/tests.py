@@ -856,3 +856,41 @@ class PostProcTestCase(APITestCase):
         values = response.json()
         self.assertEqual(values, resultado_esperado)
 
+    def test_saintelague5(self):
+        data = {
+            'type': 'SAINTELAGUE',
+            'options': [
+                {'option': 'Option 1', 'number': 1, 'votes': 100000},
+                {'option': 'Option 2', 'number': 2, 'votes': 75000},
+                {'option': 'Option 3', 'number': 3, 'votes': 50000},
+                {'option': 'Option 4', 'number': 4, 'votes': 25000},
+            ],
+            'escanio': 5,
+            'candidates': [
+                {'id': '1', 'sex': 'H',  'edad':23},
+                {'id': '2', 'sex': 'H',  'edad':42},
+                {'id': '3', 'sex': 'M',  'edad':29},
+                {'id': '4', 'sex': 'M',  'edad':26},
+                {'id': '5', 'sex': 'H',  'edad':21},
+                {'id': '6', 'sex': 'M',  'edad':22},]
+        }
+
+        resultado_esperado = [
+            {'option': 'Option 1', 'number': 1, 'votes': 100000, 'escanio': 2, 'paridad':[
+                                                        {'id': '3', 'sex': 'M', 'edad': 29}, 
+                                                        {'id': '1', 'sex': 'H', 'edad': 23}]},
+            {'option': 'Option 2', 'number': 2, 'votes': 75000, 'escanio': 2, 'paridad': [
+                                                        {'id': '3', 'sex': 'M', 'edad': 29}, 
+                                                        {'id': '1', 'sex': 'H', 'edad': 23}]},
+            {'option': 'Option 3', 'number': 3, 'votes': 50000, 'escanio': 1, 'paridad' : [{'id': '3', 'sex': 'M', 'edad': 29}]},
+            {'option': 'Option 4', 'number': 4, 'votes': 25000, 'escanio': 0, 'paridad' : []},
+        ]
+        
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, resultado_esperado)
+
+    
+
