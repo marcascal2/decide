@@ -31,6 +31,16 @@
   </div>
 </nav>
 
+<form action="{% url 'import_by_voting' %}" method="post" class="search-form">
+  {% csrf_token %}
+  <span>
+    Importa nuevos censos: 
+  </span>
+  <div class="import-button">
+  <input type="submit" value="Importar">
+  </div>
+</form>
+
 <form action="{% url 'filter_by' %}" method="post" class="search-form">
     {% csrf_token %}
     <span>
@@ -237,7 +247,7 @@
               aria-expanded="false"
               aria-controls="collapseSix"
             >
-              Exportar votación:
+              Exportar por votación:
             </button>
           </h2>
           <div
