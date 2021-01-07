@@ -858,7 +858,7 @@ class PostProcTestCase(APITestCase):
 
     def test_saintelague5(self):
         data = {
-            'type': 'SAINTELAGUE',
+            'type': 'SAINTELAGUETCP',
             'options': [
                 {'option': 'Option 1', 'number': 1, 'votes': 100000},
                 {'option': 'Option 2', 'number': 2, 'votes': 75000},

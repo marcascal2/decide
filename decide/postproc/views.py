@@ -299,6 +299,8 @@ class PostProcView(APIView):
             return Response(self.mgu(opts,s))
         elif t == 'SAINTELAGUE':
             return self.saintelague(opts,s,cands)
+        elif t == 'SAINTELAGUETCP':
+            return self.saintelague(opts,s,cands)
         elif t == 'PARIDAD':
             comprueba= self.comprobar(opts,cands)
             if comprueba:
