@@ -557,21 +557,32 @@ class PostProcTestCase(APITestCase):
     #Test con valores correctos
     def test_dhondt1(self):
         data = {
-            'type': 'DHONDT',
+            'type': 'DHONDTCP',
             'options': [
                 {'option': 'Option 1', 'number': 1, 'votes': 100000},
                 {'option': 'Option 2', 'number': 2, 'votes': 75000},
                 {'option': 'Option 3', 'number': 3, 'votes': 50000},
                 {'option': 'Option 4', 'number': 4, 'votes': 25000},
             ],
-            'escanio': 5
+            'escanio': 5,
+            'candidates': [
+                {'id': '1', 'sex': 'H',  'edad':23},
+                {'id': '2', 'sex': 'H',  'edad':42},
+                {'id': '3', 'sex': 'M',  'edad':29},
+                {'id': '4', 'sex': 'M',  'edad':26},
+                {'id': '5', 'sex': 'H',  'edad':21},
+                {'id': '6', 'sex': 'M',  'edad':22},]
         }
 
         expected_result1 = [
-            {'option': 'Option 1', 'number': 1, 'votes': 100000, 'seat': 2},
-            {'option': 'Option 2', 'number': 2, 'votes': 75000, 'seat': 2},
-            {'option': 'Option 3', 'number': 3, 'votes': 50000, 'seat': 1},
-            {'option': 'Option 4', 'number': 4, 'votes': 25000, 'seat': 0},
+            {'option': 'Option 1', 'number': 1, 'votes': 100000, 'escanio': 2, 'paridad':[
+                                                        {'id': '3', 'sex': 'M', 'edad': 29}, 
+                                                        {'id': '1', 'sex': 'H', 'edad': 23}]},
+            {'option': 'Option 2', 'number': 2, 'votes': 75000, 'escanio': 2, 'paridad': [
+                                                        {'id': '3', 'sex': 'M', 'edad': 29}, 
+                                                        {'id': '1', 'sex': 'H', 'edad': 23}]},
+            {'option': 'Option 3', 'number': 3, 'votes': 50000, 'escanio': 1, 'paridad' : [{'id': '3', 'sex': 'M', 'edad': 29}]},
+            {'option': 'Option 4', 'number': 4, 'votes': 25000, 'escanio': 0, 'paridad' : []},
         ]
         
         response = self.client.post('/postproc/', data, format='json')
@@ -596,11 +607,11 @@ class PostProcTestCase(APITestCase):
         }
 
         expected_result2 = [
-            {'option': 'Option 1', 'number': 1, 'votes': 510, 'seat': 3},
-            {'option': 'Option 3', 'number': 3, 'votes': 450, 'seat': 2},
-            {'option': 'Option 2', 'number': 2, 'votes': 250, 'seat': 1}, 
-            {'option': 'Option 4', 'number': 4, 'votes': 300, 'seat': 1},
-            {'option': 'Option 5', 'number': 5, 'votes': 150, 'seat': 0},
+            {'option': 'Option 1', 'number': 1, 'votes': 510, 'escanio': 3},
+            {'option': 'Option 3', 'number': 3, 'votes': 450, 'escanio': 2},
+            {'option': 'Option 2', 'number': 2, 'votes': 250, 'escanio': 1}, 
+            {'option': 'Option 4', 'number': 4, 'votes': 300, 'escanio': 1},
+            {'option': 'Option 5', 'number': 5, 'votes': 150, 'escanio': 0},
         ]
 
         response = self.client.post('/postproc/', data, format='json')
@@ -622,9 +633,9 @@ class PostProcTestCase(APITestCase):
         }
 
         expected_result3 = [
-            {'option': 'Option 3', 'number': 3, 'votes': 58, 'seat': 3},
-            {'option': 'Option 1', 'number': 1, 'votes': 32, 'seat': 1},
-            {'option': 'Option 2', 'number': 2, 'votes': 20, 'seat': 1},
+            {'option': 'Option 3', 'number': 3, 'votes': 58, 'escanio': 3},
+            {'option': 'Option 1', 'number': 1, 'votes': 32, 'escanio': 1},
+            {'option': 'Option 2', 'number': 2, 'votes': 20, 'escanio': 1},
         ]
 
         response = self.client.post('/postproc/', data, format='json')
@@ -646,9 +657,9 @@ class PostProcTestCase(APITestCase):
         }
 
         expected_result4 = [
-            {'option': 'Option 3', 'number': 3, 'votes': 58, 'seat': 3},
-            {'option': 'Option 1', 'number': 1, 'votes': 32, 'seat': 1},
-            {'option': 'Option 2', 'number': 2, 'votes': 20, 'seat': 1},
+            {'option': 'Option 3', 'number': 3, 'votes': 58, 'escanio': 3},
+            {'option': 'Option 1', 'number': 1, 'votes': 32, 'escanio': 1},
+            {'option': 'Option 2', 'number': 2, 'votes': 20, 'escanio': 1},
         ]
 
         response = self.client.post('/postproc/', data, format='json')

@@ -63,7 +63,7 @@ class PostProcView(APIView):
     # en dicho método trabajaremos con listas de partidos politicos y con un número de escaños que será pasado como parámetro. 
     #           Fórmula de D'Hondt: cociente = V/S+1    , siendo V: el número total de votosS
     #                                                            S: el num. de escaños que posee en el momento
-    def dhondt(self, options, escanio):
+    def dhondt(self, options, totalEscanio,cands):
 
         #Salida
         out = [] 
@@ -74,11 +74,11 @@ class PostProcView(APIView):
             out.append({
                 **opt, 
 
-                'seat': 0,
+                'escanio': 0,
             })
 
         #Igualamos numEscanos al numero total de escaños a repartir
-        numEscanos = escanio
+        numEscanos = totalEscanio
 
         #Mientras no se repartan todos los escaños hacemos lo siguiente
         while numEscanos>0:
@@ -87,8 +87,8 @@ class PostProcView(APIView):
             
             #Comparamos todas las opciones posibles
             for i in range(1, len(out)):
-                valorActual = out[actual]['votes'] / (out[actual]['seat'] + 1)
-                valorComparar = out[i]['votes'] / (out[i]['seat'] + 1)
+                valorActual = out[actual]['votes'] / (out[actual]['escanio'] + 1)
+                valorComparar = out[i]['votes'] / (out[i]['escanio'] + 1)
 
                 #Si el valor a comparar es mayor que el valor actual mayor se cambian
                 if(valorActual<valorComparar):
@@ -96,14 +96,15 @@ class PostProcView(APIView):
             
             #Al final de recorrer todos, la opcion cuyo indice es actual es el que posee más votos y,
             #por tanto, se le añade un escaño
-            out[actual]['seat'] = out[actual]['seat'] + 1
+            out[actual]['escanio'] = out[actual]['escanio'] + 1
             numEscanos = numEscanos - 1
         
         #Ordenamos las diferentes opciones por su número total de escaños obtenidos durante el método
-        out.sort(key = lambda x: -x['seat'])
-
+        out.sort(key = lambda x: -x['escanio'])
+        if (cands != []):
+            out = self.paridad(out, cands)
+        
         return Response(out)
-
 
     def mgu(self, options,Totalseats):
         out = []
@@ -176,7 +177,7 @@ class PostProcView(APIView):
             return False    
         else:
             return True
-
+    
     def paridad (self,options,cands):
         out = []
 
@@ -287,7 +288,9 @@ class PostProcView(APIView):
         if t == 'IDENTITY':
             return self.identity(opts)
         elif t == 'DHONDT':
-            return self.dhondt(opts, request.data.get('escanio'))
+            return self.dhondt(opts, request.data.get('escanio'),cands)
+        elif t == 'DHONDTCP':
+            return self.dhondt(opts, request.data.get('escanio'),cands)
         elif t == 'SIMPLE':
             return Response(self.simple(opts,s))
         elif t == 'MGU':
