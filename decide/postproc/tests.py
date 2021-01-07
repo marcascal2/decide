@@ -958,7 +958,7 @@ class PostProcTestCase(APITestCase):
 
 
     
-    def test_saintelague7(self):
+    def test_saintelague8(self):
         data = {
             'type': 'SAINTELAGUETCP',
             'options': [
