@@ -226,6 +226,39 @@
             </div>
           </div>
         </div>
+        <!--Exportar-->
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingSix">
+            <button
+              class="accordion-button collapsed"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#collapseSix"
+              aria-expanded="false"
+              aria-controls="collapseSix"
+            >
+              Exportar votación:
+            </button>
+          </h2>
+          <div
+            id="collapseSix"
+            class="accordion-collapse collapse"
+            aria-labelledby="headingSix"
+            data-bs-parent="#accordionExample"
+          >
+            <div class="accordion-body">
+              <ul class="filtro-container">
+                {% for voting in votings %}
+                <li>
+                  <a href="{% url 'export_by_voting' voting_id=voting.id %}"
+                    >{{voting.name}}</a
+                  >
+                </li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
