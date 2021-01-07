@@ -35,7 +35,7 @@ class PostProcView(APIView):
             partidos.append(opt['votes']) 
             out.append({
                 **opt,
-                'seats': 0,
+                'escanio': 0,
                 })
 
         #Inicializamos la lista así para que no se cambie por referencia
@@ -57,12 +57,12 @@ class PostProcView(APIView):
             if maxVotos != 0:
                 
                 escanos[index] += 1 
-                out[index]['seats'] += 1 
+                out[index]['escanio'] += 1 
                 puntosPorPart[index] = partidos[index] / ((2*escanos[index])+1) 
 
             i=i+1
             
-        out.sort(key=lambda x: -x['seats'])
+        out.sort(key=lambda x: -x['escanio'])
         return Response(out)
 
     def post(self, request):
@@ -84,6 +84,6 @@ class PostProcView(APIView):
         if t == 'IDENTITY':
             return self.identity(opts)
         elif t == 'SAINTELAGUE':
-            return self.saintelague(opts,request.data.get('nSeats'))
+            return self.saintelague(opts,request.data.get('escanio'))
 
         return Response({})
