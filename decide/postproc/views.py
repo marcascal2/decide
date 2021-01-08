@@ -293,7 +293,7 @@ class PostProcView(APIView):
             return self.dhondt(opts, request.data.get('escanio'),cands)
         elif t == 'SIMPLE':
             return Response(self.simple(opts,s))
-       elif t == 'SIMPLEP':
+        elif t == 'SIMPLEP':
             c = self.check_json(opts)
             if c:
                 options = []
