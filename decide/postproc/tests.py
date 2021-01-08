@@ -715,15 +715,32 @@ class PostProcTestCase(APITestCase):
                 { 'option': 'Option 4', 'number': 4, 'votes': 8 },
                 { 'option': 'Option 5', 'number': 5, 'votes': 8 },
                 { 'option': 'Option 6', 'number': 6, 'votes': 8 },
-            ]
+            ],            
+            'candidates': [
+                {'id': '1', 'sex': 'H',  'edad':23},
+                {'id': '2', 'sex': 'H',  'edad':25},
+                {'id': '3', 'sex': 'M',  'edad':44},
+                {'id': '4', 'sex': 'M',  'edad':51},
+                {'id': '5', 'sex': 'H',  'edad':39},
+                {'id': '6', 'sex': 'M',  'edad':42},
+                {'id': '7', 'sex': 'M',  'edad':32},
+                {'id': '8', 'sex': 'H',  'edad':37},
+                {'id': '9', 'sex': 'M',  'edad':45},
+                {'id': '10', 'sex': 'H',  'edad':56},]
         }
+            
 
         expected_result = [
-            { 'option': 'Option 1', 'number': 1, 'votes': 8, 'escanio': 1 , 'paridad':[]},
-            { 'option': 'Option 2', 'number': 2, 'votes': 8 , 'escanio': 1 , 'paridad':[]},
-            { 'option': 'Option 3', 'number': 3, 'votes': 8, 'escanio': 1 , 'paridad':[]},
-            { 'option': 'Option 4', 'number': 4, 'votes': 8, 'escanio': 1 , 'paridad':[]},
-            { 'option': 'Option 5', 'number': 5, 'votes': 8, 'escanio': 1, 'paridad':[]},
+            { 'option': 'Option 1', 'number': 1, 'votes': 8, 'escanio': 1 , 'paridad':[
+                {'id': '3', 'sex': 'M',  'edad':44}]},
+            { 'option': 'Option 2', 'number': 2, 'votes': 8 , 'escanio': 1 , 'paridad':[
+                {'id': '3', 'sex': 'M',  'edad':44}]},
+            { 'option': 'Option 3', 'number': 3, 'votes': 8, 'escanio': 1 , 'paridad':[
+                {'id': '3', 'sex': 'M',  'edad':44}]},
+            { 'option': 'Option 4', 'number': 4, 'votes': 8, 'escanio': 1 , 'paridad':[
+                {'id': '3', 'sex': 'M',  'edad':44}]},
+            { 'option': 'Option 5', 'number': 5, 'votes': 8, 'escanio': 1, 'paridad':[
+                {'id': '3', 'sex': 'M',  'edad':44}]},
             { 'option': 'Option 6', 'number': 6, 'votes': 8, 'escanio': 0 , 'paridad':[]},
         ]
        
