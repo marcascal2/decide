@@ -289,4 +289,4 @@ A tener en cuenta:
 * En un servidor local, con un postgres que por defecto nos viene limitado a 100 usuarios
   concurrentes, cuando pongamos más de 100, lo normal es que empiecen a fallar muchas peticiones.
 * Si hacemos las pruebas en local, donde tenemos activado el modo debug de Django, lo normal es que
-  las peticiones tarden algo más y consigamos menos RPS (Peticiones por segundo).
+  las peticiones tarden algo más y consigamos menos RPS (Peticiones por segundo)
