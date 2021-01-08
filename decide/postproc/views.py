@@ -15,7 +15,7 @@ class PostProcView(APIView):
 
         out.sort(key=lambda x: -x['postproc'])
         return Response(out)
-        
+
     def simple(self, options, seats):
         out = []
         for simp in options:
@@ -78,5 +78,6 @@ class PostProcView(APIView):
 
         elif t == 'SIMPLE':
             return Response(self.simple(opts,s))
+
 
         return Response({})
