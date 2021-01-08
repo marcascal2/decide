@@ -14,7 +14,9 @@ from .filters import StartedFilter
 
 def confirm_date(modeladmin, request, queryset):
     for v in queryset.all():
-        if v.start_date < timezone.now():
+        if v.start_date is None:
+            raise ValidationError("La fecha inicio no puede ser confirmada si no existe")
+        elif v.start_date < timezone.now():
             raise ValidationError("La fecha no puede ser anterior a ahora")
         else:
             v.create_pubkey()
