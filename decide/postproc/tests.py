@@ -216,12 +216,12 @@ class PostProcTestCase(APITestCase):
             ]
         }
         expected_result = [
-            { 'option': 'Option 3', 'number': 3, 'votes': 19, 'postproc': 10 },
-            { 'option': 'Option 5', 'number': 5, 'votes': 10, 'postproc': 0 },
-            { 'option': 'Option 6', 'number': 6, 'votes': 9, 'postproc': 0 },
-            { 'option': 'Option 1', 'number': 1, 'votes': 7, 'postproc': 0 },
-            { 'option': 'Option 2', 'number': 2, 'votes': 4, 'postproc': 0 },
-            { 'option': 'Option 4', 'number': 4, 'votes': 2 , 'postproc': 0 }
+            { 'option': 'Option 3', 'number': 3, 'votes': 19, 'escanio': 10 },
+            { 'option': 'Option 5', 'number': 5, 'votes': 10, 'escanio': 0 },
+            { 'option': 'Option 6', 'number': 6, 'votes': 9, 'escanio': 0 },
+            { 'option': 'Option 1', 'number': 1, 'votes': 7, 'escanio': 0 },
+            { 'option': 'Option 2', 'number': 2, 'votes': 4, 'escanio': 0 },
+            { 'option': 'Option 4', 'number': 4, 'votes': 2 , 'escanio': 0 }
         ]
 
         response = self.client.post('/postproc/', data, format='json')
@@ -274,12 +274,12 @@ class PostProcTestCase(APITestCase):
         }
 
         expected_result = [
-            { 'option': 'Option 3', 'number': 3, 'votes': 10, 'postproc': 10 },
-            { 'option': 'Option 5', 'number': 5, 'votes': 10, 'postproc': 10 },
-            { 'option': 'Option 6', 'number': 6, 'votes': 9, 'postproc': 0 },
-            { 'option': 'Option 1', 'number': 1, 'votes': 6, 'postproc': 0 },
-            { 'option': 'Option 2', 'number': 2, 'votes': 5, 'postproc': 0 },
-            { 'option': 'Option 4', 'number': 4, 'votes': 0 , 'postproc': 0 },
+            { 'option': 'Option 3', 'number': 3, 'votes': 10, 'escanio': 10 },
+            { 'option': 'Option 5', 'number': 5, 'votes': 10, 'escanio': 10 },
+            { 'option': 'Option 6', 'number': 6, 'votes': 9, 'escanio': 0 },
+            { 'option': 'Option 1', 'number': 1, 'votes': 6, 'escanio': 0 },
+            { 'option': 'Option 2', 'number': 2, 'votes': 5, 'escanio': 0 },
+            { 'option': 'Option 4', 'number': 4, 'votes': 0 , 'escanio': 0 },
         ]
 
         response = self.client.post('/postproc/', data, format='json')
@@ -329,12 +329,12 @@ class PostProcTestCase(APITestCase):
             ]
         }
         expected_result = [
-            { 'option': 'Option 3', 'number': 3, 'votes': 15, 'postproc': 10 },
-            { 'option': 'Option 4', 'number': 4, 'votes': 15 , 'postproc': 10 },
-            { 'option': 'Option 5', 'number': 5, 'votes': 15, 'postproc': 10 },
-            { 'option': 'Option 6', 'number': 6, 'votes': 9, 'postproc': 2 },
-            { 'option': 'Option 1', 'number': 1, 'votes': 6, 'postproc': 0 },
-            { 'option': 'Option 2', 'number': 2, 'votes': 5, 'postproc': 0 },
+            { 'option': 'Option 3', 'number': 3, 'votes': 15, 'escanio': 10 },
+            { 'option': 'Option 4', 'number': 4, 'votes': 15 , 'escanio': 10 },
+            { 'option': 'Option 5', 'number': 5, 'votes': 15, 'escanio': 10 },
+            { 'option': 'Option 6', 'number': 6, 'votes': 9, 'escanio': 2 },
+            { 'option': 'Option 1', 'number': 1, 'votes': 6, 'escanio': 0 },
+            { 'option': 'Option 2', 'number': 2, 'votes': 5, 'escanio': 0 },
         ]
         response = self.client.post('/postproc/', data, format='json')
         self.assertEqual(response.status_code, 200)
@@ -426,12 +426,12 @@ class PostProcTestCase(APITestCase):
         }
 
         expected_result = [
-            { 'option': 'Option 1', 'number': 1, 'votes': 8, 'postproc': 5 },
-            { 'option': 'Option 2', 'number': 2, 'votes': 8 , 'postproc': 2 },
-            { 'option': 'Option 3', 'number': 3, 'votes': 8, 'postproc': 2 },
-            { 'option': 'Option 4', 'number': 4, 'votes': 8, 'postproc': 2 },
-            { 'option': 'Option 5', 'number': 5, 'votes': 8, 'postproc': 2 },
-            { 'option': 'Option 6', 'number': 6, 'votes': 8, 'postproc': 2 },
+            { 'option': 'Option 1', 'number': 1, 'votes': 8, 'escanio': 5 },
+            { 'option': 'Option 2', 'number': 2, 'votes': 8 , 'escanio': 2 },
+            { 'option': 'Option 3', 'number': 3, 'votes': 8, 'escanio': 2 },
+            { 'option': 'Option 4', 'number': 4, 'votes': 8, 'escanio': 2 },
+            { 'option': 'Option 5', 'number': 5, 'votes': 8, 'escanio': 2 },
+            { 'option': 'Option 6', 'number': 6, 'votes': 8, 'escanio': 2 },
         ]
 
         response = self.client.post('/postproc/', data, format='json')
@@ -483,12 +483,12 @@ class PostProcTestCase(APITestCase):
         }
 
         expected_result = [
-            { 'option': 'Option 1', 'number': 1, 'votes': 8, 'postproc': 1 },
-            { 'option': 'Option 2', 'number': 2, 'votes': 8 , 'postproc': 1 },
-            { 'option': 'Option 3', 'number': 3, 'votes': 8, 'postproc': 1 },
-            { 'option': 'Option 4', 'number': 4, 'votes': 8, 'postproc': 1 },
-            { 'option': 'Option 5', 'number': 5, 'votes': 8, 'postproc': 1 },
-            { 'option': 'Option 6', 'number': 6, 'votes': 8, 'postproc': 0 },
+            { 'option': 'Option 1', 'number': 1, 'votes': 8, 'escanio': 1 },
+            { 'option': 'Option 2', 'number': 2, 'votes': 8 , 'escanio': 1 },
+            { 'option': 'Option 3', 'number': 3, 'votes': 8, 'escanio': 1 },
+            { 'option': 'Option 4', 'number': 4, 'votes': 8, 'escanio': 1 },
+            { 'option': 'Option 5', 'number': 5, 'votes': 8, 'escanio': 1 },
+            { 'option': 'Option 6', 'number': 6, 'votes': 8, 'escanio': 0 },
         ]
        
        
@@ -540,12 +540,12 @@ class PostProcTestCase(APITestCase):
         }
 
         expected_result = [
-            { 'option': 'Option 3', 'number': 3, 'votes': 15, 'postproc': 10 },
-            { 'option': 'Option 4', 'number': 4, 'votes': 15 , 'postproc': 10 },
-            { 'option': 'Option 5', 'number': 5, 'votes': 15, 'postproc': 10 },
-            { 'option': 'Option 6', 'number': 6, 'votes': 15, 'postproc': 10 },
-            { 'option': 'Option 1', 'number': 1, 'votes': 6, 'postproc': 3 },
-            { 'option': 'Option 2', 'number': 2, 'votes': 5, 'postproc': 0 },
+            { 'option': 'Option 3', 'number': 3, 'votes': 15, 'escanio': 10 },
+            { 'option': 'Option 4', 'number': 4, 'votes': 15 , 'escanio': 10 },
+            { 'option': 'Option 5', 'number': 5, 'votes': 15, 'escanio': 10 },
+            { 'option': 'Option 6', 'number': 6, 'votes': 15, 'escanio': 10 },
+            { 'option': 'Option 1', 'number': 1, 'votes': 6, 'escanio': 3 },
+            { 'option': 'Option 2', 'number': 2, 'votes': 5, 'escanio': 0 },
         ]
 
         response = self.client.post('/postproc/', data, format='json')
