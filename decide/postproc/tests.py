@@ -649,6 +649,90 @@ class PostProcTestCase(APITestCase):
         values = response.json()
         self.assertEqual(values, expected_result)
 
+    def test_mgu_todos_ganadores_con_paridad(self):
+        data = {
+            'type': 'MGUCP',
+            'escanio': 15,
+            'options': [
+                { 'option': 'Option 1', 'number': 1, 'votes': 8 },
+                { 'option': 'Option 2', 'number': 2, 'votes': 8 },
+                { 'option': 'Option 3', 'number': 3, 'votes': 8 },
+                { 'option': 'Option 4', 'number': 4, 'votes': 8 },
+                { 'option': 'Option 5', 'number': 5, 'votes': 8 },
+                { 'option': 'Option 6', 'number': 6, 'votes': 8 },
+            ],
+            'candidates': [
+                {'id': '1', 'sex': 'H',  'edad':23},
+                {'id': '2', 'sex': 'H',  'edad':25},
+                {'id': '3', 'sex': 'M',  'edad':44},
+                {'id': '4', 'sex': 'M',  'edad':51},
+                {'id': '5', 'sex': 'H',  'edad':39},
+                {'id': '6', 'sex': 'M',  'edad':42},
+                {'id': '7', 'sex': 'M',  'edad':32},
+                {'id': '8', 'sex': 'H',  'edad':37},
+                {'id': '9', 'sex': 'M',  'edad':45},
+                {'id': '10', 'sex': 'H',  'edad':56},]
+        }
+
+        expected_result = [
+            { 'option': 'Option 1', 'number': 1, 'votes': 8, 'escanio': 5 , 'paridad':[
+                {'id': '3', 'sex': 'M',  'edad':44},
+                {'id': '1', 'sex': 'H',  'edad':23},
+                {'id': '4', 'sex': 'M',  'edad':51},
+                {'id': '2', 'sex': 'H',  'edad':25},
+                {'id': '6', 'sex': 'M',  'edad':42}]},
+            { 'option': 'Option 2', 'number': 2, 'votes': 8, 'escanio': 2  , 'paridad':[
+                {'id': '3', 'sex': 'M',  'edad':44},
+                {'id': '1', 'sex': 'H',  'edad':23}]},
+            { 'option': 'Option 3', 'number': 3, 'votes': 8, 'escanio': 2  , 'paridad':[
+                {'id': '3', 'sex': 'M',  'edad':44},
+                {'id': '1', 'sex': 'H',  'edad':23}]},
+            { 'option': 'Option 4', 'number': 4, 'votes': 8, 'escanio': 2  , 'paridad':[
+                {'id': '3', 'sex': 'M',  'edad':44},
+                {'id': '1', 'sex': 'H',  'edad':23}]},
+            { 'option': 'Option 5', 'number': 5, 'votes': 8, 'escanio': 2 , 'paridad':[
+                {'id': '3', 'sex': 'M',  'edad':44},
+                {'id': '1', 'sex': 'H',  'edad':23}]},
+            { 'option': 'Option 6', 'number': 6, 'votes': 8, 'escanio': 2  , 'paridad':[
+                {'id': '3', 'sex': 'M',  'edad':44},
+                {'id': '1', 'sex': 'H',  'edad':23}]},
+        ]
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+
+    def test_mgu_mas_ganadores_que_seats_con_paridad(self):
+        data = {
+            'type': 'MGUCP',
+            'escanio': 5,
+            'options': [
+                { 'option': 'Option 1', 'number': 1, 'votes': 8 },
+                { 'option': 'Option 2', 'number': 2, 'votes': 8 },
+                { 'option': 'Option 3', 'number': 3, 'votes': 8 },
+                { 'option': 'Option 4', 'number': 4, 'votes': 8 },
+                { 'option': 'Option 5', 'number': 5, 'votes': 8 },
+                { 'option': 'Option 6', 'number': 6, 'votes': 8 },
+            ]
+        }
+
+        expected_result = [
+            { 'option': 'Option 1', 'number': 1, 'votes': 8, 'escanio': 1 , 'paridad':[]},
+            { 'option': 'Option 2', 'number': 2, 'votes': 8 , 'escanio': 1 , 'paridad':[]},
+            { 'option': 'Option 3', 'number': 3, 'votes': 8, 'escanio': 1 , 'paridad':[]},
+            { 'option': 'Option 4', 'number': 4, 'votes': 8, 'escanio': 1 , 'paridad':[]},
+            { 'option': 'Option 5', 'number': 5, 'votes': 8, 'escanio': 1, 'paridad':[]},
+            { 'option': 'Option 6', 'number': 6, 'votes': 8, 'escanio': 0 , 'paridad':[]},
+        ]
+       
+       
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
     def test_simple5(self):
         data = {
             'type': 'SIMPLE',
