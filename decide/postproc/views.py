@@ -113,7 +113,7 @@ class PostProcView(APIView):
 
             out.append({
                 **o,
-                'postproc': 0,
+                'escanio': 0,
             })
         
         out.sort(key=lambda x: -x['votes'])
@@ -126,27 +126,27 @@ class PostProcView(APIView):
                 ng =ng + 1
             
         if ng == 1:
-            out[0]['postproc'] = Totalseats
+            out[0]['escanio'] = Totalseats
         else:
             r = Totalseats % ng
             c = Totalseats// ng
             if r== 0:
                 a=0
                 for x in range(0,ng):
-                   out[x]['postproc'] = c
+                   out[x]['escanio'] = c
             else:
                 if ng == len(out) and ng < Totalseats:
-                    out[0]['postproc'] = c + r
+                    out[0]['escanio'] = c + r
                     for x in range(1,ng):
-                        out[x]['postproc'] = c
+                        out[x]['escanio'] = c
                 else:
                     if ng > Totalseats:
                         for x in range(0,r):
-                          out[x]['postproc'] = 1
+                          out[x]['escanio'] = 1
                     else:
                         for x in range(0,ng):
-                            out[x]['postproc'] =c
-                        out[ng]['postproc'] =r
+                            out[x]['escanio'] =c
+                        out[ng]['escanio'] =r
         return out
     
     def comprobar(self,opts,cands):
@@ -295,6 +295,10 @@ class PostProcView(APIView):
             return Response(self.simple(opts,s))
         elif t == 'MGU':
             return Response(self.mgu(opts,s))
+        elif t == 'MGUCP':
+            options= []
+            options = self.mgu(opts,s)
+            return Response(self.paridad(options,cands))
         elif t == 'SAINTELAGUE':
             return self.saintelague(opts,request.data.get('escanio'))
         elif t == 'PARIDAD':
