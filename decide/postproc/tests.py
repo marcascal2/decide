@@ -549,8 +549,6 @@ class PostProcTestCase(APITestCase):
         values = response.json()
         self.assertEqual(values, expected_result)
 
-
-    #prueba 7
     def test_simple6(self):
         data = {
             'type': 'SIMPLE',
