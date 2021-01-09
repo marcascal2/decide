@@ -256,7 +256,7 @@ class CensusTestCase(BaseTestCase):
         self.assertIn('date', headers)
 
     def test_import_census_user_correct(self):
-        csv = open("/home/german/Universidad/Curso4/Egc/Proyecto/decide-part-zumeta/decide/census/testing_files/csv_user.csv", 'rb')
+        csv = open("census/testing_files/csv_user.csv", 'rb')
         data = SimpleUploadedFile(content = csv.read(), name = csv.name, content_type='multipart/form-data')
         u = User(username='request_user', password='request_password')
         u.save()
@@ -279,7 +279,7 @@ class CensusTestCase(BaseTestCase):
         csv.close()
 
     def test_import_census_admin_correct(self):
-        csv = open("/home/german/Universidad/Curso4/Egc/Proyecto/decide-part-zumeta/decide/census/testing_files/csv_admin.csv", 'rb')
+        csv = open("census/testing_files/csv_admin.csv", 'rb')
         data = SimpleUploadedFile(content = csv.read(), name = csv.name, content_type='multipart/form-data')
         u = User(username='request_user', password='request_password')
         u.save()
