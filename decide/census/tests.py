@@ -12,6 +12,7 @@ from datetime import date
 from django.test import RequestFactory, TestCase
 
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.urls import reverse
 import io
 import csv
 
@@ -234,8 +235,28 @@ class CensusTestCase(BaseTestCase):
         self.assertIn('adscripcion', headers)
         self.assertIn('date', headers)
 
+    def test_export_census_admin(self):
+        census = Census.objects.all()
+
+        rf = RequestFactory()
+        request = rf.post('', {'action': 'export_as_csv'})
+        response = admin.CensusAdmin.export_as_csv(self,request,census)
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode('utf-8')
+
+        csv_reader = csv.reader(io.StringIO(content))
+        num_row = sum(1 for row in csv_reader)
+        #headers + 3 censos
+        self.assertEqual(num_row, 4)
+
+        csv_reader = csv.reader(io.StringIO(content))
+        headers = next(csv_reader)
+        self.assertIn('voter_id', headers)
+        self.assertIn('adscripcion', headers)
+        self.assertIn('date', headers)
+
     def test_import_census_user_correct(self):
-        csv = open("/home/german/Universidad/Curso4/Egc/Proyecto/decide-part-zumeta/decide/census/testing_files/estructura_correcta_user.csv", 'rb')
+        csv = open("/home/german/Universidad/Curso4/Egc/Proyecto/decide-part-zumeta/decide/census/testing_files/csv_user.csv", 'rb')
         data = SimpleUploadedFile(content = csv.read(), name = csv.name, content_type='multipart/form-data')
         u = User(username='request_user', password='request_password')
         u.save()
@@ -244,7 +265,7 @@ class CensusTestCase(BaseTestCase):
         content_type = 'multipart/form-data'
         headers= {
             'HTTP_CONTENT_TYPE': content_type,
-            'HTTP_CONTENT_DISPOSITION': 'attachment; filename=estructura_correcta_user.csv'}
+            'HTTP_CONTENT_DISPOSITION': 'attachment; filename=csv_user.csv'}
         
         request = rf.post('upload.html', {'file': data}, **headers)
         request.user = u
@@ -258,7 +279,7 @@ class CensusTestCase(BaseTestCase):
         csv.close()
 
     def test_import_census_admin_correct(self):
-        csv = open("/home/german/Universidad/Curso4/Egc/Proyecto/decide-part-zumeta/decide/census/testing_files/estructura_correcta_admin.csv", 'rb')
+        csv = open("/home/german/Universidad/Curso4/Egc/Proyecto/decide-part-zumeta/decide/census/testing_files/csv_admin.csv", 'rb')
         data = SimpleUploadedFile(content = csv.read(), name = csv.name, content_type='multipart/form-data')
         u = User(username='request_user', password='request_password')
         u.save()
@@ -267,7 +288,7 @@ class CensusTestCase(BaseTestCase):
         content_type = 'multipart/form-data'
         headers= {
             'HTTP_CONTENT_TYPE': content_type,
-            'HTTP_CONTENT_DISPOSITION': 'attachment; filename=estructura_correcta_admin.csv'}
+            'HTTP_CONTENT_DISPOSITION': 'attachment; filename=csv_admin.csv'}
         
         request = rf.post('upload.html', {'file': data}, **headers)
         request.user = u

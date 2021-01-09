@@ -21,7 +21,7 @@ class CensusAdmin(admin.ModelAdmin):
     actions = ['export_as_csv']
 
     def export_as_csv(self, request, queryset):
-        meta = self.model._meta
+        meta = Census._meta
         field_names = [field.name for field in meta.fields]
 
         response = HttpResponse(content_type='text/csv')
