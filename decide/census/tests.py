@@ -11,6 +11,8 @@ from base.tests import BaseTestCase
 from datetime import date
 from django.test import RequestFactory, TestCase
 
+import io
+import csv
 
 class CensusTestCase(BaseTestCase):
 
@@ -194,3 +196,40 @@ class CensusTestCase(BaseTestCase):
         self.assertContains(response, c1)
         self.assertContains(response, c2)
         self.assertContains(response, c3)
+
+    def test_export_census_user(self):
+        rf = RequestFactory()
+        request = rf.get('/census/export_by_voting/{}'.format(1))  
+        response = views.export_by_voting(request, '1')
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode('utf-8')
+
+        csv_reader = csv.reader(io.StringIO(content))
+        num_row = sum(1 for row in csv_reader)
+        #headers + 2 censos con voting_id == 1
+        self.assertEqual(num_row, 3)
+
+        csv_reader = csv.reader(io.StringIO(content))
+        headers = next(csv_reader)
+        self.assertIn('voter_id', headers)
+        self.assertIn('adscripcion', headers)
+        self.assertIn('date', headers)
+
+    def test_export_census_user_void(self):
+        rf = RequestFactory()
+        request = rf.get('/census/export_by_voting/{}'.format(2))  
+        response = views.export_by_voting(request, '2')
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode('utf-8')
+
+        csv_reader = csv.reader(io.StringIO(content))
+        num_row = sum(1 for row in csv_reader)
+        #solo hay headers ya que no existe el voting con id 2
+        self.assertEqual(num_row, 1)
+
+        csv_reader = csv.reader(io.StringIO(content))
+        headers = next(csv_reader)
+        self.assertIn('voter_id', headers)
+        self.assertIn('adscripcion', headers)
+        self.assertIn('date', headers)
+        
