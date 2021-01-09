@@ -4,7 +4,7 @@ from django.test import TestCase
 from rest_framework.test import APIClient
 
 from .models import Census
-from census import views
+from census import views, admin
 from voting.models import Voting, Question
 from base import mods
 from base.tests import BaseTestCase
@@ -249,6 +249,29 @@ class CensusTestCase(BaseTestCase):
         request = rf.post('upload.html', {'file': data}, **headers)
         request.user = u
         response = views.import_by_voting(request)
+
+        self.assertEqual(response.status_code, 200)
+        for row1, row2  in zip(request.FILES['file'], data):
+            cadena1 = row1.decode('utf-8')
+            cadena2 = row2.decode('utf-8')
+            self.assertEqual(cadena1, cadena2)
+        csv.close()
+
+    def test_import_census_admin_correct(self):
+        csv = open("/home/german/Universidad/Curso4/Egc/Proyecto/decide-part-zumeta/decide/census/testing_files/estructura_correcta_admin.csv", 'rb')
+        data = SimpleUploadedFile(content = csv.read(), name = csv.name, content_type='multipart/form-data')
+        u = User(username='request_user', password='request_password')
+        u.save()
+
+        rf = RequestFactory()
+        content_type = 'multipart/form-data'
+        headers= {
+            'HTTP_CONTENT_TYPE': content_type,
+            'HTTP_CONTENT_DISPOSITION': 'attachment; filename=estructura_correcta_admin.csv'}
+        
+        request = rf.post('upload.html', {'file': data}, **headers)
+        request.user = u
+        response = admin.CensusAdmin.import_from_csv(self, request)
 
         self.assertEqual(response.status_code, 200)
         for row1, row2  in zip(request.FILES['file'], data):

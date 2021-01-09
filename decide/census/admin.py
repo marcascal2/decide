@@ -58,7 +58,6 @@ class CensusAdmin(admin.ModelAdmin):
                     objDate = datetime.strptime(dat, '%Y-%m-%d')
                     census = Census(voting_id=voting_id, voter_id=voter_id, adscripcion=adscripcion, date=objDate)
                     census.save()
-            f.close()
 
         form = UploadDocumentForm()
         if request.method == 'POST':
