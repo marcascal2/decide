@@ -426,8 +426,11 @@ def import_by_voting(request):
     if request.method == 'POST':
         form = UploadDocumentForm(request.POST, request.FILES)
         if form.is_valid():
-            save_import(request.FILES['file'], request.POST.get('voting_id', ''))
-            return render(request, 'succes.html', locals())
+            try:
+                save_import(request.FILES['file'], request.POST.get('voting_id', ''))
+                return render(request, 'succes.html', locals())
+            except:
+                return render(request, 'import_error.html', locals())
     else:
         form = UploadDocumentForm()
     
