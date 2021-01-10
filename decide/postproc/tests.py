@@ -671,6 +671,32 @@ class PostProcTestCase(APITestCase):
         values = response.json()
         self.assertNotEqual(values, expected_result4)
 
+
+    # Test con valores esperados erróneos
+    def test_dhondt5(self):
+        data = {
+            'type': 'DHONDT',
+            'options': [
+                {'option': 'Option 1', 'number': 1, 'votes': 432},
+                {'option': 'Option 2', 'number': 2, 'votes': 943},
+                {'option': 'Option 3', 'number': 3, 'votes': 645},
+            ],
+            'escanio': 10,
+            'candidates': []
+        }
+
+        expected_result5 = [
+            {'option': 'Option 3', 'number': 3, 'votes': 645, 'escanio': 2},
+            {'option': 'Option 1', 'number': 1, 'votes': 432, 'escanio': 5},
+            {'option': 'Option 2', 'number': 2, 'votes': 943, 'escanio': 3},
+        ]
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertNotEqual(values, expected_result5)
+
   
 
     def test_paridad_2(self):
