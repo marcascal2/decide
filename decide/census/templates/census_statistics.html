@@ -6,7 +6,8 @@
         <link type="text/css" rel="stylesheet" href="{% static "census/style.css" %}" />
     </head>
     <body>
-        <h3>Census statistics</h3>
+        <h2>Estadísticas de censos</h2>
+        <h4>Censos a los que pertenece un votante</h4>
         <div class="canvas_div">
             <canvas id="voters_per_census" ></canvas>
         </div>
@@ -15,6 +16,31 @@
         <script type="text/javascript">
             $.get('{% url "voters_chart_json" %}', function(data) {
                 var ctx = $("#voters_per_census").get(0).getContext("2d");
+                new Chart(ctx, {
+                    type: 'bar', data: data,
+                    options: {
+                        responsive: true,
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }]
+                        }
+                    }
+                });
+            });
+        </script>
+
+        <h4>Datos de las votaciones con censos</h4>
+        <div class="canvas_div">
+            <canvas id="voting_data" ></canvas>
+        </div>
+        <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
+        <script type="text/javascript" src="{% static 'js/Chart.min.js' %}"></script>
+        <script type="text/javascript">
+            $.get('{% url "votings_chart_json" %}', function(data) {
+                var ctx = $("#voting_data").get(0).getContext("2d");
                 new Chart(ctx, {
                     type: 'bar', data: data,
                     options: {

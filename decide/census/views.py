@@ -493,7 +493,40 @@ def add_user_to_voting(user_id, voting_id):
     Census.objects.create(voter_id = user_id, voting_id = voting_id)
 
 # Visualización gráfica
-def voters_per_census():
+def census_per_voters():
+    res = {}
+    census = Census.objects.all()
+
+    for c in census:
+        v = User.objects.get(id = c.voter_id)
+        if(v.username not in res):
+            res[v.username] = 1
+        else:
+            res[v.username] += 1
+
+    return res
+
+def candidates():
+    res = {}
+    census = Census.objects.all()
+
+    for c in census:
+        v = Voting.objects.get(id = c.voting_id)
+        if(v.name not in res):
+            res[v.name] = v.candidates.count()
+    return res
+
+def escanios():
+    res = {}
+    census = Census.objects.all()
+
+    for c in census:
+        v = Voting.objects.get(id = c.voting_id)
+        if(v.name not in res):
+            res[v.name] = v.escanios
+    return res
+
+def voters():
     res = {}
     census = Census.objects.all()
 
@@ -506,20 +539,61 @@ def voters_per_census():
 
     return res
 
-class LineChartJSONView(BaseLineChartView):
+def votings_labels():
+    res = []
+    census = Census.objects.all()
+
+    for c in census:
+        v = Voting.objects.get(id = c.voting_id)
+        if(v.name not in res):
+            res.append(v.name)
+
+    return res
+
+def votings_data():
+    res = []
+    cand = candidates()
+    esc = escanios()
+    vot = voters()
+
+    res.append(list(cand.values()))
+    res.append(list(esc.values()))
+    res.append(list(vot.values()))
+
+    return res
+
+class VotersChartJSONView(BaseLineChartView):
 
     def get_labels(self):
         # Return labels for the x-axis.
-        census = list(voters_per_census().keys())
-        return census
+        voters = list(census_per_voters().keys())
+        return voters
 
     def get_providers(self):
-        return ['Votantes del censo']
+        return ['Censos por votante']
 
     def get_data(self):
         # Return datasets to plot.
-        voters = list(voters_per_census().values())
-        return [voters]
+        census = list(census_per_voters().values())
+        return [census]
 
-voters_chart = TemplateView.as_view(template_name='census_statistics.html')
-voters_chart_json = LineChartJSONView.as_view()
+class VotingsChartJSONView(BaseLineChartView):
+
+    def get_labels(self):
+        # Return labels for the x-axis.
+        voters = list(votings_labels())
+        print(voters)
+        return voters
+
+    def get_providers(self):
+        return ['Números de candidatos', 'Número de escaños', 'Número de votantes del censo']
+
+    def get_data(self):
+        # Return datasets to plot.
+        census = list(votings_data())
+        print(census)
+        return census
+
+charts = TemplateView.as_view(template_name='census_statistics.html')
+votings_chart_json = VotingsChartJSONView.as_view()
+voters_chart_json = VotersChartJSONView.as_view()
