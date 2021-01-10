@@ -554,7 +554,7 @@ class PostProcTestCase(APITestCase):
         values = response.json()
         self.assertEqual(values, expected_result)
 
-    #Test con valores correctos
+    # Test con valores correctos
     def test_dhondt1(self):
         data = {
             'type': 'DHONDT',
@@ -592,7 +592,7 @@ class PostProcTestCase(APITestCase):
         self.assertEqual(values, expected_result1)
 
     
-    #Test con valores correctos
+    # Test con valores correctos
     def test_dhondt2(self):
         data = {
             'type': 'DHONDT',
@@ -621,7 +621,7 @@ class PostProcTestCase(APITestCase):
         values = response.json()
         self.assertEqual(values, expected_result2)
 
-    #Test con valores correctos
+    # Test con valores correctos
     def test_dhondt3(self):
         data = {
             'type': 'DHONDT',
@@ -680,6 +680,7 @@ class PostProcTestCase(APITestCase):
                 {'option': 'Option 1', 'number': 1, 'votes': 432},
                 {'option': 'Option 2', 'number': 2, 'votes': 943},
                 {'option': 'Option 3', 'number': 3, 'votes': 645},
+                {'option': 'Option 4', 'number': 4, 'votes': 213},
             ],
             'escanio': 10,
             'candidates': []
@@ -689,6 +690,7 @@ class PostProcTestCase(APITestCase):
             {'option': 'Option 3', 'number': 3, 'votes': 645, 'escanio': 2},
             {'option': 'Option 1', 'number': 1, 'votes': 432, 'escanio': 5},
             {'option': 'Option 2', 'number': 2, 'votes': 943, 'escanio': 3},
+            {'option': 'Option 4', 'number': 4, 'votes': 213, 'escanio': 0},
         ]
 
         response = self.client.post('/postproc/', data, format='json')
@@ -697,7 +699,30 @@ class PostProcTestCase(APITestCase):
         values = response.json()
         self.assertNotEqual(values, expected_result5)
 
-  
+    # Test con valores esperados erróneos
+    def test_dhondt6(self):
+        data = {
+            'type': 'DHONDT',
+            'options': [
+                {'option': 'Option 1', 'number': 1, 'votes': 42},
+                {'option': 'Option 2', 'number': 2, 'votes': 83},
+                {'option': 'Option 3', 'number': 3, 'votes': 76},
+            ],
+            'escanio': 2,
+            'candidates': []
+        }
+
+        expected_result6 = [
+            {'option': 'Option 2', 'number': 2, 'votes': 83, 'escanio': 2},
+            {'option': 'Option 3', 'number': 3, 'votes': 32, 'escanio': 0},
+            {'option': 'Option 1', 'number': 1, 'votes': 20, 'escanio': 0},
+        ]
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertNotEqual(values, expected_result6)
 
     def test_paridad_2(self):
         data = {
