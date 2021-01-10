@@ -582,7 +582,6 @@ class VotingsChartJSONView(BaseLineChartView):
     def get_labels(self):
         # Return labels for the x-axis.
         voters = list(votings_labels())
-        print(voters)
         return voters
 
     def get_providers(self):
@@ -591,7 +590,6 @@ class VotingsChartJSONView(BaseLineChartView):
     def get_data(self):
         # Return datasets to plot.
         census = list(votings_data())
-        print(census)
         return census
 
 charts = TemplateView.as_view(template_name='census_statistics.html')
