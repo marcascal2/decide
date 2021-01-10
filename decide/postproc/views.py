@@ -68,7 +68,7 @@ class PostProcView(APIView):
         #Salida
         out = [] 
 
-        #Añadimos a options un parámetro llamado 'seat' que será donde
+        #Añadimos a options un parámetro llamado 'escanio' que será donde
         #guardaremos la cantidad de escaños por opción y nuestra 'S' en la fórmula de D'Hondt
         for opt in options:
             out.append({
@@ -101,6 +101,8 @@ class PostProcView(APIView):
         
         #Ordenamos las diferentes opciones por su número total de escaños obtenidos durante el método
         out.sort(key = lambda x: -x['escanio'])
+        
+        #En el caso de que la lista de candidatos no este varcía, se realiza la paridad.
         if (cands != []):
             out = self.paridad(out, cands)
         
@@ -288,8 +290,6 @@ class PostProcView(APIView):
         if t == 'IDENTITY':
             return self.identity(opts)
         elif t == 'DHONDT':
-            return self.dhondt(opts, request.data.get('escanio'),cands)
-        elif t == 'DHONDTCP':
             return self.dhondt(opts, request.data.get('escanio'),cands)
         elif t == 'SIMPLE':
             return Response(self.simple(opts,s))

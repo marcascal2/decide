@@ -557,7 +557,7 @@ class PostProcTestCase(APITestCase):
     #Test con valores correctos
     def test_dhondt1(self):
         data = {
-            'type': 'DHONDTCP',
+            'type': 'DHONDT',
             'options': [
                 {'option': 'Option 1', 'number': 1, 'votes': 100000},
                 {'option': 'Option 2', 'number': 2, 'votes': 75000},
@@ -603,7 +603,8 @@ class PostProcTestCase(APITestCase):
                 {'option': 'Option 4', 'number': 4, 'votes': 300},
                 {'option': 'Option 5', 'number': 5, 'votes': 150},
             ],
-            'escanio': 7
+            'escanio': 7,
+            'candidates': []
         }
 
         expected_result2 = [
@@ -629,7 +630,8 @@ class PostProcTestCase(APITestCase):
                 {'option': 'Option 2', 'number': 2, 'votes': 20},
                 {'option': 'Option 3', 'number': 3, 'votes': 58},
             ],
-            'escanio': 5
+            'escanio': 5,
+            'candidates': []
         }
 
         expected_result3 = [
@@ -653,7 +655,8 @@ class PostProcTestCase(APITestCase):
                 {'option': 'Option 2', 'number': 2, 'votes': 36},
                 {'option': 'Option 3', 'number': 3, 'votes': 84},
             ],
-            'escanio': 6
+            'escanio': 6,
+            'candidates': []
         }
 
         expected_result4 = [
