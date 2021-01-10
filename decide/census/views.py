@@ -31,6 +31,10 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login as do_login
 
+#Charts
+from django.views.generic import TemplateView
+from chartjs.views.lines import BaseLineChartView
+
 class CensusCreate(generics.ListCreateAPIView):
     permission_classes = (UserIsStaff,)
 
@@ -487,3 +491,35 @@ def voting_census(request, voting_id):
 #Funciones auxiliares
 def add_user_to_voting(user_id, voting_id):
     Census.objects.create(voter_id = user_id, voting_id = voting_id)
+
+# Visualización gráfica
+def voters_per_census():
+    res = {}
+    census = Census.objects.all()
+
+    for c in census:
+        v = Voting.objects.get(id = c.voting_id)
+        if(v.name not in res):
+            res[v.name] = 1
+        else:
+            res[v.name] += 1
+
+    return res
+
+class LineChartJSONView(BaseLineChartView):
+
+    def get_labels(self):
+        # Return labels for the x-axis.
+        census = list(voters_per_census().keys())
+        return census
+
+    def get_providers(self):
+        return ['Votantes del censo']
+
+    def get_data(self):
+        # Return datasets to plot.
+        voters = list(voters_per_census().values())
+        return [voters]
+
+voters_chart = TemplateView.as_view(template_name='census_statistics.html')
+voters_chart_json = LineChartJSONView.as_view()

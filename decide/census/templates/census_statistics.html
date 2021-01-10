@@ -1,0 +1,35 @@
+{% load static %}
+
+<html>
+    <head>
+        <title>django-chartjs line chart demo</title>
+        <link type="text/css" rel="stylesheet" href="{% static "census/style.css" %}" />
+        <!-- <script src="{% static 'js/excanvas.js' %}"></script> -->
+    </head>
+    <body>
+        <h3>Census statistics</h3>
+        <div class="canvas_div">
+            <canvas id="voters_per_census" ></canvas>
+        </div>
+        <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
+        <script type="text/javascript" src="{% static 'js/Chart.min.js' %}"></script>
+        <script type="text/javascript">
+            $.get('{% url "voters_chart_json" %}', function(data) {
+                var ctx = $("#voters_per_census").get(0).getContext("2d");
+                new Chart(ctx, {
+                    type: 'bar', data: data,
+                    options: {
+                        responsive: true,
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }]
+                        }
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>

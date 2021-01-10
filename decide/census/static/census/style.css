@@ -76,3 +76,15 @@ thead {
 .filtro-container {
     padding-left: 0;
 }
+
+/* GRÁFICOS */
+.canvas_div{
+    margin: 1%;
+    height: auto;
+    width: 1100px;
+    display: flex;
+}
+
+.chartjs-size-monitor, .chartjs-size-monitor-expand, .chartjs-size-monitor-shrink {
+    display: flex;
+}
