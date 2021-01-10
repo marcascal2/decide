@@ -1,27 +1,12 @@
-<h3>Censos de la votación {{voting.name}}</h3>
-<table>
-  <tr>
-      <td>
-          Votante
-      </td>
-      <td>
-          Adscripción
-      </td>
-      <td>
-          Fecha
-      </td>
-  </tr>
-  {% for c in census %}
-      <tr>
-          <td>
-              {{c.voter_username}}
-          </td>
-          <td>
-              {{c.adscripcion}}
-          </td>
-          <td>
-              {{c.date}}
-          </td>
-      </tr>
+<h3>Censo de la votación {{voting.name}}</h3>
+<ul>
+  {% for user in users %}
+  <li>{{user.username}}</li>
   {% endfor %}
-</table>
+</ul>
+
+<form method="POST">
+  {% csrf_token %} 
+  {{ form }}
+  <input type="submit" value="Submit" />
+</form>

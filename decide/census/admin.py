@@ -5,9 +5,10 @@ from django import forms
 from django.shortcuts import render
 from django.urls import path
 
-from .models import Census
 from voting.models import Voting
 from datetime import datetime
+from .models import Census, UserData
+
 
 class CensusAdmin(admin.ModelAdmin):
 
@@ -72,3 +73,4 @@ class CensusAdmin(admin.ModelAdmin):
         return render(request, 'upload.html', {'form': form})
 
 admin.site.register(Census, CensusAdmin)
+admin.site.register(UserData)

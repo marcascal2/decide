@@ -1,0 +1,6 @@
+<h3>Listado de votaciones</h3>
+<ul>
+  {% for voting in votings %}
+  <li><a href="{% url 'voting_census' voting_id=voting.id %}">{{voting.name}}</a></li>
+  {% endfor %}
+</ul>
