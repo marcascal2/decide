@@ -424,14 +424,16 @@ def import_by_voting(request):
                 objDate = datetime.strptime(dat, '%Y-%m-%d')
                 census = Census(voting_id=voting_id, voter_id=voter_id, adscripcion=adscripcion, date=objDate)
                 census.save()
-        f.close()
 
     form = UploadDocumentForm()
     if request.method == 'POST':
         form = UploadDocumentForm(request.POST, request.FILES)
         if form.is_valid():
-            save_import(request.FILES['file'], request.POST.get('voting_id', ''))
-            return render(request, 'succes.html', locals())
+            try:
+                save_import(request.FILES['file'], request.POST.get('voting_id', ''))
+                return render(request, 'succes.html', locals())
+            except:
+                return render(request, 'import_error.html', locals())
     else:
         form = UploadDocumentForm()
     
