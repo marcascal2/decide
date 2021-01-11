@@ -27,6 +27,7 @@ class StoreTextCase(BaseTestCase):
                              name='voting example',
                              question=self.question,
                              start_date=timezone.now(),
+                             escanios=0,
         )
         self.voting.save()
 
