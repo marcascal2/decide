@@ -44,7 +44,7 @@ class VotingView(generics.ListCreateAPIView):
                 question=question)
         voting.save()
         
-        candidate, _ = Candidate.objects.get()
+        candidate, _ = Candidate.objects.get_or_create(name="page")
         candidate.save()
         voting.candidates.add(candidate)
         auth, _ = Auth.objects.get_or_create(url=settings.BASEURL,
