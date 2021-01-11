@@ -74,7 +74,7 @@ def logout(request):
     # Finalizamos la sesión
     do_logout(request)
     # Redireccionamos a la portada
-    return redirect('/census/admin/')
+    return redirect('/census/login/')
 
 def all_census(request):
     if not request.user.is_authenticated:
