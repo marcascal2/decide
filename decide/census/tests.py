@@ -5,7 +5,7 @@ from rest_framework.test import APIClient
 
 from .models import Census
 from census import views
-from voting.models import Voting, Question
+from voting.models import Voting, Question, Candidate
 from base import mods
 from base.tests import BaseTestCase
 from datetime import date
@@ -18,11 +18,11 @@ class CensusTestCase(BaseTestCase):
         super().setUp()
         self.question = Question(desc='desc')
         self.question.save()
-        
-        v1 = Voting(id = 1, name='voting_testing1', question=self.question)
+
+        v1 = Voting(id = 1, name='voting_testing1', question=self.question, escanios=30)
         v1.save()
         
-        v2 = Voting(id = 3, name='voting_testing2', question=self.question)
+        v2 = Voting(id = 3, name='voting_testing2', question=self.question, escanios=10)
         v2.save()
 
         user1 = User(id=5, username='voter1', password='test_password')
@@ -194,3 +194,14 @@ class CensusTestCase(BaseTestCase):
         self.assertContains(response, c1)
         self.assertContains(response, c2)
         self.assertContains(response, c3)
+
+    def test_census_estatistics(self):
+        census_per_voters = views.census_per_voters()
+        self.assertEquals(census_per_voters['voter1'], 2)
+        self.assertEquals(census_per_voters['voter2'], 1)
+        escanios = views.escanios()
+        self.assertEquals(escanios['voting_testing1'], 30)
+        self.assertEquals(escanios['voting_testing2'], 10)
+        voters = views.voters()
+        self.assertEquals(voters['voting_testing1'], 2)
+        self.assertEquals(voters['voting_testing2'], 1)
