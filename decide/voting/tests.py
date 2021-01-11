@@ -37,7 +37,7 @@ class VotingTestCase(BaseTestCase):
         for i in range(5):
             opt = QuestionOption(question=q, option='option {}'.format(i+1))
             opt.save()
-        v = Voting(name='test voting', question=q)
+        v = Voting(name='test voting', question=q, escanios=0)
         v.save()
 
         a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
