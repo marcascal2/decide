@@ -124,7 +124,7 @@ class VotingTestCase(BaseTestCase):
         data = {
             'name': 'Example',
             'desc': 'Description example',
-            'escanios':20,
+            'escanios':0,
             'question': 'I want a ',
             'question_opt': ['cat', 'dog', 'horse'],
         }
