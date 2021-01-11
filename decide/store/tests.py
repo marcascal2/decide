@@ -36,7 +36,7 @@ class StoreTextCase(BaseTestCase):
 
     def gen_voting(self, pk):
         voting = Voting(pk=pk, name='v1', question=self.question, start_date=timezone.now(),
-                end_date=timezone.now() + datetime.timedelta(days=1))
+                end_date=timezone.now() + datetime.timedelta(days=1), escanios=0)
         voting.save()
 
     def get_or_create_user(self, pk):
