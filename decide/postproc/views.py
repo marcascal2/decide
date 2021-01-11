@@ -102,7 +102,7 @@ class PostProcView(APIView):
         #Ordenamos las diferentes opciones por su número total de escaños obtenidos durante el método
         out.sort(key = lambda x: -x['escanio'])
         
-        #En el caso de que la lista de candidatos no este varcía, se realiza la paridad.
+        #En el caso de que la lista de candidatos no este vacía, se realiza la paridad.
         if (cands != []):
             out = self.paridad(out, cands)
         
