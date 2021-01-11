@@ -10,10 +10,6 @@
 			<arguments>
 			</arguments>
 		</buildCommand>
-	</buildSpec>
-	<natures>
-		<nature>org.python.pydev.django.djangoNature</nature>
-		<nature>org.python.pydev.pythonNature</nature>
 		<buildCommand>
 			<name>org.eclipse.wst.validation.validationbuilder</name>
 			<arguments>
@@ -22,7 +18,7 @@
 	</buildSpec>
 	<natures>
 		<nature>org.eclipse.wst.jsdt.core.jsNature</nature>
-		<nature>org.python.pydev.pythonNature</nature>
 		<nature>org.python.pydev.django.djangoNature</nature>
+		<nature>org.python.pydev.pythonNature</nature>
 	</natures>
 </projectDescription>

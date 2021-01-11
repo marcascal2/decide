@@ -522,7 +522,7 @@ class PostProcTestCase(APITestCase):
         self.assertEqual(values, expected_result)
 
     # Test con valores correctos
-    def test_dhondt1(self):
+    def test_dhondtParidad(self):
         data = {
             'type': 'DHONDT',
             'options': [
@@ -558,7 +558,115 @@ class PostProcTestCase(APITestCase):
         values = response.json()
         self.assertEqual(values, expected_result1)
 
+    def test_dhondtParidad1(self):
+        data = {
+            'type': 'DHONDT',
+            'options': [
+                {'option': 'Option 1', 'number': 1, 'votes': 300000},
+                {'option': 'Option 2', 'number': 2, 'votes': 750000},
+                {'option': 'Option 3', 'number': 3, 'votes': 500000},
+                {'option': 'Option 4', 'number': 4, 'votes': 250000},
+                {'option': 'Option 5', 'number': 5, 'votes': 250000},
+                {'option': 'Option 6', 'number': 6, 'votes': 250000},
+                  
+            ],
+            'escanio': 15,
+            'candidates': [
+                {'id': '1',  'sex': 'H',  'edad':23},
+                {'id': '2',  'sex': 'H',  'edad':42},
+                {'id': '3',  'sex': 'M',  'edad':29},
+                {'id': '4',  'sex': 'M',  'edad':26},
+                {'id': '5',  'sex': 'H',  'edad':21},
+                {'id': '6',  'sex': 'M',  'edad':22},
+                {'id': '7',  'sex': 'H',  'edad':23},
+                {'id': '8',  'sex': 'H',  'edad':42},
+                {'id': '9',  'sex': 'M',  'edad':29},
+                {'id': '10', 'sex': 'M',  'edad':26},
+                {'id': '11', 'sex': 'H',  'edad':21},
+                {'id': '12', 'sex': 'M',  'edad':22},
+                {'id': '13', 'sex': 'H',  'edad':23},
+                {'id': '14', 'sex': 'H',  'edad':42},
+                {'id': '15', 'sex': 'M',  'edad':29},
+                {'id': '16', 'sex': 'M',  'edad':26},
+                ]
+        }
+
+        expected_result1 = [
+            {'option': 'Option 2', 'number': 2, 'votes': 750000, 'escanio': 6, 'paridad':[{'id': '3', 'sex': 'M', 'edad': 29}, 
+                                                                                        {'id': '1', 'sex': 'H', 'edad': 23}, 
+                                                                                        {'id': '4', 'sex': 'M', 'edad': 26}, 
+                                                                                        {'id': '2', 'sex': 'H', 'edad': 42}, 
+                                                                                        {'id': '6', 'sex': 'M', 'edad': 22}, 
+                                                                                        {'id': '5', 'sex': 'H', 'edad': 21}]},
+            {'option': 'Option 3', 'number': 3, 'votes': 500000, 'escanio': 4, 'paridad': [{'id': '3', 'sex': 'M', 'edad': 29}, 
+                                                                                        {'id': '1', 'sex': 'H', 'edad': 23}, 
+                                                                                        {'id': '4', 'sex': 'M', 'edad': 26}, 
+                                                                                        {'id': '2', 'sex': 'H', 'edad': 42},
+                                                                                        ]},
+            {'option': 'Option 1', 'number': 1, 'votes': 300000, 'escanio': 2, 'paridad' : [
+                                                                                            {'id': '3', 'sex': 'M', 'edad': 29}, 
+                                                                                            {'id': '1', 'sex': 'H', 'edad': 23},
+                                                                                            ]},
+            {'option': 'Option 4', 'number': 4, 'votes': 250000, 'escanio': 1, 'paridad' : [{'id': '3', 'sex': 'M', 'edad': 29}]},
+            {'option': 'Option 5', 'number': 5, 'votes': 250000, 'escanio': 1, 'paridad' : [{'id': '3', 'sex': 'M', 'edad': 29}]},
+            {'option': 'Option 6', 'number': 6, 'votes': 250000, 'escanio': 1, 'paridad' : [{'id': '3', 'sex': 'M', 'edad': 29}]},
+        ]
+        
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result1)
     
+    def test_dhondtParidad2(self):
+        data = {
+            'type': 'DHONDT',
+            'options': [
+                {'option': 'Option 1', 'number': 1, 'votes': 300000},
+                {'option': 'Option 2', 'number': 2, 'votes': 750000},
+                {'option': 'Option 3', 'number': 3, 'votes': 500000},
+                {'option': 'Option 4', 'number': 4, 'votes': 250000},
+                {'option': 'Option 5', 'number': 5, 'votes': 250000},
+                {'option': 'Option 6', 'number': 6, 'votes': 250000},
+                  
+            ],
+            'escanio': 10,
+            'candidates': [
+                {'id': '1',  'sex': 'H',  'edad':23},
+                {'id': '2',  'sex': 'H',  'edad':42},
+                {'id': '3',  'sex': 'M',  'edad':29},
+                {'id': '4',  'sex': 'M',  'edad':26},
+                {'id': '10', 'sex': 'M',  'edad':26},
+                {'id': '11', 'sex': 'H',  'edad':21},
+                {'id': '12', 'sex': 'M',  'edad':22},
+                {'id': '13', 'sex': 'H',  'edad':23},
+                {'id': '14', 'sex': 'H',  'edad':42},
+                {'id': '15', 'sex': 'M',  'edad':29},
+                {'id': '16', 'sex': 'M',  'edad':26},
+                ]
+        }
+
+        expected_result1 = [
+            {'option': 'Option 2', 'number': 2, 'votes': 750000, 'escanio': 4, 'paridad':[{'id': '3', 'sex': 'M', 'edad': 29}, 
+                                                                                        {'id': '1', 'sex': 'H', 'edad': 23}, 
+                                                                                        {'id': '4', 'sex': 'M', 'edad': 26}, 
+                                                                                        {'id': '2', 'sex': 'H', 'edad': 42}
+                                                                                        ]
+            },
+            {'option': 'Option 3', 'number': 3, 'votes': 500000, 'escanio': 2, 'paridad': [{'id': '3', 'sex': 'M', 'edad': 29}, 
+                                                                                        {'id': '1', 'sex': 'H', 'edad': 23},
+                                                                                        ]},
+            {'option': 'Option 1', 'number': 1, 'votes': 300000, 'escanio': 1, 'paridad' : [{'id': '3', 'sex': 'M', 'edad': 29}]},
+            {'option': 'Option 4', 'number': 4, 'votes': 250000, 'escanio': 1, 'paridad' : [{'id': '3', 'sex': 'M', 'edad': 29}]},
+            {'option': 'Option 5', 'number': 5, 'votes': 250000, 'escanio': 1, 'paridad' : [{'id': '3', 'sex': 'M', 'edad': 29}]},
+            {'option': 'Option 6', 'number': 6, 'votes': 250000, 'escanio': 1, 'paridad' : [{'id': '3', 'sex': 'M', 'edad': 29}]},
+        ]
+        
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result1)
     # Test con valores correctos
     def test_dhondt2(self):
         data = {
@@ -690,7 +798,7 @@ class PostProcTestCase(APITestCase):
 
         values = response.json()
         self.assertNotEqual(values, expected_result6)
-
+    
     def test_paridad_1(self):
         data = {
             'type':'PARIDAD',
