@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Question, QuestionOption, Voting, QuestionPrefer, QuestionOrdering, Candidate, ReadonlyVoting, MultipleVoting
+from .models import Question, Party, QuestionOption, Voting, QuestionPrefer, QuestionOrdering, Candidate, ReadonlyVoting, MultipleVoting
 from base.serializers import KeySerializer, AuthSerializer
 
 
@@ -29,9 +29,15 @@ class QuestionSerializer(serializers.HyperlinkedModelSerializer):
         #fields = ('desc', 'options')
         fields = ('prefer_options','desc', 'options', 'options_ordering')
 
+class PartySerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Party
+        fields = ('abreviatura','nombre')
+
 
 class CandidateSerializer(serializers.HyperlinkedModelSerializer):
-   class Meta:
+    political_party = PartySerializer(many=False)
+    class Meta:
         model = Candidate
         fields = ('number', 'name', 'age', 'sex', 'auto_community', 'political_party' )
 

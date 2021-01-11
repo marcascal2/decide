@@ -13,6 +13,13 @@ class Question(models.Model):
     def __str__(self):
         return self.desc
 
+class Party(models.Model):
+    abreviatura = models.TextField(max_length=10)
+    nombre = models.TextField()
+
+    def __str__(self):
+        return self.abreviatura
+
 class QuestionOption(models.Model):
     question = models.ForeignKey(Question, related_name='options', on_delete=models.CASCADE)
     number = models.PositiveIntegerField(blank=True, null=True)
@@ -104,7 +111,8 @@ class Candidate(models.Model):
         ('VA', 'Valencia')) 
     auto_community = models.TextField(choices=COMUNIDADES, default='AN')
     sex = models.TextField(default='H', choices=[('H','HOMBRE'),('M','MUJER')])
-    political_party = models.TextField(choices= PARTIDOS, default = 'PACMA')
+    #political_party = models.TextField(choices= PARTIDOS, default = 'PACMA')
+    political_party= models.ForeignKey(Party, related_name='candidate', on_delete=models.CASCADE,null=True)
     def __str__(self):
          return '{} ({}) - {} - {} - {}'.format(self.name, self.age, self.auto_community, self.sex, self.political_party)
 

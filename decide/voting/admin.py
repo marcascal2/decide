@@ -5,6 +5,7 @@ from .models import QuestionOption
 from .models import QuestionPrefer
 from .models import QuestionOrdering
 from .models import Question
+from .models import Party
 from .models import Voting, ReadonlyVoting, MultipleVoting
 from .models import Candidate
 from django.core.exceptions import ValidationError
@@ -117,5 +118,6 @@ admin.site.register(ReadonlyVoting, ReadonlyVotingAdmin)
 admin.site.register(Question, QuestionAdmin)
 # admin.site.register(Candidate, CandidateAdmin)
 admin.site.register(Candidate)
+admin.site.register(Party)
 # admin.site.register(VotingCandidate, VotingCandidateAdmin)
 # admin.site.register(QuestionCandidate,QuestionCandidateAdmin)
