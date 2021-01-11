@@ -37,6 +37,24 @@
     justify-content: flex-end;
 }
 
+#statistics-div {
+    display: flex;
+    margin: auto;
+}
+
+#statistics-div-sub {
+    display: flex;
+    padding-top: 25%;
+}
+
+/* PÁGINA DE GRÁFICOS */
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 3%;
+}
+
 /* CONTENIDO PRINCIPAL */
 .card-body {
     display: flex;
