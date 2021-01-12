@@ -1095,28 +1095,26 @@ class PostProcTestCase(APITestCase):
         expected_result1 = [
             {'option': 'Option 2', 'number': 2, 'votes': 750000, 'escanio': 6, 'paridad':[
                 {'id': '3', 'sex': 'M', 'edad': 29}, 
+                {'id': '1', 'sex': 'H', 'edad': 23}, 
                 {'id': '4', 'sex': 'M', 'edad': 26}, 
                 {'id': '2', 'sex': 'H', 'edad': 42}, 
                 {'id': '6', 'sex': 'M', 'edad': 22}, 
-                {'id': '1', 'sex': 'H', 'edad': 23}, 
                 {'id': '5', 'sex': 'H', 'edad': 21}]},
             {'option': 'Option 3', 'number': 3, 'votes': 500000, 'escanio': 4, 'paridad': [
                 {'id': '3', 'sex': 'M', 'edad': 29}, 
                 {'id': '1', 'sex': 'H', 'edad': 23}, 
                 {'id': '4', 'sex': 'M', 'edad': 26}, 
-                {'id': '2', 'sex': 'H', 'edad': 42},
-                                                                                        ]},
+                {'id': '2', 'sex': 'H', 'edad': 42}]},
             {'option': 'Option 1', 'number': 1, 'votes': 300000, 'escanio': 2, 'paridad' : [
                     {'id': '3', 'sex': 'M', 'edad': 29}, 
-                    {'id': '1', 'sex': 'H', 'edad': 23},
-                                                                                            ]},
+                    {'id': '1', 'sex': 'H', 'edad': 23}]},
             {'option': 'Option 4', 'number': 4, 'votes': 250000, 'escanio': 1, 'paridad' : [
                 {'id': '3', 'sex': 'M', 'edad': 29}]},
             {'option': 'Option 5', 'number': 5, 'votes': 250000, 'escanio': 1, 'paridad' : [
                 {'id': '3', 'sex': 'M', 'edad': 29}]},
             {'option': 'Option 6', 'number': 6, 'votes': 250000, 'escanio': 1, 'paridad' : [
                 {'id': '3', 'sex': 'M', 'edad': 29}]},
-        ]
+            ]
         
         response = self.client.post('/postproc/', data, format='json')
         self.assertEqual(response.status_code, 200)
