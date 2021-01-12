@@ -13,7 +13,7 @@ from census.models import Census
 from mixnet.mixcrypt import ElGamal
 from mixnet.mixcrypt import MixCrypt
 from mixnet.models import Auth
-from voting.models import Voting, Question, QuestionOption, QuestionPrefer, QuestionOrdering, Candidate, ReadonlyVoting, MultipleVoting
+from voting.models import Voting, Question, QuestionOption, QuestionPrefer, QuestionOrdering, Candidate, ReadonlyVoting, MultipleVoting, Party
 
 
 class VotingTestCase(BaseTestCase):
@@ -360,7 +360,11 @@ class VotingTestCase(BaseTestCase):
                 'sex': 'H',
                 'auto_community': 'H',
                 'age': 21,
-                'political_party': 'PACMA'
+                'political_party': 
+                {   
+                    'abreviatura': 'PC',
+                    'nombre': 'Partido Cuestista'
+                }
                 
             }
         }
@@ -396,21 +400,33 @@ class VotingTestCase(BaseTestCase):
                 'sex': 'H',
                 'auto_community': 'H',
                 'age': 21,
-                'political_party': 'PACMA'
+                'political_party': 
+                {   
+                    'abreviatura': 'PACMA',
+                    'nombre': 'Partido Animalista'
+                }
             },
             {
                 'name': 'pepe2',
                 'sex': 'H',
                 'auto_community': 'BA',
                 'age': 21,
-                'political_party': 'VOX'  
+                'political_party': 
+                {   
+                    'abreviatura': 'VOX',
+                    'nombre': 'VOX'
+                }  
             },           
             { 
                 'name': 'pepe3',
                 'sex': 'M',
                 'auto_community': 'AN',
                 'age': 30,
-                'political_party': 'UP'  
+                'political_party': 
+                {   
+                    'abreviatura': 'UP',
+                    'nombre': 'Unidas Podemos'
+                } 
             }
             ]
         }
@@ -663,6 +679,8 @@ class QuestionOrderingTestCase(BaseTestCase):
 class CandidateTestCase(BaseTestCase):
 
     def setUp(self):
+        p = Party(abreviatura = "PC")
+        p.save()
         c = Candidate(name="pepe")
         c.save()
         super().setUp()
@@ -677,13 +695,43 @@ class CandidateTestCase(BaseTestCase):
         self.assertEqual(candidate_test.name, "pepe")
 
     def testExistCompleteCandidate(self):
-        candidate_test = Candidate(name="test", age=21, number=1, auto_community="AN", sex ="H", political_party="PACMA")
+        p1 = Party(abreviatura = "PC")
+        candidate_test = Candidate(name="test", age=21, number=1, auto_community="AN", sex ="H", political_party = p1)
         self.assertEqual(candidate_test.name, "test")
         self.assertEqual(candidate_test.age, 21)
         self.assertEqual(candidate_test.number, 1)
         self.assertEqual(candidate_test.auto_community, "AN")
         self.assertEqual(candidate_test.sex, "H")
-        self.assertEqual(candidate_test.political_party, "PACMA")
+        self.assertEqual(candidate_test.political_party.abreviatura, "PC")
+
+class PartyTests(BaseTestCase):
+
+    def setUp(self):
+        self.p = Party(abreviatura = "PC", nombre = 'Partido Cuestista')
+        self.p.save()
+        super().setUp()
+
+    def tearDown(self):
+        super().tearDown()
+        self.v = None
+
+    def testExistParty(self):
+        p = Party.objects.get(abreviatura = "PC")
+        self.assertEquals(p.abreviatura, "PC")
+
+    def testExistCompleteParty(self):
+        p = Party.objects.get(abreviatura = "PC")
+        self.assertEquals(p.abreviatura, "PC")
+        self.assertEquals(p.nombre, "Partido Cuestista")
+
+    def testUpdateCompleteParty(self):
+        p = Party.objects.get(abreviatura = "PC")
+        p.abreviatura = "PG"
+        p.nombre = "Partido Guerrista"
+        self.assertEquals(p.abreviatura, "PG")
+        self.assertEquals(p.nombre, "Partido Guerrista")
+
+
 
 class ReadOnlyVotingTests(BaseTestCase):
 
