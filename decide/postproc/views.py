@@ -220,7 +220,7 @@ class PostProcView(APIView):
                     break
         return out
       
-    def saintelague(self, options, escanio):
+    def saintelague(self, options, escanio,cands):
         
         #Definimos las variables
 
@@ -267,6 +267,8 @@ class PostProcView(APIView):
             i=i+1
             
         out.sort(key=lambda x: -x['escanio'])
+        if (cands != []):
+            out = self.paridad(out, cands)
         return Response(out)
     
     def post(self, request):
@@ -296,7 +298,9 @@ class PostProcView(APIView):
         elif t == 'MGU':
             return Response(self.mgu(opts,s))
         elif t == 'SAINTELAGUE':
-            return self.saintelague(opts,request.data.get('escanio'))
+            return self.saintelague(opts,s,cands)
+        elif t == 'SAINTELAGUETCP':
+            return self.saintelague(opts,s,cands)
         elif t == 'PARIDAD':
             comprueba= self.comprobar(opts,cands)
             if comprueba:
