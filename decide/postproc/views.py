@@ -306,9 +306,13 @@ class PostProcView(APIView):
         elif t == 'MGU':
             return Response(self.mgu(opts,s))
         elif t == 'MGUCP':
-            options= []
-            options = self.mgu(opts,s)
-            return Response(self.paridad(options,cands))
+            comprueba= self.comprobar(opts,cands)
+            if comprueba:
+                options= []
+                options = self.mgu(opts,s)
+                return Response(self.paridad(options,cands))
+            else:
+                return Response({'message' : 'la diferencia del numero de hombres y mujeres es de más de un 60% - 40%'})        
         elif t == 'SAINTELAGUE':
             return self.saintelague(opts,s,cands)
         elif t == 'SAINTELAGUETCP':

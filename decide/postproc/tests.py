@@ -44,7 +44,213 @@ class PostProcTestCase(APITestCase):
         values = response.json()
         self.assertEqual(values, expected_result)
         
+    def test_integracion_mgu_paridad_genero1(self):
+        data = {
+            'type':'MGUCP',
+            'escanio':10,
+            'options': [
+                {'option':'Option 1', 'number':1 , 'votes':7},
+                {'option':'Option 2', 'number':2 , 'votes': 4},
+                {'option':'Option 3', 'number':3 , 'votes': 19},
+                {'option':'Option 4', 'number':4 , 'votes': 2},
+                {'option':'Option 5', 'number':5 , 'votes': 10},
+                {'option':'Option 6', 'number':6 , 'votes': 9},
+            ],
+            'candidates': [
+                {'id': '1', 'sex': 'M',  'edad':23},
+                {'id': '2', 'sex': 'M',  'edad':42},
+                {'id': '3', 'sex': 'M',  'edad':29},
+                {'id': '4', 'sex': 'M',  'edad':26},
+                {'id': '5', 'sex': 'M',  'edad':61},
+                {'id': '6', 'sex': 'H',  'edad':32},
+                {'id': '7', 'sex': 'H',  'edad':42},
+                {'id': '8', 'sex': 'M',  'edad':27},
+                {'id': '9', 'sex': 'M',  'edad':25},
+                {'id': '10', 'sex': 'M',  'edad':56},
+            ],
+        }
 
+        res = [
+            {'option':'Option 3', 'number':1 , 'votes': 40, 'escanio': 4, 'paridad': [
+                {'id': '3', 'sex': 'M', 'edad': 29}, 
+                {'id': '1', 'sex': 'M', 'edad': 23}, 
+                {'id': '4', 'sex': 'M', 'edad': 26}, 
+                {'id': '2', 'sex': 'M', 'edad': 42},
+                {'id': '5', 'sex': 'M', 'edad': 29}, 
+                {'id': '7', 'sex': 'M', 'edad': 23}, 
+                {'id': '9', 'sex': 'M', 'edad': 26}, 
+                {'id': '10', 'sex': 'M', 'edad': 42},
+                {'id': '6', 'sex': 'H', 'edad': 42}]},
+            {'option': 'Option 5','number':5, 'votes':10,'escanio':0,'paridad':[]},
+            {'option': 'Option 6','number':6, 'votes':9,'escanio':0,'paridad':[]},
+            {'option': 'Option 1','number':1, 'votes':7,'escanio':0,'paridad':[]},
+            {'option': 'Option 2','number':2, 'votes':4,'escanio':0,'paridad':[]},
+            {'option': 'Option 4','number':4, 'votes':2,'escanio':0,'paridad':[]}
+    
+
+        ]
+        result = {'message' : 'la diferencia del numero de hombres y mujeres es de más de un 60% - 40%'}
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+                
+        values = response.json()
+        self.assertEqual(values, result)
+        
+    def test_integracion_mgu_paridad_genero2(self):
+        data = {
+            'type':'MGUCP',
+            'escanio':10,
+            'options': [
+                {'option':'Option 1', 'number':1 , 'votes':7},
+                {'option':'Option 2', 'number':2 , 'votes': 4},
+                {'option':'Option 3', 'number':3 , 'votes': 19},
+                {'option':'Option 4', 'number':4 , 'votes': 2},
+                {'option':'Option 5', 'number':5 , 'votes': 10},
+                {'option':'Option 6', 'number':6 , 'votes': 9},
+            ],
+            'candidates': [
+                {'id': '1', 'sex': 'H',  'edad':23},
+                {'id': '2', 'sex': 'H',  'edad':42},
+                {'id': '3', 'sex': 'H',  'edad':29},
+                {'id': '4', 'sex': 'H',  'edad':26},
+                {'id': '5', 'sex': 'H',  'edad':61},
+                {'id': '6', 'sex': 'H',  'edad':32},
+                {'id': '7', 'sex': 'H',  'edad':42},
+                {'id': '8', 'sex': 'M',  'edad':27},
+                {'id': '9', 'sex': 'M',  'edad':25},
+                {'id': '10', 'sex': 'M',  'edad':56},
+            ],
+        }
+
+        res = [
+            {'option':'Option 3', 'number':1 , 'votes': 40, 'escanio': 4, 'paridad': [
+                {'id': '3', 'sex': 'H', 'edad': 29}, 
+                {'id': '1', 'sex': 'H', 'edad': 23}, 
+                {'id': '4', 'sex': 'H', 'edad': 26}, 
+                {'id': '2', 'sex': 'H', 'edad': 42},
+                {'id': '5', 'sex': 'H', 'edad': 29}, 
+                {'id': '7', 'sex': 'M', 'edad': 23}, 
+                {'id': '9', 'sex': 'M', 'edad': 26}, 
+                {'id': '10', 'sex': 'M', 'edad': 42},
+                {'id': '6', 'sex': 'H', 'edad': 42}]},
+            {'option': 'Option 5','number':5, 'votes':10,'escanio':0,'paridad':[]},
+            {'option': 'Option 6','number':6, 'votes':9,'escanio':0,'paridad':[]},
+            {'option': 'Option 1','number':1, 'votes':7,'escanio':0,'paridad':[]},
+            {'option': 'Option 2','number':2, 'votes':4,'escanio':0,'paridad':[]},
+            {'option': 'Option 4','number':4, 'votes':2,'escanio':0,'paridad':[]}
+    
+
+        ]
+        result = {'message' : 'la diferencia del numero de hombres y mujeres es de más de un 60% - 40%'}
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+                
+        values = response.json()
+        self.assertEqual(values, result)
+        
+    def test_integracion_mgu_paridad_genero3(self):
+        data = {
+            'type':'MGUCP',
+            'escanio':10,
+            'options': [
+                {'option':'Option 1', 'number':1 , 'votes':7},
+                {'option':'Option 2', 'number':2 , 'votes': 4},
+                {'option':'Option 3', 'number':3 , 'votes': 19},
+                {'option':'Option 4', 'number':4 , 'votes': 2},
+                {'option':'Option 5', 'number':5 , 'votes': 10},
+                {'option':'Option 6', 'number':6 , 'votes': 9},
+            ],
+            'candidates': [
+                {'id': '1', 'sex': 'M',  'edad':23},
+                {'id': '2', 'sex': 'H',  'edad':42},
+                {'id': '3', 'sex': 'H',  'edad':29},
+                {'id': '4', 'sex': 'M',  'edad':26},
+                {'id': '5', 'sex': 'H',  'edad':61},
+                {'id': '6', 'sex': 'H',  'edad':32},
+                {'id': '7', 'sex': 'H',  'edad':42},
+                {'id': '8', 'sex': 'M',  'edad':27},
+                {'id': '9', 'sex': 'M',  'edad':25},
+                {'id': '10', 'sex': 'M',  'edad':56},
+            ],
+        }
+
+        res = [
+            {'option':'Option 3', 'number':1 , 'votes': 40, 'escanio': 4, 'paridad': [
+                {'id': '3', 'sex': 'M', 'edad': 29}, 
+                {'id': '1', 'sex': 'H', 'edad': 23}, 
+                {'id': '4', 'sex': 'H', 'edad': 26}, 
+                {'id': '2', 'sex': 'H', 'edad': 42},
+                {'id': '5', 'sex': 'H', 'edad': 29}, 
+                {'id': '7', 'sex': 'M', 'edad': 23}, 
+                {'id': '9', 'sex': 'M', 'edad': 26}, 
+                {'id': '10', 'sex': 'M', 'edad': 42},
+                {'id': '6', 'sex': 'H', 'edad': 42}]},
+            {'option': 'Option 5','number':5, 'votes':10,'escanio':0,'paridad':[]},
+            {'option': 'Option 6','number':6, 'votes':9,'escanio':0,'paridad':[]},
+            {'option': 'Option 1','number':1, 'votes':7,'escanio':0,'paridad':[]},
+            {'option': 'Option 2','number':2, 'votes':4,'escanio':0,'paridad':[]},
+            {'option': 'Option 4','number':4, 'votes':2,'escanio':0,'paridad':[]}
+    
+
+        ]
+        result = {'message' : 'la diferencia del numero de hombres y mujeres es de más de un 60% - 40%'}
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+                
+        values = response.json()
+        self.assertNotEqual(values, result)
+        
+    def test_integracion_mgu_paridad_genero4(self):
+        data = {
+            'type':'MGUCP',
+            'escanio':10,
+            'options': [
+                {'option':'Option 1', 'number':1 , 'votes':7},
+                {'option':'Option 2', 'number':2 , 'votes': 4},
+                {'option':'Option 3', 'number':3 , 'votes': 19},
+                {'option':'Option 4', 'number':4 , 'votes': 2},
+                {'option':'Option 5', 'number':5 , 'votes': 10},
+                {'option':'Option 6', 'number':6 , 'votes': 9},
+            ],
+            'candidates': [
+                {'id': '1', 'sex': 'H',  'edad':23},
+                {'id': '2', 'sex': 'M',  'edad':42},
+                {'id': '3', 'sex': 'M',  'edad':29},
+                {'id': '4', 'sex': 'H',  'edad':26},
+                {'id': '5', 'sex': 'M',  'edad':61},
+                {'id': '6', 'sex': 'M',  'edad':32},
+                {'id': '7', 'sex': 'M',  'edad':42},
+                {'id': '8', 'sex': 'H',  'edad':27},
+                {'id': '9', 'sex': 'H',  'edad':25},
+                {'id': '10', 'sex': 'M',  'edad':56},
+            ],
+        }
+
+        res = [
+            {'option':'Option 3', 'number':1 , 'votes': 40, 'escanio': 4, 'paridad': [
+                {'id': '3', 'sex': 'M', 'edad': 29}, 
+                {'id': '1', 'sex': 'H', 'edad': 23}, 
+                {'id': '4', 'sex': 'M', 'edad': 26}, 
+                {'id': '2', 'sex': 'M', 'edad': 42},
+                {'id': '5', 'sex': 'H', 'edad': 29}, 
+                {'id': '7', 'sex': 'H', 'edad': 23}, 
+                {'id': '9', 'sex': 'M', 'edad': 26}, 
+                {'id': '10', 'sex': 'H', 'edad': 42},
+                {'id': '6', 'sex': 'H', 'edad': 42}]},
+            {'option': 'Option 5','number':5, 'votes':10,'escanio':0,'paridad':[]},
+            {'option': 'Option 6','number':6, 'votes':9,'escanio':0,'paridad':[]},
+            {'option': 'Option 1','number':1, 'votes':7,'escanio':0,'paridad':[]},
+            {'option': 'Option 2','number':2, 'votes':4,'escanio':0,'paridad':[]},
+            {'option': 'Option 4','number':4, 'votes':2,'escanio':0,'paridad':[]}
+    
+
+        ]
+        result = {'message' : 'la diferencia del numero de hombres y mujeres es de más de un 60% - 40%'}
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+                
+        values = response.json()
+        self.assertNotEqual(values, result)
 
     def test_genero_1(self):
         data = {
@@ -414,12 +620,12 @@ class PostProcTestCase(APITestCase):
             ]
         }
         expected_result = [
-            { 'option': 'Option 3', 'number': 3, 'votes': 15, 'postproc': 10 },
-            { 'option': 'Option 4', 'number': 4, 'votes': 15 , 'postproc': 10 },
-            { 'option': 'Option 5', 'number': 5, 'votes': 15, 'postproc': 10 },
-            { 'option': 'Option 6', 'number': 6, 'votes': 9, 'postproc': 2 },
-            { 'option': 'Option 1', 'number': 1, 'votes': 6, 'postproc': 0 },
-            { 'option': 'Option 2', 'number': 2, 'votes': 5, 'postproc': 0 },
+            { 'option': 'Option 3', 'number': 3, 'votes': 15, 'escanio': 10 },
+            { 'option': 'Option 4', 'number': 4, 'votes': 15 , 'escanio': 10 },
+            { 'option': 'Option 5', 'number': 5, 'votes': 15, 'escanio': 10 },
+            { 'option': 'Option 6', 'number': 6, 'votes': 9, 'escanio': 2 },
+            { 'option': 'Option 1', 'number': 1, 'votes': 6, 'escanio': 0 },
+            { 'option': 'Option 2', 'number': 2, 'votes': 5, 'escanio': 0 },
         ]
         response = self.client.post('/postproc/', data, format='json')
         self.assertEqual(response.status_code, 200)
@@ -782,10 +988,12 @@ class PostProcTestCase(APITestCase):
         }
 
         expected_result = [
-            { 'option': 'Option 2', 'number': 2, 'votes': 20000, 'postproc': 203 },
-            { 'option': 'Option 3', 'number': 3, 'votes': 15000, 'postproc': 153 },
-            { 'option': 'Option 1', 'number': 1, 'votes': 10000, 'postproc':  102},
-            { 'option': 'Option 4', 'number': 4, 'votes': 4100, 'postproc': 42 },
+            { 'option': 'Option 1', 'number': 1, 'votes': 8, 'escanio': 1 },
+            { 'option': 'Option 2', 'number': 2, 'votes': 8 , 'escanio': 1 },
+            { 'option': 'Option 3', 'number': 3, 'votes': 8, 'escanio': 1 },
+            { 'option': 'Option 4', 'number': 4, 'votes': 8, 'escanio': 1 },
+            { 'option': 'Option 5', 'number': 5, 'votes': 8, 'escanio': 1 },
+            { 'option': 'Option 6', 'number': 6, 'votes': 8, 'escanio': 0 },
         ]
         response = self.client.post('/postproc/', data, format='json')
         self.assertEqual(response.status_code, 200)
