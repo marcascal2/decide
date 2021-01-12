@@ -295,6 +295,14 @@ class PostProcView(APIView):
             return self.dhondt(opts, request.data.get('escanio'),cands)
         elif t == 'SIMPLE':
             return Response(self.simple(opts,s))
+        elif t == 'SIMPLEP':
+            c = self.check_json(opts)
+            if c:
+                options = []
+                options = self.simple(opts, s)
+                return Response(self.paridad(options))
+            else:
+                return Response({'message' : 'la diferencia del numero de hombres y mujeres es de más de un 60% - 40%'})
         elif t == 'MGU':
             return Response(self.mgu(opts,s))
         elif t == 'SAINTELAGUE':
