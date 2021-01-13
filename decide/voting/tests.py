@@ -143,7 +143,7 @@ class VotingTestCase(BaseTestCase):
             'desc': 'Description example',
             'escanios': 20,
             'question': 'I want a ',
-            'question_opt': ['cat', 'dog', 'horse']
+            'question_opt': ['cat', 'dog', 'horse'],
         }
 
         response = self.client.post('/voting/', data, format='json')

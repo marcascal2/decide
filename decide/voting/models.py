@@ -206,11 +206,9 @@ class Voting(models.Model):
             else:
                 votes=0
             cnds.append({
-                'name': candidate.name,
+                'id':candidate.id,
                 'sex': candidate.sex,
-                'auto_community': candidate.auto_community,
                 'age': candidate.age,
-                'political_party': candidate.political_party
             })
         opts = []
         for opt in options:
@@ -222,11 +220,8 @@ class Voting(models.Model):
                 'option': opt.option,
                 'number': opt.number,
                 'votes': votes,
-                'candidates':cnds,
                 'escanio':escanios
             })
-
-
         prefers = []
         for pre in prefer_options:
             if isinstance(tally, list):
@@ -252,7 +247,7 @@ class Voting(models.Model):
                 'votes': votes
             })
 
-        data = { 'type': 'IDENTITY', 'options': opts, 'options_ordering': opts_ordering , 'prefer_options':prefers}
+        data = { 'type': 'IDENTITY', 'options': opts, 'options_ordering': opts_ordering , 'prefer_options':prefers,opts,'candidates':cnds,'escanio':escanios}
         postp = mods.post('postproc', json=data)
 
         self.postproc = postp

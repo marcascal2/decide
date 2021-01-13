@@ -9,6 +9,7 @@ from .models import Question, QuestionOption, Voting, QuestionPrefer, QuestionOr
 from .serializers import SimpleVotingSerializer, VotingSerializer, CandidateSerializer, ReadonlyVotingSerializer, ReadonlySimpleVotingSerializer, MultipleSimpleVotingSerializer, MultipleVotingSerializer
 from base.perms import UserIsStaff
 from base.models import Auth
+from voting.models import Candidate
 
 
 class VotingView(generics.ListCreateAPIView):
