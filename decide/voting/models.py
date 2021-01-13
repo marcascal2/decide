@@ -13,12 +13,34 @@ class Question(models.Model):
     def __str__(self):
         return self.desc
 
+class Program(models.Model):
+    title = models.CharField(max_length=200)
+    overview = models.TextField()
+
+    def __str__(self):
+        return self.title
+
 class Party(models.Model):
     abreviatura = models.TextField(max_length=10)
     nombre = models.TextField()
+    program = models.ForeignKey(Program, related_name='party', on_delete=models.CASCADE,null=True)
 
     def __str__(self):
-        return self.abreviatura
+        return self.abreviatura        
+
+
+class Plank(models.Model):
+    program = models.ForeignKey(Program, related_name='plank', on_delete=models.CASCADE)
+    number = models.PositiveIntegerField(blank=True, null=True)
+    plank = models.TextField()
+
+    def save(self):
+        if not self.number:
+            self.number = self.program.planks.count() + 2
+        return super().save()
+
+    def __str__(self):
+        return '{} ({})'.format(self.plank, self.number)
 
 class QuestionOption(models.Model):
     question = models.ForeignKey(Question, related_name='options', on_delete=models.CASCADE)
