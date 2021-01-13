@@ -28,7 +28,6 @@ class StoreTextCase(BaseTestCase):
                              question=self.question,
                              escanios = 3,
                              start_date=timezone.now(),
-                             escanios=0,
         )
         self.voting.save()
 
