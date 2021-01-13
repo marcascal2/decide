@@ -991,7 +991,7 @@ class PostProcTestCase(APITestCase):
         values = response.json()
         self.assertEqual(values, expected_result)
 
-    def test_simpleParidad(self):
+    def test_integracionGeneroParidad(self):
         data = {
             'type':'SIMPLEP',
             'options': [
@@ -1152,10 +1152,10 @@ class PostProcTestCase(APITestCase):
         expected_result1 = [
             {'option': 'Option 2', 'number': 2, 'votes': 750000, 'escanio': 6, 'paridad':[
                 {'id': '3', 'sex': 'M', 'edad': 29}, 
+                {'id': '1', 'sex': 'H', 'edad': 23},
                 {'id': '4', 'sex': 'M', 'edad': 26}, 
                 {'id': '2', 'sex': 'H', 'edad': 42}, 
                 {'id': '6', 'sex': 'M', 'edad': 22}, 
-                {'id': '1', 'sex': 'H', 'edad': 23}, 
                 {'id': '5', 'sex': 'H', 'edad': 21}]},
             {'option': 'Option 3', 'number': 3, 'votes': 500000, 'escanio': 4, 'paridad': [
                 {'id': '3', 'sex': 'M', 'edad': 29}, 
