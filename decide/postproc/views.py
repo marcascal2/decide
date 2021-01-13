@@ -25,7 +25,7 @@ class PostProcView(APIView):
         for simp in options:
             out.append({
                 **simp,
-                'postproc': 0,
+                'escanio': 0,
             })
         out.sort(key=lambda x: -x['votes'])
 
@@ -41,21 +41,21 @@ class PostProcView(APIView):
         while sea > 0:
             if n1 < len(out):
                 escanio_ = math.trunc(out[n1]['votes']/valEs) 
-                out[n1]['postproc'] = escanio_
+                out[n1]['escanio'] = escanio_
                 sea = sea - escanio_
                 n1 = n1+1
             else:
                 now = 0
                 c = 1
                 while c <len(out):
-                    vAct = out[now]['votes']/valEs - out[now]['postproc']
-                    vCom = out[c]['votes']/valEs - out[c]['postproc']
+                    vAct = out[now]['votes']/valEs - out[now]['escanio']
+                    vCom = out[c]['votes']/valEs - out[c]['escanio']
                     if(vAct >= vCom):
                         c = c + 1
                     else:
                         now=c
                         c = c + 1
-                out[now]['postproc'] = out[now]['postproc'] + 1
+                out[now]['escanio'] = out[now]['escanio'] + 1
                 sea = sea - 1
         return out
 
@@ -294,11 +294,11 @@ class PostProcView(APIView):
         elif t == 'SIMPLE':
             return Response(self.simple(opts,s))
         elif t == 'SIMPLEP':
-            c = self.check_json(opts)
+            c = self.comprobar(opts, cands)
             if c:
                 options = []
                 options = self.simple(opts, s)
-                return Response(self.paridad(options))
+                return Response(self.paridad(options,cands))
             else:
                 return Response({'message' : 'la diferencia del numero de hombres y mujeres es de más de un 60% - 40%'})
         elif t == 'MGU':
