@@ -41,7 +41,7 @@ class ProgramSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('title', 'overview', 'planks')
 
 class PartySerializer(serializers.HyperlinkedModelSerializer):
-    program = ProgramSerializer(many=True)
+    program = ProgramSerializer(many=False)
     class Meta:
         model = Party
         fields = ('abreviatura','nombre', 'program')
