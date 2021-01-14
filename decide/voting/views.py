@@ -54,6 +54,17 @@ class VotingView(generics.ListCreateAPIView):
         
         candidate, _ = Candidate.objects.get_or_create(name="pepe")
         candidate.save()
+        
+        party, _ = Party.objects.get_or_create(abreviatura="p", nombre="partido")
+        party.save()
+        program, _ = Program.objects.get_or_create(title="programa")
+        program.save()
+        for idx, p_plk in enumerate(program.plank.all()):
+            plk = Plank(program=program, plank=p_plk, number=idx)
+            plk.save()
+        party.program.add(program)
+        candidate.political_party.add(party)
+
         voting.candidates.add(candidate)
         auth, _ = Auth.objects.get_or_create(url=settings.BASEURL,
                                           defaults={'me': True, 'name': 'test auth'})
