@@ -1,7 +1,90 @@
-<h2>Iniciar sesión</h2>
+<div class="body">
 
-<form method="POST">
-    {{ form.as_p }}
-    {% csrf_token %}
-    <button type="submit">Login</button>
-</form>
+    {% extends "base.html" %} {% load i18n static %}
+
+    <!-- Este bloque extiende el head -->
+    {% block extrahead %}
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1"
+      crossorigin="anonymous"
+    />
+    
+    <link type="text/css" rel="stylesheet" href="{% static "census/styleLogin.css" %}" />
+    {% endblock %}
+    
+    <!--CONTENIDO-->
+    {% block content %}
+        <div class="container">
+          <div class="row">
+            <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+              <div class="card card-signin my-5">
+                <div class="card-body">
+                  <h5 class="card-title text-center">Sign In</h5>
+                  <form method="POST">
+                    {{ form.as_p }}
+                    {% csrf_token %}
+                    <button type="submit">Login</button>
+                </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+</div>
+<!--FOOTER-->
+
+<footer class="bg-light text-center text-lg-start">
+    <!-- Grid container -->
+    <div class="container p-4">
+      <!--Grid row-->
+      <div class="row">
+        <!--Grid column-->
+        <div class="col-lg-6 col-md-12 mb-4 mb-md-0">
+          <h5 class="text-uppercase">About us</h5>
+  
+          <p>
+            Grupo de trabajo encargado de las modificaciones realizadas en la
+            parte de censo. Forman parte del proyecto DECIDE-PART-ZUMETA.
+          </p>
+        </div>
+        <!--Grid column-->
+  
+        <!--Grid column-->
+        <div class="col-lg-6 col-md-12 mb-4 mb-md-0">
+          <h5 class="text-uppercase">Membership</h5>
+  
+          <p>
+            -Moises Calzado Cobo.<br />
+            -Maria Casasola Calzadilla.<br />
+            -Emilia Coleto Alcudia.<br />
+            -Antonio German Trujillo.<br />
+            -Fernando Angulo Moruno.<br />
+          </p>
+        </div>
+        <!--Grid column-->
+      </div>
+      <!--Grid row-->
+    </div>
+    <!-- Grid container -->
+  
+    <!-- Copyright -->
+    <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2)">
+      © 2020 Copyright:
+      <a class="text-dark" href="https://github.com/marcascal2/decide-part-zumeta"
+        >Página del proyecto</a
+      >
+    </div>
+    <!-- Copyright -->
+  </footer>
+  
+  {% endblock %} {% block extrabody %}
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
+    crossorigin="anonymous"
+  ></script>
+  
+  {% endblock %}
