@@ -254,7 +254,7 @@ class Voting(models.Model):
                 'sex': candidate.sex,
                 'auto_community': candidate.auto_community,
                 'age': candidate.age,
-                'political_party': candidate.political_party
+                'political_party': candidate.political_party.abreviatura
             })
         opts = []
         for opt in options:
