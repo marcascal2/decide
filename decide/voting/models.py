@@ -30,7 +30,7 @@ class Party(models.Model):
 
 
 class Plank(models.Model):
-    program = models.ForeignKey(Program, related_name='plank', on_delete=models.CASCADE)
+    program = models.ForeignKey(Program, related_name='planks', on_delete=models.CASCADE)
     number = models.PositiveIntegerField(blank=True, null=True)
     plank = models.TextField()
 

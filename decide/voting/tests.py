@@ -13,7 +13,7 @@ from census.models import Census
 from mixnet.mixcrypt import ElGamal
 from mixnet.mixcrypt import MixCrypt
 from mixnet.models import Auth
-from voting.models import Voting, Question, QuestionOption, QuestionPrefer, QuestionOrdering, Candidate, ReadonlyVoting, MultipleVoting, Party
+from voting.models import Voting, Question, QuestionOption, QuestionPrefer, QuestionOrdering, Candidate, ReadonlyVoting, MultipleVoting, Party, Program, Plank
 
 
 class VotingTestCase(BaseTestCase):
@@ -363,7 +363,14 @@ class VotingTestCase(BaseTestCase):
                 'political_party': 
                 {   
                     'abreviatura': 'PC',
-                    'nombre': 'Partido Cuestista'
+                    'nombre': 'Partido Cuestista',
+                    'program':
+                    {
+                        'title': 'programa de PC',
+                        'overview': 'el programa politico del PC',
+                        'plank': ['promesa1', 'promesa2', 'promesa3'],
+
+                    }
                 }
                 
             }
@@ -704,16 +711,27 @@ class CandidateTestCase(BaseTestCase):
         self.assertEqual(candidate_test.sex, "H")
         self.assertEqual(candidate_test.political_party.abreviatura, "PC")
 
-class PartyTests(BaseTestCase):
+
+class PartyTestCase(BaseTestCase):
 
     def setUp(self):
-        self.p = Party(abreviatura = "PC", nombre = 'Partido Cuestista')
+        self.p = self.create_party()
         self.p.save()
         super().setUp()
 
     def tearDown(self):
         super().tearDown()
-        self.v = None
+
+    def create_party(self):
+        p = Program(title='programa test')
+        p.save()
+        for i in range(5):
+            plk = Plank(program=p, plank='plank {}'.format(i+1))
+            plk.save()
+        pt = Party(abreviatura = 'PC', nombre='Partido Cuestista', program=p)
+        pt.save()
+
+        return pt    
 
     def testExistParty(self):
         p = Party.objects.get(abreviatura = "PC")
@@ -722,7 +740,10 @@ class PartyTests(BaseTestCase):
     def testExistCompleteParty(self):
         p = Party.objects.get(abreviatura = "PC")
         self.assertEquals(p.abreviatura, "PC")
-        self.assertEquals(p.nombre, "Partido Cuestista")
+        self.assertEquals(p.nombre , "Partido Cuestista")
+        self.assertEquals(p.program.title , "programa test")
+        #for plk in p.program.planks.all():
+    
 
     def testUpdateCompleteParty(self):
         p = Party.objects.get(abreviatura = "PC")
@@ -730,6 +751,48 @@ class PartyTests(BaseTestCase):
         p.nombre = "Partido Guerrista"
         self.assertEquals(p.abreviatura, "PG")
         self.assertEquals(p.nombre, "Partido Guerrista")
+
+
+class ProgramTestCase(BaseTestCase):
+
+    def setUp(self):
+        p=Program(title="test de Programa")
+        p.save()
+
+        self.pt=Party(abreviatura="TP", nombre='test party', program=p)
+        self.pt.save()
+        super().setUp()
+
+    def tearDown(self):
+        super().tearDown()
+        self.pt=None
+
+    def testExistProgramNoPlank(self):
+        pt = Party.objects.get(abreviatura="TP")
+        self.assertEqual(pt.program.title, "test de Programa")
+
+    def testExistProgramWithPlank(self):
+        p = Program.objects.get(title="test de Programa")
+        plk1 = Plank(program = p, plank="plank1")
+        plk1.save()
+        pt = Party.objects.get(abreviatura="TP")
+        pt.program = p
+        pt.plank = plk1
+        pt.save()
+        self.assertEqual(pt.program.planks.all()[0].plank, "plank1")
+    
+    def testAddPlank(self):
+        pt = Party.objects.get(abreviatura="TP")
+        p = pt.program
+
+        self.assertEqual(pt.program.planks.all().count(),0)
+
+        plk = Plank(program = p, plank="plank")
+        plk.save()
+        pt.save()
+
+        self.assertEqual(pt.program.planks.all()[0].plank , "plank")
+        self.assertEqual(pt.program.planks.all().count(),1)
 
 
 
