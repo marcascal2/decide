@@ -22,7 +22,7 @@ class CensusAdmin(admin.ModelAdmin):
     actions = ['export_as_csv']
 
     def export_as_csv(self, request, queryset):
-        meta = self.model._meta
+        meta = Census._meta
         field_names = [field.name for field in meta.fields]
 
         response = HttpResponse(content_type='text/csv')
@@ -59,14 +59,16 @@ class CensusAdmin(admin.ModelAdmin):
                     objDate = datetime.strptime(dat, '%Y-%m-%d')
                     census = Census(voting_id=voting_id, voter_id=voter_id, adscripcion=adscripcion, date=objDate)
                     census.save()
-            f.close()
 
         form = UploadDocumentForm()
         if request.method == 'POST':
             form = UploadDocumentForm(request.POST, request.FILES)
             if form.is_valid():
-                save_import(request.FILES['file'])
-                return render(request, 'succes.html', locals())
+                try:
+                    save_import(request.FILES['file'])
+                    return render(request, 'succes.html', locals())
+                except:
+                    return render(request, 'import_error.html', locals())
         else:
             form = UploadDocumentForm()
 

@@ -31,6 +31,10 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login as do_login
 
+#Charts
+from django.views.generic import TemplateView
+from chartjs.views.lines import BaseLineChartView
+
 class CensusCreate(generics.ListCreateAPIView):
     permission_classes = (UserIsStaff,)
 
@@ -77,7 +81,7 @@ def logout(request):
     # Finalizamos la sesión
     do_logout(request)
     # Redireccionamos a la portada
-    return redirect('/census/admin/')
+    return redirect('/census/login/')
 
 def all_census(request):
     if not request.user.is_authenticated:
@@ -424,14 +428,16 @@ def import_by_voting(request):
                 objDate = datetime.strptime(dat, '%Y-%m-%d')
                 census = Census(voting_id=voting_id, voter_id=voter_id, adscripcion=adscripcion, date=objDate)
                 census.save()
-        f.close()
 
     form = UploadDocumentForm()
     if request.method == 'POST':
         form = UploadDocumentForm(request.POST, request.FILES)
         if form.is_valid():
-            save_import(request.FILES['file'], request.POST.get('voting_id', ''))
-            return render(request, 'succes.html', locals())
+            try:
+                save_import(request.FILES['file'], request.POST.get('voting_id', ''))
+                return render(request, 'succes.html', locals())
+            except:
+                return render(request, 'import_error.html', locals())
     else:
         form = UploadDocumentForm()
     
@@ -487,3 +493,107 @@ def voting_census(request, voting_id):
 #Funciones auxiliares
 def add_user_to_voting(user_id, voting_id):
     Census.objects.create(voter_id = user_id, voting_id = voting_id)
+
+# Visualización gráfica
+def census_per_voters():
+    res = {}
+    census = Census.objects.all()
+
+    for c in census:
+        v = User.objects.get(id = c.voter_id)
+        if(v.username not in res):
+            res[v.username] = 1
+        else:
+            res[v.username] += 1
+
+    return res
+
+def candidates():
+    res = {}
+    census = Census.objects.all()
+
+    for c in census:
+        v = Voting.objects.get(id = c.voting_id)
+        if(v.name not in res):
+            res[v.name] = v.candidates.count()
+    return res
+
+def escanios():
+    res = {}
+    census = Census.objects.all()
+
+    for c in census:
+        v = Voting.objects.get(id = c.voting_id)
+        if(v.name not in res):
+            res[v.name] = v.escanios
+    return res
+
+def voters():
+    res = {}
+    census = Census.objects.all()
+
+    for c in census:
+        v = Voting.objects.get(id = c.voting_id)
+        if(v.name not in res):
+            res[v.name] = 1
+        else:
+            res[v.name] += 1
+
+    return res
+
+def votings_labels():
+    res = []
+    census = Census.objects.all()
+
+    for c in census:
+        v = Voting.objects.get(id = c.voting_id)
+        if(v.name not in res):
+            res.append(v.name)
+
+    return res
+
+def votings_data():
+    res = []
+    cand = candidates()
+    esc = escanios()
+    vot = voters()
+
+    res.append(list(cand.values()))
+    res.append(list(esc.values()))
+    res.append(list(vot.values()))
+
+    return res
+
+class VotersChartJSONView(BaseLineChartView):
+
+    def get_labels(self):
+        # Return labels for the x-axis.
+        voters = list(census_per_voters().keys())
+        return voters
+
+    def get_providers(self):
+        return ['Censos por votante']
+
+    def get_data(self):
+        # Return datasets to plot.
+        census = list(census_per_voters().values())
+        return [census]
+
+class VotingsChartJSONView(BaseLineChartView):
+
+    def get_labels(self):
+        # Return labels for the x-axis.
+        voters = list(votings_labels())
+        return voters
+
+    def get_providers(self):
+        return ['Números de candidatos', 'Número de escaños', 'Número de votantes del censo']
+
+    def get_data(self):
+        # Return datasets to plot.
+        census = list(votings_data())
+        return census
+
+charts = TemplateView.as_view(template_name='census_statistics.html')
+votings_chart_json = VotingsChartJSONView.as_view()
+voters_chart_json = VotersChartJSONView.as_view()

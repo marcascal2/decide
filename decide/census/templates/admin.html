@@ -18,7 +18,7 @@
 <!--NAVBAR-->
 <nav class="navbar navbar-dark bg-dark">
   <div class="container-fluid">
-    <a class="navbar-brand" href="#">
+    <a class="navbar-brand" href="{% url 'admin_census_panel' %}">
       <img src="{% static "census/img/index.png" %}" alt="" width="30"
       height="24"> Censo
     </a>
@@ -30,6 +30,16 @@
     </div>
   </div>
 </nav>
+
+<form action="{% url 'import_by_voting' %}" method="post" class="search-form">
+  {% csrf_token %}
+  <span>
+    Importa nuevos censos: 
+  </span>
+  <div class="import-button">
+  <input type="submit" value="Importar">
+  </div>
+</form>
 
 <form action="{% url 'filter_by' %}" method="post" class="search-form">
     {% csrf_token %}
@@ -226,7 +236,47 @@
             </div>
           </div>
         </div>
+        <!--Exportar-->
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingSix">
+            <button
+              class="accordion-button collapsed"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#collapseSix"
+              aria-expanded="false"
+              aria-controls="collapseSix"
+            >
+              Exportar por votación:
+            </button>
+          </h2>
+          <div
+            id="collapseSix"
+            class="accordion-collapse collapse"
+            aria-labelledby="headingSix"
+            data-bs-parent="#accordionExample"
+          >
+            <div class="accordion-body">
+              <ul class="filtro-container">
+                {% for voting in votings %}
+                <li>
+                  <a href="{% url 'export_by_voting' voting_id=voting.id %}"
+                    >{{voting.name}}</a
+                  >
+                </li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
       </div>
+      <form action="{% url 'statistics' %}" method="get" class="search-form">
+        <div id="statistics-div">
+          <div id="statistics-div-sub">
+            <input type="submit" value="Gráficos de censos">
+          </div>
+        </div>
+      </form>
     </div>
   </div>
 </div>
