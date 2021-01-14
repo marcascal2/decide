@@ -204,7 +204,6 @@ class CensusTestCase(BaseTestCase):
         self.assertContains(response, c2)
         self.assertContains(response, c3)
 
-<<<<<<< HEAD
     def test_export_census_user(self):
         rf = RequestFactory()
         request = rf.get('/census/export_by_voting/{}'.format(1))  
@@ -307,7 +306,6 @@ class CensusTestCase(BaseTestCase):
             self.assertEqual(cadena1, cadena2)
         csv.close()
         
-=======
     def test_census_estatistics(self):
         census_per_voters = views.census_per_voters()
         self.assertEquals(census_per_voters['voter1'], 2)
@@ -318,4 +316,3 @@ class CensusTestCase(BaseTestCase):
         voters = views.voters()
         self.assertEquals(voters['voting_testing1'], 2)
         self.assertEquals(voters['voting_testing2'], 1)
->>>>>>> task/visualizacion-maria
