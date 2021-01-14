@@ -4,13 +4,8 @@ from django.test import TestCase
 from rest_framework.test import APIClient
 
 from .models import Census
-<<<<<<< HEAD
-from census import views, admin
-from voting.models import Voting, Question
-=======
 from census import views
 from voting.models import Voting, Question, Candidate
->>>>>>> task/visualizacion-maria
 from base import mods
 from base.tests import BaseTestCase
 from datetime import date
