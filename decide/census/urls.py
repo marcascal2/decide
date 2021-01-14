@@ -20,7 +20,5 @@ urlpatterns = [
     path('statistics/', views.charts, name='statistics'),
     path('voterschartJSON', views.voters_chart_json, name='voters_chart_json'),
     path('votingschartJSON', views.votings_chart_json, name='votings_chart_json'),
-    #TODO: quitar
-    path('panel/', views.render_panel_administracion, name='census_panel'),
     path('panel/<int:voting_id>', views.voting_census, name="voting_census")
 ]

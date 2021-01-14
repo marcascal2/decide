@@ -33,23 +33,25 @@
 
 <form action="{% url 'import_by_voting' %}" method="post" class="search-form">
   {% csrf_token %}
-  <span>
-    Importa nuevos censos: 
-  </span>
+  <span> Importa nuevos censos: </span>
   <div class="import-button">
-  <input type="submit" value="Importar">
+    <input type="submit" value="Importar" />
   </div>
 </form>
 
 <form action="{% url 'filter_by' %}" method="post" class="search-form">
-    {% csrf_token %}
-    <span>
-      Búsqueda entre nuestros censos: 
-    </span>
-    <div class="search-bar">
-    <input class="search-bar-text" id="q" name="q" type="text" placeholder="Escriba la palabra por la que desea filtrar">
-    <input type="submit" value="Buscar">
-    </div>
+  {% csrf_token %}
+  <span> Búsqueda entre nuestros censos: </span>
+  <div class="search-bar">
+    <input
+      class="search-bar-text"
+      id="q"
+      name="q"
+      type="text"
+      placeholder="Escriba la palabra por la que desea filtrar"
+    />
+    <input type="submit" value="Buscar" />
+  </div>
 </form>
 
 <div class="card">
@@ -64,7 +66,11 @@
         </thead>
         {% for c in census %}
         <tr class="filas-tabla">
-          <td>{{c.voting_name}}</td>
+          <td>
+            <a href="{% url 'voting_census' voting_id=c.voting_id %}"
+              >{{c.voting_name}}</a
+            >
+          </td>
           <td>{{c.voter_username}}</td>
           <td>{{c.adscripcion}}</td>
           <td>{{c.date}}</td>
@@ -273,7 +279,7 @@
       <form action="{% url 'statistics' %}" method="get" class="search-form">
         <div id="statistics-div">
           <div id="statistics-div-sub">
-            <input type="submit" value="Gráficos de censos">
+            <input type="submit" value="Gráficos de censos" />
           </div>
         </div>
       </form>
