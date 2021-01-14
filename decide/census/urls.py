@@ -17,6 +17,9 @@ urlpatterns = [
     path('all_census/search/',views.filter_by, name='filter_by'),
     path('import_by_voting/', views.import_by_voting, name="import_by_voting"),
     path('export_by_voting/<int:voting_id>', views.export_by_voting, name="export_by_voting"),
+    path('statistics/', views.charts, name='statistics'),
+    path('voterschartJSON', views.voters_chart_json, name='voters_chart_json'),
+    path('votingschartJSON', views.votings_chart_json, name='votings_chart_json'),
     #TODO: quitar
     path('panel/', views.render_panel_administracion, name='census_panel'),
     path('panel/<int:voting_id>', views.voting_census, name="voting_census")
