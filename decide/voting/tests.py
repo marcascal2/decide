@@ -6,6 +6,9 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework.test import APIClient
 from rest_framework.test import APITestCase
+from pathlib import Path
+import os
+from datetime import datetime
 
 from base import mods
 from base.tests import BaseTestCase
@@ -265,6 +268,9 @@ class VotingTestCase(BaseTestCase):
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), 'Voting tallied')
+        
+        #Comprobar que se ha creado el archivo
+        self.test_createfiles_voting()
 
         # STATUS VOTING: tallied
         data = {'action': 'start'}
@@ -822,3 +828,9 @@ class MultipleVotingTests(BaseTestCase):
         for q in v.postproc:
             self.assertEqual(tally.get(q["number"], 0), q["votes"])
         
+    def test_createfiles_voting(self):
+        _datetime = datetime.now()
+        datetime_str = _datetime.strftime("%Y-%m-%d-%H")
+        path = 'archivosGuardados/'+datetime_str+'.zip'
+        self.assertTrue(os.path.exists(path))
+
