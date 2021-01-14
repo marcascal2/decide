@@ -208,3 +208,43 @@ class VotingTestCase(BaseTestCase):
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), 'Voting already tallied')
+
+    def create_voting_custom_url(self):
+        q = Question(desc='new test question')
+        q.save()
+        for i in range(5):
+            opt = QuestionOption(question=q, option='option {}'.format(i+1))
+            opt.save()
+        v = Voting(name='new test voting', question=q, customURL='custom')
+        v.save()
+
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'test auth'})
+        a.save()
+        v.auths.add(a)
+
+        return v
+
+    def test_complete_voting_custom(self):
+        v = self.create_voting_custom_url()
+        self.create_voters(v)
+
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
+
+        clear = self.store_votes(v)
+
+        self.login()  # set token
+        v.tally_votes(self.token)
+
+        tally = v.tally
+        tally.sort()
+        tally = {k: len(list(x)) for k, x in itertools.groupby(tally)}
+
+        for q in v.question.options.all():
+            self.assertEqual(tally.get(q.number, 0), clear.get(q.number, 0))
+
+        for q in v.postproc:
+            self.assertEqual(tally.get(q["number"], 0), q["votes"])
+        

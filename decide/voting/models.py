@@ -38,7 +38,7 @@ class Voting(models.Model):
 
     pub_key = models.OneToOneField(Key, related_name='voting', blank=True, null=True, on_delete=models.SET_NULL)
     auths = models.ManyToManyField(Auth, related_name='votings')
-    customURL = models.TextField(blank=True, null=True, unique=True)
+    customURL = models.CharField(null=True, blank=True, unique=True, max_length=200)
     tally = JSONField(blank=True, null=True)
     postproc = JSONField(blank=True, null=True)
 
