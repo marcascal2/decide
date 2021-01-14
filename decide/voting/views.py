@@ -5,8 +5,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
 from rest_framework.response import Response
 
-from .models import Question, QuestionOption, Voting, QuestionPrefer, QuestionOrdering, Candidate, ReadonlyVoting, MultipleVoting
-from .serializers import SimpleVotingSerializer, VotingSerializer, CandidateSerializer, ReadonlyVotingSerializer, ReadonlySimpleVotingSerializer, MultipleSimpleVotingSerializer, MultipleVotingSerializer
+from .models import Question, QuestionOption, Voting, QuestionPrefer, QuestionOrdering, Candidate, Party, ReadonlyVoting, MultipleVoting
+from .serializers import SimpleVotingSerializer, VotingSerializer, CandidateSerializer, PartySerializer, ReadonlyVotingSerializer, ReadonlySimpleVotingSerializer, MultipleSimpleVotingSerializer, MultipleVotingSerializer
 from base.perms import UserIsStaff
 from base.models import Auth
 
