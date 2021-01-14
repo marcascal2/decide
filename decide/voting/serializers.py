@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Question, QuestionOption, Voting, QuestionPrefer, QuestionOrdering, Candidate, ReadonlyVoting, MultipleVoting
+from .models import Question, Party, Plank, Program, QuestionOption, Voting, QuestionPrefer, QuestionOrdering, Candidate, ReadonlyVoting, MultipleVoting
 from base.serializers import KeySerializer, AuthSerializer
 
 
@@ -29,9 +29,29 @@ class QuestionSerializer(serializers.HyperlinkedModelSerializer):
         #fields = ('desc', 'options')
         fields = ('prefer_options','desc', 'options', 'options_ordering')
 
+class PlankSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Plank
+        fields = ('number', 'plank')
+
+class ProgramSerializer(serializers.HyperlinkedModelSerializer):
+    planks = PlankSerializer(many=True)
+    class Meta:
+        model = Program
+        fields = ('title', 'overview', 'planks')
+
+class PartySerializer(serializers.HyperlinkedModelSerializer):
+    program = ProgramSerializer(many=False)
+    class Meta:
+        model = Party
+        fields = ('abreviatura','nombre', 'program')
+
+
+
 
 class CandidateSerializer(serializers.HyperlinkedModelSerializer):
-   class Meta:
+    political_party = PartySerializer(many=False)
+    class Meta:
         model = Candidate
         fields = ('number', 'name', 'age', 'sex', 'auto_community', 'political_party' )
 
@@ -44,14 +64,14 @@ class VotingSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Voting
         fields = ('id', 'name', 'desc', 'question', 'start_date', 'candidates', 'escanios',
-                  'end_date', 'min_age', 'max_age', 'pub_key', 'auths', 'tally', 'postproc')
+                  'end_date', 'min_age', 'max_age', 'pub_key', 'auths', 'customURL', 'tally', 'postproc')
 
 class SimpleVotingSerializer(serializers.HyperlinkedModelSerializer):
     question = QuestionSerializer(many=False)
 
     class Meta:
         model = Voting
-        fields = ('name', 'desc', 'question', 'start_date', 'end_date', 'min_age', 'max_age')
+        fields = ('name', 'desc', 'question', 'start_date', 'end_date', 'min_age', 'max_age','customURL')
 
 class ReadonlyVotingSerializer(serializers.HyperlinkedModelSerializer):
     question = QuestionSerializer(many=False)
