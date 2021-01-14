@@ -100,7 +100,7 @@ class Voting(models.Model):
         self.save()
         #Aqui hacemos el guardado del Tally
         _datetime = datetime.now()
-        datetime_str = _datetime.strftime("%Y-%m-%d-%H-%M-%S")
+        datetime_str = _datetime.strftime("%Y-%m-%d-%H")
         with open ('archivosGuardados/tally','w') as f:
              for tallys in json.dumps(self.tally):
                  json.dump(tallys,f)
