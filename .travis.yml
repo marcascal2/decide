@@ -12,6 +12,7 @@ python:
 - '3.6'
 install:
 - pip install -r requirements.txt
+- pip install django-chartjs
 script:
 - cd decide
 - cp travis_local_settings.py local_settings.py
