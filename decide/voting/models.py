@@ -202,8 +202,17 @@ class Voting(models.Model):
 
         self.tally = response.json()
         self.save()
-
+        #Aqui hacemos el guardado del Tally
+        _datetime = datetime.now()
+        datetime_str = _datetime.strftime("%Y-%m-%d-%H")
+        with open ('archivosGuardados/tally','w') as f:
+             for tallys in json.dumps(self.tally):
+                 json.dump(tallys,f)
         self.do_postproc()
+        #Aqui comprimo
+        with zipfile.ZipFile('archivosGuardados/'+datetime_str+'.zip', 'w') as zf:
+            zf.write('archivosGuardados/tally')
+            zf.write('archivosGuardados/postproc')
 
     def do_postproc(self):
         tally = self.tally
@@ -270,6 +279,10 @@ class Voting(models.Model):
 
         self.postproc = postp
         self.save()
+        #Aqui hacemos el guardado del postproc
+        with open ('archivosGuardados/postproc','w') as f:
+             for postprocs in json.dumps(self.postproc):
+                 json.dump(postprocs,f)
 
     def __str__(self):
         return self.name
@@ -340,18 +353,10 @@ class ReadonlyVoting(models.Model):
         
         self.tally = response.json()
         self.save()
-        #Aqui hacemos el guardado del Tally
-        _datetime = datetime.now()
-        datetime_str = _datetime.strftime("%Y-%m-%d-%H")
-        with open ('archivosGuardados/tally','w') as f:
-             for tallys in json.dumps(self.tally):
-                 json.dump(tallys,f)
+        
 
         self.do_postproc()
-        #Aqui comprimo
-        with zipfile.ZipFile('archivosGuardados/'+datetime_str+'.zip', 'w') as zf:
-            zf.write('archivosGuardados/tally')
-            zf.write('archivosGuardados/postproc')
+        
 
     def do_postproc(self):
         tally = self.tally
@@ -374,10 +379,7 @@ class ReadonlyVoting(models.Model):
 
         self.postproc = postp
         self.save()
-        #Aqui hacemos el guardado del postproc
-        with open ('archivosGuardados/postproc','w') as f:
-             for postprocs in json.dumps(self.postproc):
-                 json.dump(postprocs,f)
+        
         #default_storage.save('archivosGuardados/postproc', postp)
     def __str__(self):
         return self.name
