@@ -5,6 +5,9 @@ from .models import QuestionOption
 from .models import QuestionPrefer
 from .models import QuestionOrdering
 from .models import Question
+from .models import Party
+from .models import Plank
+from .models import Program
 from .models import Voting, ReadonlyVoting, MultipleVoting
 from .models import Candidate
 from django.core.exceptions import ValidationError
@@ -14,7 +17,9 @@ from .filters import StartedFilter
 
 def confirm_date(modeladmin, request, queryset):
     for v in queryset.all():
-        if v.start_date < timezone.now():
+        if v.start_date is None:
+            raise ValidationError("La fecha inicio no puede ser confirmada si no existe")
+        elif v.start_date < timezone.now():
             raise ValidationError("La fecha no puede ser anterior a ahora")
         else:
             v.create_pubkey()
@@ -51,6 +56,14 @@ class QuestionOrderingInline(admin.TabularInline):
 class QuestionAdmin(admin.ModelAdmin):
     inlines = [QuestionOptionInline]
     inlines = [QuestionOptionInline, QuestionPreferInLine, QuestionOrderingInline]
+
+
+
+class PlankInline(admin.TabularInline):
+    model = Plank
+
+class ProgramAdmin(admin.ModelAdmin):
+    inlines = [PlankInline]
 
 
 # class CandidateAdmin(admin.ModelAdmin):
@@ -115,5 +128,7 @@ admin.site.register(ReadonlyVoting, ReadonlyVotingAdmin)
 admin.site.register(Question, QuestionAdmin)
 # admin.site.register(Candidate, CandidateAdmin)
 admin.site.register(Candidate)
+admin.site.register(Party)
+admin.site.register(Program, ProgramAdmin)
 # admin.site.register(VotingCandidate, VotingCandidateAdmin)
 # admin.site.register(QuestionCandidate,QuestionCandidateAdmin)

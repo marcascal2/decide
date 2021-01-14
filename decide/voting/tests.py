@@ -6,6 +6,9 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework.test import APIClient
 from rest_framework.test import APITestCase
+from pathlib import Path
+import os
+from datetime import datetime
 
 from base import mods
 from base.tests import BaseTestCase
@@ -13,7 +16,7 @@ from census.models import Census
 from mixnet.mixcrypt import ElGamal
 from mixnet.mixcrypt import MixCrypt
 from mixnet.models import Auth
-from voting.models import Voting, Question, QuestionOption, QuestionPrefer, QuestionOrdering, Candidate, ReadonlyVoting, MultipleVoting
+from voting.models import Voting, Question, QuestionOption, QuestionPrefer, QuestionOrdering, Candidate, ReadonlyVoting, MultipleVoting, Party, Program, Plank
 
 
 class VotingTestCase(BaseTestCase):
@@ -55,6 +58,22 @@ class VotingTestCase(BaseTestCase):
             opt = QuestionPrefer(question=q, prefer = 'YES',option='option {}'.format(i+1))
             opt.save()
         v = Voting(name='test voting', question=q)
+        v.save()
+
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'test auth'})
+        a.save()
+        v.auths.add(a)
+
+        return v
+        
+    def create_voting_custom_url(self):
+        q = Question(desc='new test question')
+        q.save()
+        for i in range(5):
+            opt = QuestionOption(question=q, option='option {}'.format(i+1))
+            opt.save()
+        v = Voting(name='new test voting', question=q, customURL='custom')
         v.save()
 
         a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
@@ -265,6 +284,9 @@ class VotingTestCase(BaseTestCase):
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), 'Voting tallied')
+        
+        #Comprobar que se ha creado el archivo
+        self.test_createfiles_voting()
 
         # STATUS VOTING: tallied
         data = {'action': 'start'}
@@ -360,7 +382,18 @@ class VotingTestCase(BaseTestCase):
                 'sex': 'H',
                 'auto_community': 'H',
                 'age': 21,
-                'political_party': 'PACMA'
+                'political_party': 
+                {   
+                    'abreviatura': 'PC',
+                    'nombre': 'Partido Cuestista',
+                    'program':
+                    {
+                        'title': 'programa de PC',
+                        'overview': 'el programa politico del PC',
+                        'plank': ['promesa1', 'promesa2', 'promesa3'],
+
+                    }
+                }
                 
             }
         }
@@ -396,27 +429,68 @@ class VotingTestCase(BaseTestCase):
                 'sex': 'H',
                 'auto_community': 'H',
                 'age': 21,
-                'political_party': 'PACMA'
+                'political_party': 
+                {   
+                    'abreviatura': 'PACMA',
+                    'nombre': 'Partido Animalista'
+                }
             },
             {
                 'name': 'pepe2',
                 'sex': 'H',
                 'auto_community': 'BA',
                 'age': 21,
-                'political_party': 'VOX'  
+                'political_party': 
+                {   
+                    'abreviatura': 'VOX',
+                    'nombre': 'VOX'
+                }  
             },           
             { 
                 'name': 'pepe3',
                 'sex': 'M',
                 'auto_community': 'AN',
                 'age': 30,
-                'political_party': 'UP'  
+                'political_party': 
+                {   
+                    'abreviatura': 'UP',
+                    'nombre': 'Unidas Podemos'
+                } 
             }
             ]
         }
 
         response = self.client.post('/voting/', data, format='json')
         self.assertEqual(response.status_code, 201)
+
+    def test_complete_voting_custom(self):
+        v = self.create_voting_custom_url()
+        self.create_voters(v)
+
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
+
+        clear = self.store_votes(v)
+
+        self.login()  # set token
+        v.tally_votes(self.token)
+
+        tally = v.tally
+        tally.sort()
+        tally = {k: len(list(x)) for k, x in itertools.groupby(tally)}
+
+        for q in v.question.options.all():
+            self.assertEqual(tally.get(q.number, 0), clear.get(q.number, 0))
+
+        for q in v.postproc:
+            self.assertEqual(tally.get(q["number"], 0), q["votes"])
+        
+    def test_createfiles_voting(self):
+        _datetime = datetime.now()
+        datetime_str = _datetime.strftime("%Y-%m-%d-%H")
+        path = 'archivosGuardados/'+datetime_str+'.zip'
+        self.assertTrue(os.path.exists(path))
 
 class QuestionTestCase(BaseTestCase):
 
@@ -504,6 +578,7 @@ class AgeTestCase(BaseTestCase):
     def create_wrong_voting(self):
         
         q = Question(desc='test question')
+
         q.save()
         for i in range(5):
             opt = QuestionOption(question=q, option='option {}'.format(i+1))
@@ -517,6 +592,7 @@ class AgeTestCase(BaseTestCase):
         v.auths.add(a)
 
         return v
+    
 
     def testExistWithoutAges(self):
         v = Voting.objects.get(name="Votacion")
@@ -663,6 +739,8 @@ class QuestionOrderingTestCase(BaseTestCase):
 class CandidateTestCase(BaseTestCase):
 
     def setUp(self):
+        p = Party(abreviatura = "PC")
+        p.save()
         c = Candidate(name="pepe")
         c.save()
         super().setUp()
@@ -677,13 +755,99 @@ class CandidateTestCase(BaseTestCase):
         self.assertEqual(candidate_test.name, "pepe")
 
     def testExistCompleteCandidate(self):
-        candidate_test = Candidate(name="test", age=21, number=1, auto_community="AN", sex ="H", political_party="PACMA")
+        p1 = Party(abreviatura = "PC")
+        candidate_test = Candidate(name="test", age=21, number=1, auto_community="AN", sex ="H", political_party = p1)
         self.assertEqual(candidate_test.name, "test")
         self.assertEqual(candidate_test.age, 21)
         self.assertEqual(candidate_test.number, 1)
         self.assertEqual(candidate_test.auto_community, "AN")
         self.assertEqual(candidate_test.sex, "H")
-        self.assertEqual(candidate_test.political_party, "PACMA")
+        self.assertEqual(candidate_test.political_party.abreviatura, "PC")
+
+
+class PartyTestCase(BaseTestCase):
+
+    def setUp(self):
+        self.p = self.create_party()
+        self.p.save()
+        super().setUp()
+
+    def tearDown(self):
+        super().tearDown()
+
+    def create_party(self):
+        p = Program(title='programa test')
+        p.save()
+        for i in range(5):
+            plk = Plank(program=p, plank='plank {}'.format(i+1))
+            plk.save()
+        pt = Party(abreviatura = 'PC', nombre='Partido Cuestista', program=p)
+        pt.save()
+
+        return pt    
+
+    def testExistParty(self):
+        p = Party.objects.get(abreviatura = "PC")
+        self.assertEquals(p.abreviatura, "PC")
+
+    def testExistCompleteParty(self):
+        p = Party.objects.get(abreviatura = "PC")
+        self.assertEquals(p.abreviatura, "PC")
+        self.assertEquals(p.nombre , "Partido Cuestista")
+        self.assertEquals(p.program.title , "programa test")
+        #for plk in p.program.planks.all():
+    
+
+    def testUpdateCompleteParty(self):
+        p = Party.objects.get(abreviatura = "PC")
+        p.abreviatura = "PG"
+        p.nombre = "Partido Guerrista"
+        self.assertEquals(p.abreviatura, "PG")
+        self.assertEquals(p.nombre, "Partido Guerrista")
+
+
+class ProgramTestCase(BaseTestCase):
+
+    def setUp(self):
+        p=Program(title="test de Programa")
+        p.save()
+
+        self.pt=Party(abreviatura="TP", nombre='test party', program=p)
+        self.pt.save()
+        super().setUp()
+
+    def tearDown(self):
+        super().tearDown()
+        self.pt=None
+
+    def testExistProgramNoPlank(self):
+        pt = Party.objects.get(abreviatura="TP")
+        self.assertEqual(pt.program.title, "test de Programa")
+
+    def testExistProgramWithPlank(self):
+        p = Program.objects.get(title="test de Programa")
+        plk1 = Plank(program = p, plank="plank1")
+        plk1.save()
+        pt = Party.objects.get(abreviatura="TP")
+        pt.program = p
+        pt.plank = plk1
+        pt.save()
+        self.assertEqual(pt.program.planks.all()[0].plank, "plank1")
+    
+    def testAddPlank(self):
+        pt = Party.objects.get(abreviatura="TP")
+        p = pt.program
+
+        self.assertEqual(pt.program.planks.all().count(),0)
+
+        plk = Plank(program = p, plank="plank")
+        plk.save()
+        pt.save()
+
+        self.assertEqual(pt.program.planks.all()[0].plank , "plank")
+        self.assertEqual(pt.program.planks.all().count(),1)
+
+
 
 class ReadOnlyVotingTests(BaseTestCase):
 
@@ -783,3 +947,5 @@ class MultipleVotingTests(BaseTestCase):
         self.assertEquals(v.desc, "example2")
         self.assertEquals(v.question.all()[0].desc, "multiple test question")
         with self.assertRaises(IndexError): v.question.all()[1].desc
+
+
