@@ -4,7 +4,7 @@ from django.test import TestCase
 from rest_framework.test import APIClient
 
 from .models import Census
-from census import views
+from census import views, admin
 from voting.models import Voting, Question, Candidate
 from base import mods
 from base.tests import BaseTestCase
