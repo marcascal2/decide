@@ -19,5 +19,6 @@ WORKDIR /app/decide
 ADD docker-settings.py /app/decide/local_settings.py
 
 RUN ./manage.py collectstatic
+RUN ./manage.py makemigrations
 
 #CMD ["gunicorn", "-w 5", "decide.wsgi", "--timeout=500", "-b 0.0.0.0:5000"]
