@@ -23,6 +23,8 @@ services:
       - static:/app/static
     depends_on:
       - db
+    links:
+      - db:db
     networks:
       - decide
   nginx:
