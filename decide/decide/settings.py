@@ -70,7 +70,7 @@ MODULES = [
     'voting',
 ]
 
-BASEURL = 'http://decide-part-zumeta.herokuapp.com/'
+BASEURL = 'http://decide-part-zumeta.herokuapp.com'
 
 APIS = {
     'authentication': BASEURL,
