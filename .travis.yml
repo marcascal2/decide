@@ -18,6 +18,7 @@ script:
 - cp travis_local_settings.py local_settings.py
 - ./manage.py makemigrations
 - ./manage.py migrate
+- python manage.py collectstatic
 - coverage run --branch --source=. ./manage.py test --keepdb
 deploy:
   provider: heroku
