@@ -64,10 +64,10 @@
         </thead>
         {% for c in census %}
         <tr class="filas-tabla">
-          <td>{{c.voting_name}}</td>
-          <td>{{c.voter_username}}</td>
-          <td>{{c.adscripcion}}</td>
-          <td>{{c.date}}</td>
+          <td id="voting-column-{{ forloop.counter }}">{{c.voting_name}}</td>
+          <td id="voter-column-{{ forloop.counter }}">{{c.voter_username}}</td>
+          <td id="adscripcion-column-{{ forloop.counter }}">{{c.adscripcion}}</td>
+          <td id="date-column-{{ forloop.counter }}">{{c.date}}</td>
         </tr>
         {% endfor %}
       </table>
@@ -99,7 +99,7 @@
               <ul class="filtro-container">
                 {% for voting in votings %}
                 <li>
-                  <a href="{% url 'group_by_voting' voting_id=voting.id %}"
+                  <a href="{% url 'group_by_voting' voting_id=voting.id %}" id="voting-{{ forloop.counter }}"
                     >{{voting.name}}</a
                   >
                 </li>
@@ -134,7 +134,7 @@
                 {% for adscripcion in adscripciones %}
                 <li>
                   <a
-                    href="{% url 'group_by_adscripcion' adscripcion=adscripcion %}"
+                    href="{% url 'group_by_adscripcion' adscripcion=adscripcion %}" id="adscripcion-{{ forloop.counter }}"
                     >{{adscripcion}}</a
                   >
                 </li>
@@ -168,7 +168,7 @@
               <ul class="filtro-container">
                 {% for voter in voters %}
                 <li>
-                  <a href="{% url 'group_by_voter' voter_id=voter.id %}"
+                  <a href="{% url 'group_by_voter' voter_id=voter.id %}" id="voter-{{ forloop.counter }}"
                     >{{voter.username}}</a
                   >
                 </li>
@@ -202,7 +202,7 @@
               <ul class="filtro-container">
                 {% for date in dates %}
                 <li>
-                  <a href="{% url 'group_by_date' date=date %}">{{date}}</a>
+                  <a href="{% url 'group_by_date' date=date %}" id="date-{{ forloop.counter }}">{{date}}</a>
                 </li>
                 {% endfor %}
               </ul>
@@ -234,7 +234,7 @@
               <ul class="filtro-container">
                 {% for q in questions %}
                 <li>
-                  <a href="{% url 'group_by_question' question=q %}">{{q}}</a>
+                  <a href="{% url 'group_by_question' question=q %}" id="question-{{ forloop.counter }}">{{q}}</a>
                 </li>
                 {% endfor %}
               </ul>
