@@ -5,10 +5,11 @@ from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
 from rest_framework.response import Response
 
-from .models import Question, QuestionOption, Voting, QuestionPrefer, QuestionOrdering, Candidate, ReadonlyVoting, MultipleVoting
-from .serializers import SimpleVotingSerializer, VotingSerializer, CandidateSerializer, ReadonlyVotingSerializer, ReadonlySimpleVotingSerializer, MultipleSimpleVotingSerializer, MultipleVotingSerializer
+from .models import Question, QuestionOption, Voting, QuestionPrefer, QuestionOrdering, Candidate, Party, Plank, Program, ReadonlyVoting, MultipleVoting
+from .serializers import SimpleVotingSerializer, VotingSerializer, CandidateSerializer, PartySerializer,ProgramSerializer, PlankSerializer, ReadonlyVotingSerializer, ReadonlySimpleVotingSerializer, MultipleSimpleVotingSerializer, MultipleVotingSerializer
 from base.perms import UserIsStaff
 from base.models import Auth
+from voting.models import Candidate
 
 
 class VotingView(generics.ListCreateAPIView):
@@ -54,6 +55,7 @@ class VotingView(generics.ListCreateAPIView):
         
         candidate, _ = Candidate.objects.get_or_create(name="pepe")
         candidate.save()
+
         voting.candidates.add(candidate)
         auth, _ = Auth.objects.get_or_create(url=settings.BASEURL,
                                           defaults={'me': True, 'name': 'test auth'})

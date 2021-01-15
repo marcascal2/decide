@@ -1,9 +1,14 @@
 from django.db import models
+from django.core.files import File
 from django.contrib.postgres.fields import JSONField
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from django.core.files.storage import default_storage
+from datetime import datetime
+import zipfile
+import json
 from base import mods
 from base.models import Auth, Key
 
@@ -12,6 +17,35 @@ class Question(models.Model):
 
     def __str__(self):
         return self.desc
+
+class Program(models.Model):
+    title = models.CharField(max_length=200)
+    overview = models.TextField()
+
+    def __str__(self):
+        return self.title
+
+class Party(models.Model):
+    abreviatura = models.TextField(max_length=10)
+    nombre = models.TextField()
+    program = models.ForeignKey(Program, related_name='party', on_delete=models.CASCADE,null=True)
+
+    def __str__(self):
+        return self.abreviatura        
+
+
+class Plank(models.Model):
+    program = models.ForeignKey(Program, related_name='planks', on_delete=models.CASCADE)
+    number = models.PositiveIntegerField(blank=True, null=True)
+    plank = models.TextField()
+
+    def save(self):
+        if not self.number:
+            self.number = self.program.planks.count() + 2
+        return super().save()
+
+    def __str__(self):
+        return '{} ({})'.format(self.plank, self.number)
 
 class QuestionOption(models.Model):
     question = models.ForeignKey(Question, related_name='options', on_delete=models.CASCADE)
@@ -104,7 +138,8 @@ class Candidate(models.Model):
         ('VA', 'Valencia')) 
     auto_community = models.TextField(choices=COMUNIDADES, default='AN')
     sex = models.TextField(default='H', choices=[('H','HOMBRE'),('M','MUJER')])
-    political_party = models.TextField(choices= PARTIDOS, default = 'PACMA')
+    #political_party = models.TextField(choices= PARTIDOS, default = 'PACMA')
+    political_party= models.ForeignKey(Party, related_name='candidate', on_delete=models.CASCADE,null=True)
     def __str__(self):
          return '{} ({}) - {} - {} - {}'.format(self.name, self.age, self.auto_community, self.sex, self.political_party)
 
@@ -124,7 +159,7 @@ class Voting(models.Model):
     
     pub_key = models.OneToOneField(Key, related_name='voting', blank=True, null=True, on_delete=models.SET_NULL)
     auths = models.ManyToManyField(Auth, related_name='votings')
-
+    customURL = models.CharField(null=True, blank=True, unique=True, max_length=200)
     tally = JSONField(blank=True, null=True)
     postproc = JSONField(blank=True, null=True)
 
@@ -189,8 +224,17 @@ class Voting(models.Model):
 
         self.tally = response.json()
         self.save()
-
+        #Aqui hacemos el guardado del Tally
+        _datetime = datetime.now()
+        datetime_str = _datetime.strftime("%Y-%m-%d-%H")
+        with open ('archivosGuardados/tally','w') as f:
+             for tallys in json.dumps(self.tally):
+                 json.dump(tallys,f)
         self.do_postproc()
+        #Aqui comprimo
+        with zipfile.ZipFile('archivosGuardados/'+datetime_str+'.zip', 'w') as zf:
+            zf.write('archivosGuardados/tally')
+            zf.write('archivosGuardados/postproc')
 
     def do_postproc(self):
         tally = self.tally
@@ -206,11 +250,10 @@ class Voting(models.Model):
             else:
                 votes=0
             cnds.append({
-                'name': candidate.name,
+                'id':candidate.id,
                 'sex': candidate.sex,
-                'auto_community': candidate.auto_community,
                 'age': candidate.age,
-                'political_party': candidate.political_party
+                'political_party': candidate.political_party.abreviatura
             })
         opts = []
         for opt in options:
@@ -222,11 +265,8 @@ class Voting(models.Model):
                 'option': opt.option,
                 'number': opt.number,
                 'votes': votes,
-                'candidates':cnds,
                 'escanio':escanios
             })
-
-
         prefers = []
         for pre in prefer_options:
             if isinstance(tally, list):
@@ -252,11 +292,15 @@ class Voting(models.Model):
                 'votes': votes
             })
 
-        data = { 'type': 'IDENTITY', 'options': opts, 'options_ordering': opts_ordering , 'prefer_options':prefers}
+        data = { 'type': 'IDENTITY', 'options': opts, 'options_ordering': opts_ordering , 'prefer_options':prefers,'candidates':cnds,'escanio':escanios}
         postp = mods.post('postproc', json=data)
 
         self.postproc = postp
         self.save()
+        #Aqui hacemos el guardado del postproc
+        with open ('archivosGuardados/postproc','w') as f:
+             for postprocs in json.dumps(self.postproc):
+                 json.dump(postprocs,f)
 
     def __str__(self):
         return self.name
@@ -324,11 +368,13 @@ class ReadonlyVoting(models.Model):
         if response.status_code != 200:
             # TODO: manage error
             pass
-
+        
         self.tally = response.json()
         self.save()
+        
 
         self.do_postproc()
+        
 
     def do_postproc(self):
         tally = self.tally
@@ -351,7 +397,8 @@ class ReadonlyVoting(models.Model):
 
         self.postproc = postp
         self.save()
-
+        
+        #default_storage.save('archivosGuardados/postproc', postp)
     def __str__(self):
         return self.name
 
