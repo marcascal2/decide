@@ -12,6 +12,7 @@ from django.contrib.auth.models import User
 from census.models import Census
 from voting.models import Voting, Question
 from datetime import date
+import time
 
 class TestGroupingbyadscripciontest(StaticLiveServerTestCase):
   
@@ -43,6 +44,10 @@ class TestGroupingbyadscripciontest(StaticLiveServerTestCase):
     c2 = Census(id=22,voting_id=3, voter_id=5, adscripcion='Colegio1', date=date.today())
     c2.save()
 
+    c3 = Census(id=23,voting_id=1, voter_id=6, adscripcion='Colegio2', date=date.today())
+    c3.save()
+
+
     super().setUp()
   
   def tearDown(self):
@@ -57,8 +62,14 @@ class TestGroupingbyadscripciontest(StaticLiveServerTestCase):
     self.driver.find_element_by_id('id_password').send_keys("qwerty",Keys.ENTER)
 
     self.driver.get(f'{self.live_server_url}/census/admin/')
+    
     self.driver.find_element(By.ID, "agrupar_adscripcion").click()
-    self.driver.find_element(By.LINK_TEXT, "Colegio1").click()
-    assert self.driver.find_element(By.CSS_SELECTOR, ".filas-tabla:nth-child(1) > td:nth-child(3)").text == "Colegio1"
-    assert self.driver.find_element(By.CSS_SELECTOR, ".filas-tabla:nth-child(2) > td:nth-child(3)").text == "Colegio1"
-  
+    time.sleep(2)
+    self.driver.find_element(By.ID, "adscripcion-1").click()
+    assert self.driver.find_element(By.ID, "adscripcion-column-1").text == "Colegio1"
+    assert self.driver.find_element(By.ID, "adscripcion-column-2").text == "Colegio1"
+    
+    self.driver.find_element(By.ID, "agrupar_adscripcion").click()
+    time.sleep(2)
+    self.driver.find_element(By.ID, "adscripcion-2").click()
+    assert self.driver.find_element(By.ID, "adscripcion-column-1").text == "Colegio2"
