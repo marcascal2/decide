@@ -13,7 +13,9 @@ from census.models import Census
 from voting.models import Voting, Question
 from datetime import date
 import time
+import os
 
+@unittest.skipIf("TRAVIS" in os.environ and os.environ["TRAVIS"]=="true", "Skipping this test on Travis CI.")
 class TestGroupingbyvotingtest(StaticLiveServerTestCase):
   
   def setUp(self):

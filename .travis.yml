@@ -3,18 +3,10 @@ services:
 - postgresql
 addons:
   postgresql: '9.4'
-  chrome: stable
 before_script:
 - psql -U postgres -c "create user decide password 'decide'"
 - psql -U postgres -c "create database test_decide owner decide"
 - psql -U postgres -c "ALTER USER decide CREATEDB"
-- pip install -U selenium
-- google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 http://localhost &
-- wget http://chromedriver.storage.googleapis.com/2.27/chromedriver_linux64.zip
-- unzip chromedriver_linux64.zip
-- sudo cp chromedriver /usr/local/bin/.
-- sudo chmod +x /usr/local/bin/chromedriver
-- sudo apt install -y chromium-browser
 language: python
 python:
 - '3.6'

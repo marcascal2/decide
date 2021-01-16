@@ -4,7 +4,6 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 
 from base.tests import BaseTestCase
@@ -13,7 +12,9 @@ from census.models import Census
 from voting.models import Voting, Question
 from datetime import date
 import time
+import os
 
+@unittest.skipIf("TRAVIS" in os.environ and os.environ["TRAVIS"]=="true", "Skipping this test on Travis CI.")
 class TestGroupingbyvotingtest(StaticLiveServerTestCase):
   
   def setUp(self):
