@@ -64,7 +64,7 @@
         </thead>
         {% for c in census %}
         <tr class="filas-tabla">
-          <td>{{c.voting_name}}</td>
+          <td><a class="navbar-brand" href="{% url 'voting_census' voting_id=c.voting_id %}">{{c.voting_name}}</a></td>
           <td>{{c.voter_username}}</td>
           <td>{{c.adscripcion}}</td>
           <td>{{c.date}}</td>
