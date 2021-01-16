@@ -18,6 +18,63 @@ from mixnet.mixcrypt import MixCrypt
 from mixnet.models import Auth
 from voting.models import Voting, Question, QuestionOption, QuestionPrefer, QuestionOrdering, Candidate, ReadonlyVoting, MultipleVoting, Party, Program, Plank
 
+class VotingToString(BaseTestCase):
+
+    def setUp(self):
+        q=Question(desc="Descripcion")
+        q.save()
+
+        que1=Question(desc="Descripcion1")
+        que1.save()
+        que2=Question(desc="Descripcion2")
+        que2.save()
+
+        opt1 = QuestionOption(question = q, option = "option1")
+        opt1.save()
+
+        opt2 = QuestionOption(question = q, option = "option2")
+        opt2.save()
+
+        q_prefer = QuestionPrefer(question = q, prefer = "YES", number = 4, option="option1")
+        q_prefer.save()
+
+        q_ordering = QuestionOrdering(question=q, number = 5, option="prueba de ordenacion", ordering=1)
+        q_ordering.save()
+
+        party1 = Party(abreviatura = "PC")
+        party1.save()
+
+        self.candidate1 = Candidate(name="test", age=21, number=1, auto_community="AN", sex ="H", political_party = party1)
+        self.candidate1.save()
+
+        self.v1 = ReadonlyVoting(name="VotacionRO", question=que1, desc = "example")
+        self.v2 = MultipleVoting(name="VotacionM", desc = "example")
+        self.v2.save()
+        self.v2.question.add(que1)
+        self.v2.question.add(que2)
+        self.v=Voting(name="Votacion", question=q)
+        self.v.save()
+        self.v1.save()
+        self.v2.save()
+        super().setUp()
+
+    def tearDown(self):
+        super().tearDown()
+        self.v = None
+
+    def test_Voting_toString(self):
+        v = Voting.objects.get(name = 'Votacion')
+        v1 = ReadonlyVoting.objects.get(name = 'VotacionRO')
+        v2 = MultipleVoting.objects.get(name = 'VotacionM')
+        candidate1 = Candidate.objects.get(name = 'test')
+        self.assertEquals(str(v),"Votacion")
+        self.assertEquals(str(v.question),"Descripcion")
+        self.assertEquals(str(v.question.options.all()[0]),"option1 (2)")
+        self.assertEquals(str(v.question.prefer_options.all()[0]), "option1 (4)")
+        self.assertEquals(str(v.question.options_ordering.all()[0]), "prueba de ordenacion (5)")
+        self.assertEquals(str(candidate1), "test (21) - AN - H - PC")
+        self.assertEquals(str(v1),"VotacionRO")
+        self.assertEquals(str(v2),"VotacionM")
 
 class VotingTestCase(BaseTestCase):
 
