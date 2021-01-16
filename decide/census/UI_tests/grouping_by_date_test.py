@@ -15,7 +15,6 @@ from datetime import date
 import time
 import os
 
-@unittest.skipIf("TRAVIS" in os.environ and os.environ["TRAVIS"]=="true", "Skipping this test on Travis CI.")
 class TestGroupingbyvotingtest(StaticLiveServerTestCase):
   
     def setUp(self):
@@ -40,10 +39,10 @@ class TestGroupingbyvotingtest(StaticLiveServerTestCase):
         user2 = User(id=6, username='voter2', password='test_password')
         user2.save()
 
-        c1 = Census(id=21, voting_id=1, voter_id=5, adscripcion='Colegio1', date=date.today())
+        c1 = Census(id=21, voting_id=1, voter_id=5, adscripcion='Colegio1', date=date(2021, 1, 16))
         c1.save()
 
-        c2 = Census(id=22,voting_id=3, voter_id=6, adscripcion='Colegio1', date=date.today())
+        c2 = Census(id=22,voting_id=3, voter_id=6, adscripcion='Colegio1', date=date(2021, 1, 15))
         c2.save()
 
         super().setUp()
@@ -63,4 +62,4 @@ class TestGroupingbyvotingtest(StaticLiveServerTestCase):
         self.driver.find_element(By.ID, "agrupar_fecha").click()
         time.sleep(2)
         self.driver.find_element(By.ID, "date-1").click()
-        assert self.driver.find_element(By.ID, "date-column-1").text == "Jan. 15, 2021"
+        assert self.driver.find_element(By.ID, "date-column-1").text == "Jan. 16, 2021"

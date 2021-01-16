@@ -13,11 +13,10 @@ from census.models import Census
 from voting.models import Voting, Question
 from datetime import date
 import os
-
-@unittest.skipIf("TRAVIS" in os.environ and os.environ["TRAVIS"]=="true", "Skipping this test on Travis CI.")
+from unittest import skipIf
 
 class TestGroupingbyvotingtest(StaticLiveServerTestCase):
-  
+    @skipIf("TRAVIS" in os.environ and os.environ["TRAVIS"]=="true", "Skipping this test on Travis CI.")
     def setUp(self):
         self.base = BaseTestCase()
         self.base.setUp()
@@ -47,13 +46,15 @@ class TestGroupingbyvotingtest(StaticLiveServerTestCase):
         c2.save()
 
         super().setUp()
-  
+
+    @skipIf("TRAVIS" in os.environ and os.environ["TRAVIS"]=="true", "Skipping this test on Travis CI.")    
     def tearDown(self):
         super().tearDown()
     
         self.driver.quit()
         self.base.tearDown()
-    
+
+    @skipIf("TRAVIS" in os.environ and os.environ["TRAVIS"]=="true", "Skipping this test on Travis CI.")
     def filter_by_test(self):
         self.driver.get(f'{self.live_server_url}/admin/')
         self.driver.find_element_by_id('id_username').send_keys("admin")
