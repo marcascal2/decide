@@ -323,6 +323,7 @@ class ReadonlyVoting(models.Model):
     tally = JSONField(blank=True, null=True)
     postproc = JSONField(blank=True, null=True)
 
+    # Comentamos lo que sigue porque pese a que esta preparado para funcionar, no se puede usar al no haber modificado la cabina de votaciones y el visualizer
     def create_pubkey(self):
         if self.pub_key or not self.auths.count():
             return
@@ -338,7 +339,7 @@ class ReadonlyVoting(models.Model):
         self.pub_key = pk
         self.save()
 
-    def get_votes(self, token=''):
+    """ def get_votes(self, token=''):
         # gettings votes from store
         votes = mods.get('store', params={'voting_id': self.id}, HTTP_AUTHORIZATION='Token ' + token)
         # anon votes
@@ -400,9 +401,8 @@ class ReadonlyVoting(models.Model):
         postp = mods.post('postproc', json=data)
 
         self.postproc = postp
-        self.save()
+        self.save() """
         
-        #default_storage.save('archivosGuardados/postproc', postp)
     def __str__(self):
         return self.name
 
@@ -420,6 +420,7 @@ class MultipleVoting(models.Model):
     tally = JSONField(blank=True, null=True)
     postproc = JSONField(blank=True, null=True)
 
+    # Comentamos lo que sigue porque pese a que esta preparado para funcionar, no se puede usar al no haber modificado la cabina de votaciones y el visualizer
     def create_pubkey(self):
         if self.pub_key or not self.auths.count():
             return
@@ -435,7 +436,7 @@ class MultipleVoting(models.Model):
         self.pub_key = pk
         self.save()
 
-    def get_votes(self, token=''):
+    """ def get_votes(self, token=''):
         # gettings votes from store
         votes = mods.get('store', params={'voting_id': self.id}, HTTP_AUTHORIZATION='Token ' + token)
         # anon votes
@@ -498,7 +499,7 @@ class MultipleVoting(models.Model):
         postp = mods.post('postproc', json=data)
 
         self.postproc = postp
-        self.save()
+        self.save() """
 
     def __str__(self):
         return self.name

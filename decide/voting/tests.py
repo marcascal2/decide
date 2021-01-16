@@ -876,6 +876,61 @@ class ReadOnlyVotingTests(BaseTestCase):
         self.assertEquals(v.question.options.all()[0].option, "option1")
         self.assertEquals(v.question.options.all()[1].option, "option2")
 
+    def testUpdateReadonlyVotingDesc(self):
+        v = ReadonlyVoting.objects.get(name="Votacion")
+        v.desc = "cambio"
+        self.assertEquals(v.desc, "cambio")
+        # Mediante tests las Readonly Voting si se pueden cambiar pese a que en la página no puedan hacerlo los usuarios
+        
+    def testDeleteReadonlyVotingDesc(self):
+        v = ReadonlyVoting.objects.get(name="Votacion")
+        v.desc = None
+        self.assertEquals(v.desc, None)
+
+    def testDeleteReadonlyVoting(self):
+        v = ReadonlyVoting.objects.get(name="Votacion")
+        v2 = ReadonlyVoting.objects.get(name="Votacion")
+        v.delete()
+        self.assertNotEquals(v, v2)
+
+    def test_update_voting(self):
+        # No se pueden votar este tipo porque habria que tocar la cabina de votaciones y el visualizer, asi que comprobamos que efectivamente no se puede votar
+
+        voting = ReadonlyVoting.objects.get(name="Votacion")
+
+        data = {'action': 'start'}
+        #response = self.client.post('/voting/{}/'.format(voting.pk), data, format='json')
+        #self.assertEqual(response.status_code, 401)
+
+        # login with user no admin
+        self.login(user='noadmin')
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 403)
+
+        # STATUS VOTING: not started
+        for action in ['stop']:
+            data = {'action': action}
+            response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+            self.assertEqual(response.status_code, 403)
+
+        # STATUS VOTING: started
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 403)
+
+        data = {'action': 'stop'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 403)
+
+        # STATUS VOTING: stopped
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 403)
+
+        data = {'action': 'stop'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 403)
+
 class MultipleVotingTests(BaseTestCase):
 
     def setUp(self):
@@ -948,4 +1003,47 @@ class MultipleVotingTests(BaseTestCase):
         self.assertEquals(v.question.all()[0].desc, "multiple test question")
         with self.assertRaises(IndexError): v.question.all()[1].desc
 
+    def testDeleteMultipleVoting(self):
+        v = MultipleVoting.objects.get(name="Votacion")
+        v2 = MultipleVoting.objects.get(name="Votacion")
+        v.delete()
+        self.assertNotEquals(v, v2)
+
+    def test_update_voting(self):
+        # No se pueden votar este tipo porque habria que tocar la cabina de votaciones y el visualizer, asi que comprobamos que efectivamente no se puede votar
+
+        voting = MultipleVoting.objects.get(name="Votacion")
+
+        data = {'action': 'start'}
+        #response = self.client.post('/voting/{}/'.format(voting.pk), data, format='json')
+        #self.assertEqual(response.status_code, 401)
+
+        # login with user no admin
+        self.login(user='noadmin')
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 403)
+
+        # STATUS VOTING: not started
+        for action in ['stop']:
+            data = {'action': action}
+            response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+            self.assertEqual(response.status_code, 403)
+
+        # STATUS VOTING: started
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 403)
+
+        data = {'action': 'stop'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 403)
+
+        # STATUS VOTING: stopped
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 403)
+
+        data = {'action': 'stop'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 403)
 

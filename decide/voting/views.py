@@ -185,21 +185,8 @@ class ReadonlyVotingUpdate(generics.RetrieveUpdateDestroyAPIView):
                 voting.end_date = timezone.now()
                 voting.save()
                 msg = 'Voting stopped'
-        elif action == 'tally':
-            if not voting.start_date:
-                msg = 'Voting is not started'
-                st = status.HTTP_400_BAD_REQUEST
-            elif not voting.end_date:
-                msg = 'Voting is not stopped'
-                st = status.HTTP_400_BAD_REQUEST
-            elif voting.tally:
-                msg = 'Voting already tallied'
-                st = status.HTTP_400_BAD_REQUEST
-            else:
-                voting.tally_votes(request.auth.key)
-                msg = 'Voting tallied'
         else:
-            msg = 'Action not found, try with start, stop or tally'
+            msg = 'Action not found, try with start or stop'
             st = status.HTTP_400_BAD_REQUEST
         return Response(msg, status=st)
 
@@ -280,20 +267,7 @@ class MultipleVotingUpdate(generics.RetrieveUpdateDestroyAPIView):
                 voting.end_date = timezone.now()
                 voting.save()
                 msg = 'Voting stopped'
-        elif action == 'tally':
-            if not voting.start_date:
-                msg = 'Voting is not started'
-                st = status.HTTP_400_BAD_REQUEST
-            elif not voting.end_date:
-                msg = 'Voting is not stopped'
-                st = status.HTTP_400_BAD_REQUEST
-            elif voting.tally:
-                msg = 'Voting already tallied'
-                st = status.HTTP_400_BAD_REQUEST
-            else:
-                voting.tally_votes(request.auth.key)
-                msg = 'Voting tallied'
         else:
-            msg = 'Action not found, try with start, stop or tally'
+            msg = 'Action not found, try with start or stop'
             st = status.HTTP_400_BAD_REQUEST
         return Response(msg, status=st)
