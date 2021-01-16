@@ -22,7 +22,7 @@ class CensusAddUserForm(forms.Form):
                 pending_users.append([user.id, user.username])
 
 
-        self.fields['user_to_add'] = forms.ChoiceField(choices=pending_users)
+        self.fields['user_to_add'] = forms.ChoiceField(label="Añadir usuario", choices=pending_users)
         
 
     user_to_add = forms.ChoiceField(choices=[])
