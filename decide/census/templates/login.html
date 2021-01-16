@@ -22,7 +22,7 @@
               <div class="card card-signin my-5">
                 <div class="card-body">
                   <h5 class="card-title text-center">Sign In</h5>
-                  <form method="POST">
+                  <form id=loginForm method="POST">
                     {{ form.as_p }}
                     {% csrf_token %}
                     <button type="submit">Login</button>

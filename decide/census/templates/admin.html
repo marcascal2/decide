@@ -41,7 +41,7 @@
   </div>
 </form>
 
-<form action="{% url 'filter_by' %}" method="post" class="search-form">
+<form action="{% url 'filter_by' %}" method="post" class="search-form" id="search_form">
     {% csrf_token %}
     <span>
       Búsqueda entre nuestros censos: 
@@ -54,7 +54,7 @@
 
 <div class="card">
   <div class="card-body">
-    <div class="left-column">
+    <div class="left-column" id="tabla_votings">
       <table>
         <thead>
           <td>Votación</td>
@@ -63,11 +63,11 @@
           <td>Fecha</td>
         </thead>
         {% for c in census %}
-        <tr class="filas-tabla">
-          <td>{{c.voting_name}}</td>
-          <td>{{c.voter_username}}</td>
-          <td>{{c.adscripcion}}</td>
-          <td>{{c.date}}</td>
+        <tr class="filas-tabla" id="linea_votings">
+          <td id="voting_name">{{c.voting_name}}</td>
+          <td id="voter_username">{{c.voter_username}}</td>
+          <td id="voting_adscription">{{c.adscripcion}}</td>
+          <td id="voting_date">{{c.date}}</td>
         </tr>
         {% endfor %}
       </table>
