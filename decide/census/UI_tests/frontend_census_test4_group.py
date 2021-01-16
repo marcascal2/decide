@@ -1,4 +1,4 @@
-from django.test import TestCase
+'''from django.test import TestCase
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
 from selenium import webdriver
@@ -20,33 +20,7 @@ class TestGroupingbyadscripciontest(StaticLiveServerTestCase):
     self.base = BaseTestCase()
     self.base.setUp()
     options = webdriver.ChromeOptions()
-    options.headless = False
-    self.driver = webdriver.Chrome(options=options)
-
-
-    from django.test import TestCase
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-
-from selenium import webdriver
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.keys import Keys
-
-from base.tests import BaseTestCase
-from django.contrib.auth.models import User
-from census.models import Census
-from voting.models import Voting, Question
-from datetime import date
-import time
-
-class TestGroupingbyadscripciontest(StaticLiveServerTestCase):
-  
-  def setUp(self):
-    self.base = BaseTestCase()
-    self.base.setUp()
-    options = webdriver.ChromeOptions()
-    options.headless = False
+    options.headless = True
     self.driver = webdriver.Chrome(options=options)
 
 
@@ -174,11 +148,8 @@ class TestGroupingbyadscripciontest(StaticLiveServerTestCase):
     time.sleep(2)
     self.driver.find_element(By.LINK_TEXT, "Jan. 15, 2021").click()
     
-
     time.sleep(1)
-
     
-
     elements = self.driver.find_elements(By.ID, "voting_date")
     element = elements[0].get_attribute("innerText")
     print(element)
@@ -187,17 +158,14 @@ class TestGroupingbyadscripciontest(StaticLiveServerTestCase):
     assert len(elements) > 0
     self.assertIn("Jan. 15, 2021",element)
 
-
-  def test_groupBy_date(self):                    
+  def test_groupBy_question(self):                    
     self.driver.get(f'{self.live_server_url}/census/login')
     self.driver.find_element(By.ID, "id_username").send_keys("admin")
     self.driver.find_element(By.ID, "id_password").send_keys("qwerty")
     self.driver.find_element(By.ID, "loginForm").submit()
+    self.driver.set_window_size(1920, 1080)
+    time.sleep(5)
 
-    time.sleep(2)
-
-    self.driver.find_element(By.CSS_SELECTOR, "#headingFive > .accordion-button").click()
-    time.sleep(2)
     self.driver.find_element(By.LINK_TEXT, "desc1").click()
     
 
@@ -211,8 +179,7 @@ class TestGroupingbyadscripciontest(StaticLiveServerTestCase):
 
     assert len(elements) < 2
     assert len(elements) > 0
-    self.assertIn("voting_testing2",element)
-
+    self.assertIn("voting_testing2",element)'''
 
   
  
