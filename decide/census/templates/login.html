@@ -27,6 +27,9 @@
                     {% csrf_token %}
                     <button type="submit">Login</button>
                 </form>
+                {% if error %}
+                    {{error}}
+                {% endif %}
                 </div>
               </div>
             </div>

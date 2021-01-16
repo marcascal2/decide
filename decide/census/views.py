@@ -392,8 +392,11 @@ def filter_by(request):
     return render(request,'admin.html', {'census':res, 'dates':dates, 'voters':voters, 'votings':votings, 'adscripciones':adscripciones, 'questions':questions})
 
 def login(request):
-    form = AuthenticationForm()
+    error = ''
+    if request.method == 'GET':
+        form = AuthenticationForm()
     if request.method == "POST":
+        form = AuthenticationForm(request=request)
         username = request.POST['username']
         password = request.POST['password']
 
@@ -404,8 +407,10 @@ def login(request):
         if user is not None:
             do_login(request, user)
             return redirect('/census/admin')
+        else:
+            error = 'Comprueba que tu usuario y tu contraseña sean correctos'
 
-    return render(request, "login.html", {'form': form})
+    return render(request, "login.html", {'form': form, 'error': error})
 
 #TODO: Frontend
 def import_by_voting(request):
