@@ -339,6 +339,9 @@ def filter_by(request):
         if c.adscripcion != None:
             if q in c.adscripcion.lower():
                 res.append(c)
+        if q in 'none':
+            if c.adscripcion == None:
+                res.append(c)
 
         if q in str(c.date) and c not in res:
             res.append(c)
@@ -412,7 +415,6 @@ def login(request):
 
     return render(request, "login.html", {'form': form, 'error': error})
 
-#TODO: Frontend
 def import_by_voting(request):
     if not request.user.is_authenticated:
         return render(request, 'login_error.html')
@@ -448,7 +450,6 @@ def import_by_voting(request):
     
     return render(request, 'upload.html', {'form': form})
 
-#TODO: Frontend
 def export_by_voting(request, voting_id):
     meta = Census._meta
     field_names = [field.name for field in meta.fields]
