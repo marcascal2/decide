@@ -17,6 +17,10 @@ from django.core.exceptions import ValidationError
 import io
 import csv
 
+from django.test import TestCase
+
+from base.tests import BaseTestCase
+
 class CensusTestCase(BaseTestCase):
 
     def setUp(self):
@@ -399,4 +403,3 @@ class CensusTestCase(BaseTestCase):
         request.user = user1
         response = views.voting_census(request, '1')
         self.assertEqual(response.status_code, 302)
-
