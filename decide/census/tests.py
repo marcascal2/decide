@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework.test import APIClient
 
-from .models import Census
+from .models import Census, UserData
 from census import views, admin
 from voting.models import Voting, Question, Candidate
 from base import mods
@@ -13,8 +13,13 @@ from django.test import RequestFactory, TestCase
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
+from django.core.exceptions import ValidationError
 import io
 import csv
+
+from django.test import TestCase
+
+from base.tests import BaseTestCase
 
 class CensusTestCase(BaseTestCase):
 
@@ -23,7 +28,7 @@ class CensusTestCase(BaseTestCase):
         self.question = Question(desc='desc')
         self.question.save()
 
-        v1 = Voting(id = 1, name='voting_testing1', question=self.question, escanios=30)
+        v1 = Voting(id = 1, name='voting_testing1', min_age=5, max_age=120, question=self.question, escanios=30)
         v1.save()
         
         v2 = Voting(id = 3, name='voting_testing2', question=self.question, escanios=10)
@@ -311,3 +316,90 @@ class CensusTestCase(BaseTestCase):
         voters = views.voters()
         self.assertEquals(voters['voting_testing1'], 2)
         self.assertEquals(voters['voting_testing2'], 1)
+
+    def test_create_user_data_wrong_max_age(self):
+        user1 = User(id=100, username='userwrong', password='test_password')
+        user1.save()
+        user1_data = UserData(age=12312323, user=user1)
+        with self.assertRaises(ValidationError):
+            user1_data.full_clean()
+
+    def test_create_user_data_wrong_min_age(self):
+        user1 = User(id=100, username='userwrong', password='test_password')
+        user1.save()
+        user1_data = UserData(age=0, user=user1)
+        with self.assertRaises(ValidationError):
+            user1_data.full_clean()
+
+    def test_create_user_data(self):
+        user1 = User(id=100, username='user', password='test_password')
+        user1.save()
+        user1_data = UserData(age=20, user=user1)
+        user1_data.save()
+
+        usuario = UserData.objects.get(user=user1)
+        self.assertEquals(usuario.age, 20)
+
+    def test_user_data_tostring(self):
+        user1 = User(id=100, username='user', password='test_password')
+        user1.save()
+        user1_data = UserData(age=20, user=user1)
+        user1_data.save()
+
+        usuario = UserData.objects.get(user=user1)
+        self.assertEquals(usuario.__str__(), "Datos del usuario : user")
+
+    def test_census_add_user_form_invalid_max_age(self):
+        user1 = User(id=100, username='user', password='test_password')
+        user1.save()
+        user1_data = UserData(age=122, user=user1)
+        user1_data.save()
+
+        rf = RequestFactory()
+        request = rf.post('/panel/{}'.format(1), data={'user_to_add': 100})  
+        request.user = user1
+        response = views.voting_census(request, '1')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response, "El usuario no cumple con la edad máxima", html=True
+        )
+
+    def test_census_add_user_form_invalid_min_age(self):
+        user1 = User(id=100, username='user', password='test_password')
+        user1.save()
+        user1_data = UserData(age=2, user=user1)
+        user1_data.save()
+
+        rf = RequestFactory()
+        request = rf.post('/panel/{}'.format(1), data={'user_to_add': 100})  
+        request.user = user1
+        response = views.voting_census(request, '1')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response, "El usuario no cumple con la edad mínima", html=True
+        )
+    
+    def test_census_add_user_form_invalid_no_age(self):
+        user1 = User(id=100, username='user', password='test_password')
+        user1.save()
+
+        rf = RequestFactory()
+        request = rf.post('/panel/{}'.format(1), data={'user_to_add': 100})  
+        request.user = user1
+        response = views.voting_census(request, '1')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response, "El usuario a agregar no tiene edad registrada", html=True
+        )
+
+    def test_census_add_user_form(self):
+        user1 = User(id=100, username='user', password='test_password')
+        user1.save()
+        user1_data = UserData(age=20, user=user1)
+        user1_data.save()
+
+        rf = RequestFactory()
+        request = rf.post('/panel/{}'.format(1), data={'user_to_add': 100})  
+        request.user = user1
+        response = views.voting_census(request, '1')
+        self.assertEqual(response.status_code, 302)

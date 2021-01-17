@@ -1,0 +1,9 @@
+{% extends 'admin/base.html' %}
+
+{% block content %}
+    <h1>The import cannot be done.</h1>
+    <h1>Because one of the ages are out of range in voting or don't have any age registered.</h1>
+    <br />
+    <h1>Try it again.</h1>
+    <input type="button" onclick="javascript:history.go(-1);" value="Return">
+{% endblock %}

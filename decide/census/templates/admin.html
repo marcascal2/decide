@@ -24,7 +24,7 @@
     </a>
     <div class="user-info">
       <span class="navbar-text"> Bienvenido {{request.user.username}} </span>
-      <a class="btn btn-primary" href="/census/logout" role="button"
+      <a id="logout" class="btn btn-primary" href="/census/logout" role="button"
         >Cerrar sesión</a
       >
     </div>
@@ -41,7 +41,7 @@
   </div>
 </form>
 
-<form action="{% url 'filter_by' %}" method="post" class="search-form">
+<form action="{% url 'filter_by' %}" method="post" class="search-form" id="search_form">
     {% csrf_token %}
     <span>
       Búsqueda entre nuestros censos: 
@@ -54,7 +54,7 @@
 
 <div class="card">
   <div class="card-body">
-    <div class="left-column">
+    <div class="left-column" id="tabla_votings">
       <table>
         <thead>
           <td>Votación</td>
@@ -63,11 +63,11 @@
           <td>Fecha</td>
         </thead>
         {% for c in census %}
-        <tr class="filas-tabla">
-          <td>{{c.voting_name}}</td>
-          <td>{{c.voter_username}}</td>
-          <td>{{c.adscripcion}}</td>
-          <td>{{c.date}}</td>
+        <tr class="filas-tabla" id="linea_votings">
+          <td><a class="navbar-brand" id="voting-column-{{ forloop.counter }}" href="{% url 'voting_census' voting_id=c.voting_id %}">{{c.voting_name}}</a></td>
+          <td id="voter-column-{{ forloop.counter }}">{{c.voter_username}}</td>
+          <td id="adscripcion-column-{{ forloop.counter }}">{{c.adscripcion}}</td>
+          <td id="date-column-{{ forloop.counter }}">{{c.date}}</td>
         </tr>
         {% endfor %}
       </table>
@@ -84,6 +84,7 @@
               data-bs-target="#collapseOne"
               aria-expanded="true"
               aria-controls="collapseOne"
+              id="agrupar_votacion"
             >
               Agrupar por votación:
             </button>
@@ -98,7 +99,7 @@
               <ul class="filtro-container">
                 {% for voting in votings %}
                 <li>
-                  <a href="{% url 'group_by_voting' voting_id=voting.id %}"
+                  <a href="{% url 'group_by_voting' voting_id=voting.id %}" id="voting-{{ forloop.counter }}"
                     >{{voting.name}}</a
                   >
                 </li>
@@ -117,6 +118,7 @@
               data-bs-target="#collapseTwo"
               aria-expanded="false"
               aria-controls="collapseTwo"
+              id="agrupar_adscripcion"
             >
               Agrupar por adscripcion:
             </button>
@@ -132,7 +134,7 @@
                 {% for adscripcion in adscripciones %}
                 <li>
                   <a
-                    href="{% url 'group_by_adscripcion' adscripcion=adscripcion %}"
+                    href="{% url 'group_by_adscripcion' adscripcion=adscripcion %}" id="adscripcion-{{ forloop.counter }}"
                     >{{adscripcion}}</a
                   >
                 </li>
@@ -151,6 +153,7 @@
               data-bs-target="#collapseThree"
               aria-expanded="false"
               aria-controls="collapseThree"
+              id="agrupar_votante"
             >
               Agrupar por votante:
             </button>
@@ -165,7 +168,7 @@
               <ul class="filtro-container">
                 {% for voter in voters %}
                 <li>
-                  <a href="{% url 'group_by_voter' voter_id=voter.id %}"
+                  <a href="{% url 'group_by_voter' voter_id=voter.id %}" id="voter-{{ forloop.counter }}"
                     >{{voter.username}}</a
                   >
                 </li>
@@ -184,6 +187,7 @@
               data-bs-target="#collapseFour"
               aria-expanded="false"
               aria-controls="collapseFour"
+              id="agrupar_fecha"
             >
               Agrupar por fecha:
             </button>
@@ -198,7 +202,7 @@
               <ul class="filtro-container">
                 {% for date in dates %}
                 <li>
-                  <a href="{% url 'group_by_date' date=date %}">{{date}}</a>
+                  <a href="{% url 'group_by_date' date=date %}" id="date-{{ forloop.counter }}">{{date}}</a>
                 </li>
                 {% endfor %}
               </ul>
@@ -215,6 +219,7 @@
               data-bs-target="#collapseFive"
               aria-expanded="false"
               aria-controls="collapseFive"
+              id="agrupar_pregunta"
             >
               Agrupar por pregunta:
             </button>
@@ -229,7 +234,7 @@
               <ul class="filtro-container">
                 {% for q in questions %}
                 <li>
-                  <a href="{% url 'group_by_question' question=q %}">{{q}}</a>
+                  <a href="{% url 'group_by_question' question=q %}" id="question-{{ forloop.counter }}">{{q}}</a>
                 </li>
                 {% endfor %}
               </ul>
