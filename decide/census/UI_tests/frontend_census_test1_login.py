@@ -1,4 +1,4 @@
-'''from django.test import TestCase
+from django.test import TestCase
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
 from selenium import webdriver
@@ -54,7 +54,7 @@ class TestGroupingbyadscripciontest(StaticLiveServerTestCase):
     self.assertIn("/census/login/",actualTitle)
 
 
-  def test_eroor_Login(self):                    
+  def test_error_Login(self):                    
     self.driver.get(f'{self.live_server_url}/census/login')
     self.driver.find_element(By.ID, "id_username").send_keys("admin")
     self.driver.find_element(By.ID, "id_password").send_keys("wrongpass")
@@ -63,9 +63,23 @@ class TestGroupingbyadscripciontest(StaticLiveServerTestCase):
     time.sleep(2)
     actualTitle = self.driver.current_url
     print(self.driver.current_url)
-    self.assertIn("/census/login/",actualTitle) '''
+    self.assertIn("/census/login/",actualTitle)
 
-  
+  def test_LogOut(self):                    
+    self.driver.get(f'{self.live_server_url}/census/login')
+    self.driver.find_element(By.ID, "id_username").send_keys("admin")
+    self.driver.find_element(By.ID, "id_password").send_keys("qwerty")
+    self.driver.find_element(By.ID, "loginForm").submit()
+    
+    time.sleep(2)
+    actualTitle = self.driver.current_url
+
+    time.sleep(2)
+
+    self.driver.find_element(By.ID, "logout").click()
+
+    print(self.driver.current_url)
+    self.assertIn("/census/admin/",actualTitle)
 
   
 

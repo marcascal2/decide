@@ -1,4 +1,4 @@
-'''from django.test import TestCase
+from django.test import TestCase
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
 from selenium import webdriver
@@ -31,8 +31,6 @@ class TestGroupingbyadscripciontest(StaticLiveServerTestCase):
     self.driver.quit()
     self.base.tearDown()  
   
-
- 
   def test_importPage(self):                    
     self.driver.get(f'{self.live_server_url}/census/login')
     self.driver.find_element(By.ID, "id_username").send_keys("admin")
@@ -43,7 +41,7 @@ class TestGroupingbyadscripciontest(StaticLiveServerTestCase):
     self.driver.find_element(By.CSS_SELECTOR, ".import-button > input").click()
     time.sleep(1)
     elements = self.driver.find_elements(By.ID, "import_form")
-    assert len(elements) > 0 '''
+    assert len(elements) > 0
 
   
 
