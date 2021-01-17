@@ -7,6 +7,7 @@ from django.test import TestCase
 from rest_framework.test import APIClient
 from rest_framework.test import APITestCase
 from pathlib import Path
+from django.urls import reverse
 import os
 from datetime import datetime
 
@@ -471,20 +472,8 @@ class VotingTestCase(BaseTestCase):
         v.start_date = timezone.now()
         v.save()
 
-        clear = self.store_votes(v)
-
-        self.login()  # set token
-        v.tally_votes(self.token)
-
-        tally = v.tally
-        tally.sort()
-        tally = {k: len(list(x)) for k, x in itertools.groupby(tally)}
-
-        for q in v.question.options.all():
-            self.assertEqual(tally.get(q.number, 0), clear.get(q.number, 0))
-
-        for q in v.postproc:
-            self.assertEqual(tally.get(q["number"], 0), q["votes"])
+        response = self.client.head(reverse('customURL',args=['custom']))
+        self.assertEqual(response.status_code, 200)
         
     def test_createfiles_voting(self):
         _datetime = datetime.now()
