@@ -7,10 +7,6 @@ from django.test import TestCase
 from rest_framework.test import APIClient
 from rest_framework.test import APITestCase
 from pathlib import Path
-<<<<<<< HEAD
-=======
-from django.urls import reverse
->>>>>>> decide-part-zumeta-votaciones
 import os
 from datetime import datetime
 
@@ -21,11 +17,6 @@ from mixnet.mixcrypt import ElGamal
 from mixnet.mixcrypt import MixCrypt
 from mixnet.models import Auth
 from voting.models import Voting, Question, QuestionOption, QuestionPrefer, QuestionOrdering, Candidate, ReadonlyVoting, MultipleVoting, Party, Program, Plank
-<<<<<<< HEAD
-=======
-from django.test import TestCase, override_settings
-@override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
->>>>>>> decide-part-zumeta-votaciones
 
 class VotingToString(BaseTestCase):
 
@@ -529,30 +520,6 @@ class VotingTestCase(BaseTestCase):
         response = self.client.post('/voting/', data, format='json')
         self.assertEqual(response.status_code, 201)
 
-<<<<<<< HEAD
-    def test_complete_voting_custom(self):
-        v = self.create_voting_custom_url()
-        self.create_voters(v)
-
-        v.create_pubkey()
-        v.start_date = timezone.now()
-        v.save()
-
-        clear = self.store_votes(v)
-
-        self.login()  # set token
-        v.tally_votes(self.token)
-
-        tally = v.tally
-        tally.sort()
-        tally = {k: len(list(x)) for k, x in itertools.groupby(tally)}
-
-        for q in v.question.options.all():
-            self.assertEqual(tally.get(q.number, 0), clear.get(q.number, 0))
-
-        for q in v.postproc:
-            self.assertEqual(tally.get(q["number"], 0), q["votes"])
-=======
     # def test_complete_voting_custom(self):
     #     v = self.create_voting_custom_url()
     #     self.create_voters(v)
@@ -563,7 +530,6 @@ class VotingTestCase(BaseTestCase):
 
     #     response = self.client.head(reverse('customURL',args=['custom']))
     #     self.assertEqual(response.status_code, 200)
->>>>>>> decide-part-zumeta-votaciones
         
     def test_createfiles_voting(self):
         _datetime = datetime.now()
@@ -1082,8 +1048,6 @@ class MultipleVotingTests(BaseTestCase):
         self.assertEquals(v.question.all()[0].desc, "multiple test question")
         with self.assertRaises(IndexError): v.question.all()[1].desc
 
-<<<<<<< HEAD
-=======
     def testDeleteMultipleVoting(self):
         v = MultipleVoting.objects.get(name="Votacion")
         v2 = MultipleVoting.objects.get(name="Votacion")
@@ -1127,5 +1091,4 @@ class MultipleVotingTests(BaseTestCase):
         data = {'action': 'stop'}
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
         self.assertEqual(response.status_code, 403)
->>>>>>> decide-part-zumeta-votaciones
 
