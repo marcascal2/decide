@@ -61,7 +61,8 @@ class CensusAdmin(admin.ModelAdmin):
                     if user.userdata is not None:
                         edad = user.userdata.age
                         if edad < voting.min_age or edad > voting.max_age:
-                            Census.objects.bulk_delete(census_list)
+                            for census in census_list:
+                                census.delete()
                             return render(request, 'age_error.html', locals())
                     adscripcion = ids[3]
                     dat = ids[4]

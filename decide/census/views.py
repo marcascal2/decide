@@ -434,7 +434,8 @@ def import_by_voting(request):
                 if user.userdata is not None:
                     edad = user.userdata.age
                     if edad < voting.min_age or edad > voting.max_age:
-                        Census.objects.bulk_delete(census_list)
+                        for census in census_list:
+                            census.delete()
                         return render(request, 'age_error.html', locals())
                 adscripcion = ids[1]
                 if adscripcion == '': adscripcion=None
@@ -450,10 +451,10 @@ def import_by_voting(request):
     if request.method == 'POST':
         form = UploadDocumentForm(request.POST, request.FILES)
         if form.is_valid():
-            try:
+            #try:
                 return save_import(request.FILES['file'], request.POST.get('voting_id', ''))
-            except:
-               return render(request, 'import_error.html', locals())
+            #except:
+            #   return render(request, 'import_error.html', locals())
     else:
         form = UploadDocumentForm()
     
