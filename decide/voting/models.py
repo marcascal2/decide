@@ -397,14 +397,8 @@ class ReadonlyVoting(models.Model):
         postp = mods.post('postproc', json=data)
 
         self.postproc = postp
-<<<<<<< HEAD
-        self.save()
-        
-        #default_storage.save('archivosGuardados/postproc', postp)
-=======
         self.save() """
         
->>>>>>> decide-part-zumeta-votaciones
     def __str__(self):
         return self.name
 
