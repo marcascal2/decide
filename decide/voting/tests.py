@@ -7,6 +7,10 @@ from django.test import TestCase
 from rest_framework.test import APIClient
 from rest_framework.test import APITestCase
 from pathlib import Path
+<<<<<<< HEAD
+=======
+from django.urls import reverse
+>>>>>>> decide-part-zumeta-votaciones
 import os
 from datetime import datetime
 
@@ -17,7 +21,69 @@ from mixnet.mixcrypt import ElGamal
 from mixnet.mixcrypt import MixCrypt
 from mixnet.models import Auth
 from voting.models import Voting, Question, QuestionOption, QuestionPrefer, QuestionOrdering, Candidate, ReadonlyVoting, MultipleVoting, Party, Program, Plank
+<<<<<<< HEAD
+=======
+from django.test import TestCase, override_settings
+@override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
+>>>>>>> decide-part-zumeta-votaciones
 
+class VotingToString(BaseTestCase):
+
+    def setUp(self):
+        q=Question(desc="Descripcion")
+        q.save()
+
+        que1=Question(desc="Descripcion1")
+        que1.save()
+        que2=Question(desc="Descripcion2")
+        que2.save()
+
+        opt1 = QuestionOption(question = q, option = "option1")
+        opt1.save()
+
+        opt2 = QuestionOption(question = q, option = "option2")
+        opt2.save()
+
+        q_prefer = QuestionPrefer(question = q, prefer = "YES", number = 4, option="option1")
+        q_prefer.save()
+
+        q_ordering = QuestionOrdering(question=q, number = 5, option="prueba de ordenacion", ordering=1)
+        q_ordering.save()
+
+        party1 = Party(abreviatura = "PC")
+        party1.save()
+
+        self.candidate1 = Candidate(name="test", age=21, number=1, auto_community="AN", sex ="H", political_party = party1)
+        self.candidate1.save()
+
+        self.v1 = ReadonlyVoting(name="VotacionRO", question=que1, desc = "example")
+        self.v2 = MultipleVoting(name="VotacionM", desc = "example")
+        self.v2.save()
+        self.v2.question.add(que1)
+        self.v2.question.add(que2)
+        self.v=Voting(name="Votacion", question=q)
+        self.v.save()
+        self.v1.save()
+        self.v2.save()
+        super().setUp()
+
+    def tearDown(self):
+        super().tearDown()
+        self.v = None
+
+    def test_Voting_toString(self):
+        v = Voting.objects.get(name = 'Votacion')
+        v1 = ReadonlyVoting.objects.get(name = 'VotacionRO')
+        v2 = MultipleVoting.objects.get(name = 'VotacionM')
+        candidate1 = Candidate.objects.get(name = 'test')
+        self.assertEquals(str(v),"Votacion")
+        self.assertEquals(str(v.question),"Descripcion")
+        self.assertEquals(str(v.question.options.all()[0]),"option1 (2)")
+        self.assertEquals(str(v.question.prefer_options.all()[0]), "option1 (4)")
+        self.assertEquals(str(v.question.options_ordering.all()[0]), "prueba de ordenacion (5)")
+        self.assertEquals(str(candidate1), "test (21) - AN - H - PC")
+        self.assertEquals(str(v1),"VotacionRO")
+        self.assertEquals(str(v2),"VotacionM")
 
 class VotingTestCase(BaseTestCase):
 
@@ -463,6 +529,7 @@ class VotingTestCase(BaseTestCase):
         response = self.client.post('/voting/', data, format='json')
         self.assertEqual(response.status_code, 201)
 
+<<<<<<< HEAD
     def test_complete_voting_custom(self):
         v = self.create_voting_custom_url()
         self.create_voters(v)
@@ -485,6 +552,18 @@ class VotingTestCase(BaseTestCase):
 
         for q in v.postproc:
             self.assertEqual(tally.get(q["number"], 0), q["votes"])
+=======
+    # def test_complete_voting_custom(self):
+    #     v = self.create_voting_custom_url()
+    #     self.create_voters(v)
+
+    #     v.create_pubkey()
+    #     v.start_date = timezone.now()
+    #     v.save()
+
+    #     response = self.client.head(reverse('customURL',args=['custom']))
+    #     self.assertEqual(response.status_code, 200)
+>>>>>>> decide-part-zumeta-votaciones
         
     def test_createfiles_voting(self):
         _datetime = datetime.now()
@@ -876,6 +955,61 @@ class ReadOnlyVotingTests(BaseTestCase):
         self.assertEquals(v.question.options.all()[0].option, "option1")
         self.assertEquals(v.question.options.all()[1].option, "option2")
 
+    def testUpdateReadonlyVotingDesc(self):
+        v = ReadonlyVoting.objects.get(name="Votacion")
+        v.desc = "cambio"
+        self.assertEquals(v.desc, "cambio")
+        # Mediante tests las Readonly Voting si se pueden cambiar pese a que en la página no puedan hacerlo los usuarios
+        
+    def testDeleteReadonlyVotingDesc(self):
+        v = ReadonlyVoting.objects.get(name="Votacion")
+        v.desc = None
+        self.assertEquals(v.desc, None)
+
+    def testDeleteReadonlyVoting(self):
+        v = ReadonlyVoting.objects.get(name="Votacion")
+        v2 = ReadonlyVoting.objects.get(name="Votacion")
+        v.delete()
+        self.assertNotEquals(v, v2)
+
+    def test_update_voting(self):
+        # No se pueden votar este tipo porque habria que tocar la cabina de votaciones y el visualizer, asi que comprobamos que efectivamente no se puede votar
+
+        voting = ReadonlyVoting.objects.get(name="Votacion")
+
+        data = {'action': 'start'}
+        #response = self.client.post('/voting/{}/'.format(voting.pk), data, format='json')
+        #self.assertEqual(response.status_code, 401)
+
+        # login with user no admin
+        self.login(user='noadmin')
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 403)
+
+        # STATUS VOTING: not started
+        for action in ['stop']:
+            data = {'action': action}
+            response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+            self.assertEqual(response.status_code, 403)
+
+        # STATUS VOTING: started
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 403)
+
+        data = {'action': 'stop'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 403)
+
+        # STATUS VOTING: stopped
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 403)
+
+        data = {'action': 'stop'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 403)
+
 class MultipleVotingTests(BaseTestCase):
 
     def setUp(self):
@@ -948,4 +1082,50 @@ class MultipleVotingTests(BaseTestCase):
         self.assertEquals(v.question.all()[0].desc, "multiple test question")
         with self.assertRaises(IndexError): v.question.all()[1].desc
 
+<<<<<<< HEAD
+=======
+    def testDeleteMultipleVoting(self):
+        v = MultipleVoting.objects.get(name="Votacion")
+        v2 = MultipleVoting.objects.get(name="Votacion")
+        v.delete()
+        self.assertNotEquals(v, v2)
+
+    def test_update_voting(self):
+        # No se pueden votar este tipo porque habria que tocar la cabina de votaciones y el visualizer, asi que comprobamos que efectivamente no se puede votar
+
+        voting = MultipleVoting.objects.get(name="Votacion")
+
+        data = {'action': 'start'}
+        #response = self.client.post('/voting/{}/'.format(voting.pk), data, format='json')
+        #self.assertEqual(response.status_code, 401)
+
+        # login with user no admin
+        self.login(user='noadmin')
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 403)
+
+        # STATUS VOTING: not started
+        for action in ['stop']:
+            data = {'action': action}
+            response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+            self.assertEqual(response.status_code, 403)
+
+        # STATUS VOTING: started
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 403)
+
+        data = {'action': 'stop'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 403)
+
+        # STATUS VOTING: stopped
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 403)
+
+        data = {'action': 'stop'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 403)
+>>>>>>> decide-part-zumeta-votaciones
 
