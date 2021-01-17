@@ -49,6 +49,7 @@ class CensusAdmin(admin.ModelAdmin):
             file = forms.FileField()
 
         def save_import(f):
+            census_list = []
             for row in f:
                 if not row.startswith(b'id'):
                     cadena = row.decode('utf-8')
@@ -60,11 +61,13 @@ class CensusAdmin(admin.ModelAdmin):
                     if user.userdata is not None:
                         edad = user.userdata.age
                         if edad < voting.min_age or edad > voting.max_age:
+                            Census.objects.bulk_delete(census_list)
                             return render(request, 'age_error.html', locals())
                     adscripcion = ids[3]
                     dat = ids[4]
                     objDate = datetime.strptime(dat, '%Y-%m-%d')
                     census = Census(voting_id=voting_id, voter_id=voter_id, adscripcion=adscripcion, date=objDate)
+                    census_list.append(census)
                     census.save()
 
             return render(request, 'succes.html', locals())
