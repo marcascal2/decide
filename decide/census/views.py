@@ -422,11 +422,18 @@ def import_by_voting(request):
         voting_id = forms.CharField()
 
     def save_import(f, voting_id):
+        voting = Voting.objects.get(id=voting_id)
+
         for row in f:
             if not row.startswith(b'voter_id'):
                 cadena = row.decode('utf-8')
                 ids = cadena.split(',')
                 voter_id = ids[0]
+                user = User.objects.get(id=voter_id)
+                if user.userdata is not None:
+                    edad = user.userdata.age
+                    if edad < voting.min_age or edad > voting.max_age:
+                        return render(request, 'age_error.html', locals())
                 adscripcion = ids[1]
                 if adscripcion == '': adscripcion=None
                 dat = ids[2]
@@ -434,15 +441,16 @@ def import_by_voting(request):
                 census = Census(voting_id=voting_id, voter_id=voter_id, adscripcion=adscripcion, date=objDate)
                 census.save()
 
+        return render(request, 'succes.html', locals())
+
     form = UploadDocumentForm()
     if request.method == 'POST':
         form = UploadDocumentForm(request.POST, request.FILES)
         if form.is_valid():
             try:
-                save_import(request.FILES['file'], request.POST.get('voting_id', ''))
-                return render(request, 'succes.html', locals())
+                return save_import(request.FILES['file'], request.POST.get('voting_id', ''))
             except:
-                return render(request, 'import_error.html', locals())
+               return render(request, 'import_error.html', locals())
     else:
         form = UploadDocumentForm()
     
