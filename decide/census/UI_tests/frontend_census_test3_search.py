@@ -1,4 +1,4 @@
-'''from django.test import TestCase
+from django.test import TestCase
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
 from selenium import webdriver
@@ -105,28 +105,6 @@ class TestGroupingbyadscripciontest(StaticLiveServerTestCase):
     elements = self.driver.find_elements(By.ID, "linea_votings")
     assert len(elements) < 3
     assert len(elements) > 1
-
-
-  def test_groupBy_voting(self):                    
-    self.driver.get(f'{self.live_server_url}/census/login')
-    self.driver.find_element(By.ID, "id_username").send_keys("admin")
-    self.driver.find_element(By.ID, "id_password").send_keys("qwerty")
-    self.driver.find_element(By.ID, "loginForm").submit()
-
-    time.sleep(2)
-
-    self.driver.find_element(By.LINK_TEXT, "voting_testing1").click()
-    
-
-    time.sleep(1)
-
-    elements = self.driver.find_elements(By.ID, "voting_name")
-    element = elements[0].get_attribute("innerText")
-    print(element)
-
-    assert len(elements) < 2
-    assert len(elements) > 0
-    self.assertIn("voting_testing1",element)'''
 
 
   
