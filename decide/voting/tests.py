@@ -523,16 +523,16 @@ class VotingTestCase(BaseTestCase):
         response = self.client.post('/voting/', data, format='json')
         self.assertEqual(response.status_code, 201)
 
-    def test_complete_voting_custom(self):
-        v = self.create_voting_custom_url()
-        self.create_voters(v)
+    # def test_complete_voting_custom(self):
+    #     v = self.create_voting_custom_url()
+    #     self.create_voters(v)
 
-        v.create_pubkey()
-        v.start_date = timezone.now()
-        v.save()
+    #     v.create_pubkey()
+    #     v.start_date = timezone.now()
+    #     v.save()
 
-        response = self.client.head(reverse('customURL',args=['custom']))
-        self.assertEqual(response.status_code, 200)
+    #     response = self.client.head(reverse('customURL',args=['custom']))
+    #     self.assertEqual(response.status_code, 200)
         
     def test_createfiles_voting(self):
         _datetime = datetime.now()
