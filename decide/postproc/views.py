@@ -59,6 +59,29 @@ class PostProcView(APIView):
                 sea = sea - 1
         return out
 
+    def comprobar_edad(self, opts, cands):
+        comprueba = ''
+        mayoresDe30 = []
+        menoresDe30 = []
+        for c in cands:
+            if c['age'] >30:
+                mayoresDe30.append(c)
+            elif c['age'] <= 30:
+                menoresDe30.append(c)
+        comprueba = self.porcentaje_edad(menoresDe30, mayoresDe30)
+        return comprueba
+
+    def porcentaje_edad(self, menoresDe30, mayoresDe30):
+        cantidad_menoresDe30 = len(menoresDe30)
+        cantidad_mayoresDe30 = len(mayoresDe30)
+        if(cantidad_mayoresDe30 > cantidad_menoresDe30):
+            return "La mayoría de candidatos son mayores a 30 años"
+        elif(cantidad_menoresDe30 > cantidad_mayoresDe30):
+            return "La mayoría de candidatos son menores o iguales a 30 años"
+        else:
+            return "Hay los mismos candidatos mayores como menores o iguales a 30 años"
+
+
     #Sistema D'Hondt - Metodo de promedio mayor para asignar escaños en sistemas de representación proporcional por listas electorales. Por tanto,
     # en dicho método trabajaremos con listas de partidos politicos y con un número de escaños que será pasado como parámetro. 
     #           Fórmula de D'Hondt: cociente = V/S+1    , siendo V: el número total de votosS
@@ -295,6 +318,12 @@ class PostProcView(APIView):
             return self.dhondt(opts, request.data.get('escanio'),cands)
         elif t == 'SIMPLE':
             return Response(self.simple(opts,s))
+        
+        elif t == 'MENSAJE':
+            mensaje = self.comprobar_edad(opts, cands)
+            res = self.simple(opts, s)
+            return Response({'mensaje': mensaje, 'res': res})
+        
         elif t == 'SIMPLEP':
             c = self.comprobar(opts, cands)
             if c:
