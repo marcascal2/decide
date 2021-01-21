@@ -49,7 +49,7 @@ class VotingView(generics.ListCreateAPIView):
                 opt.save()
         voting = Voting(name=request.data.get('name'), desc=request.data.get('desc'),
                 question=question, end_date=request.data.get('end_date'), start_date=request.data.get('start_date')
-                , min_age=request.data.get('min_age'), max_age=request.data.get('max_age'),escanios= request.data.get('escanios'))
+                , min_age=request.data.get('min_age'), max_age=request.data.get('max_age'),escanios= request.data.get('escanios'), lugares = request.data.get('lugares'))
         voting.save()
         
         candidate, _ = Candidate.objects.get_or_create(name="pepe")

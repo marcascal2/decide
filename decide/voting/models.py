@@ -149,6 +149,27 @@ class Voting(models.Model):
     question = models.ForeignKey(Question, related_name='voting', on_delete=models.CASCADE,null=True)
     candidates = models.ManyToManyField(Candidate, related_name='votings', blank = True)
     escanios = models.PositiveSmallIntegerField(default=0)
+    LUGARES = (('AN', 'Andalucia'),        
+        ('AR', 'Aragon'),
+        ('AS', 'Asturias'),    
+        ('BA', 'Baleares'),     
+        ('CA', 'Canarias'),
+        ('CT', 'Cantabria'),         
+        ('CAM', 'Castilla-Mancha'),  
+        ('CAL', 'Castilla-Leon'),  
+        ('CAT', 'Cataluña'),  
+        ('CE', 'Ceuta'),  
+        ('EX', 'Extremadura'),  
+        ('GA', 'Galicia'),  
+        ('LR', 'La-Rioja'),  
+        ('MA', 'Madrid'), 
+        ('ME', 'Melilla'),   
+        ('MU', 'Murcia'),  
+        ('NA', 'Navarra'),
+        ('PV', 'País-Vasco'),
+        ('VA', 'Valencia')) 
+
+    lugares = models.TextField(choices=LUGARES, default='AN')
 
 
     start_date = models.DateTimeField(blank=True, null=True, validators=[validate_start_date])
