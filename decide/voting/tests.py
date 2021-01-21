@@ -21,6 +21,32 @@ from voting.models import Voting, Question, QuestionOption, QuestionPrefer, Ques
 from django.test import TestCase, override_settings
 @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
 
+class LugarTestCase(BaseTestCase):
+
+    def setUp(self):
+        q=Question(desc="Descripcion")
+        q.save()
+
+        opt1 = QuestionOption(question = q, option = "option1")
+        opt1.save()
+
+        opt2 = QuestionOption(question = q, option = "option2")
+        opt2.save()
+
+        self.v=Voting(name="Votacion", question=q)
+        self.v.save()
+        super().setUp()
+
+    def tearDown(self):
+        super().tearDown()
+        self.v = None
+
+    def testExistLugar(self):
+
+        v = Voting.objects.get(name= "Votacion")
+        v.lugares= "Andalucia"
+        self.assertEquals(v.lugares, "Andalucia")
+
 class VotingToString(BaseTestCase):
 
     def setUp(self):
@@ -100,7 +126,7 @@ class VotingTestCase(BaseTestCase):
         for i in range(5):
             opt = QuestionOption(question=q, option='option {}'.format(i+1))
             opt.save()
-        v = Voting(name='test voting', question=q, escanios =20)
+        v = Voting(name='test voting', question=q, escanios =20, lugares = 'Andalucia')
         v.save()
 
         a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
@@ -117,7 +143,7 @@ class VotingTestCase(BaseTestCase):
         for i in range(5):
             opt = QuestionPrefer(question=q, prefer = 'YES',option='option {}'.format(i+1))
             opt.save()
-        v = Voting(name='test voting', question=q)
+        v = Voting(name='test voting', question=q, lugares = 'Andalucia')
         v.save()
 
         a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
@@ -133,7 +159,7 @@ class VotingTestCase(BaseTestCase):
         for i in range(5):
             opt = QuestionOption(question=q, option='option {}'.format(i+1))
             opt.save()
-        v = Voting(name='new test voting', question=q, customURL='custom')
+        v = Voting(name='new test voting', question=q, customURL='custom', lugares = 'Andalucia')
         v.save()
 
         a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
@@ -222,7 +248,8 @@ class VotingTestCase(BaseTestCase):
             'desc': 'Description example',
             'escanios': 20,
             'question': 'I want a ',
-            'question_opt': ['cat', 'dog', 'horse']
+            'question_opt': ['cat', 'dog', 'horse'],
+            'lugares': 'Andalucia'
         }
 
         response = self.client.post('/voting/', data, format='json')
@@ -250,7 +277,8 @@ class VotingTestCase(BaseTestCase):
             'question': 'I want a ',
             'escanios': 20,
             'question_opt': ['cat', 'dog', 'horse'],
-            'end_date': '2024-12-21T11:33:23Z'
+            'end_date': '2024-12-21T11:33:23Z',
+            'lugares': 'Andalucia'
         }
 
         response = self.client.post('/voting/', data, format='json')
@@ -277,7 +305,8 @@ class VotingTestCase(BaseTestCase):
             'question': 'I want a ',
             'escanios': 10,
             'question_opt': ['cat', 'dog', 'horse'],
-            'start_date': '2021-10-18T10:28:19Z'
+            'start_date': '2021-10-18T10:28:19Z',
+            'lugares': 'Andalucia'
         }
 
         response = self.client.post('/voting/', data, format='json')
@@ -409,7 +438,8 @@ class VotingTestCase(BaseTestCase):
             'question': 'I want a ',
             'escanios': 20,
             'question_opt' : [],
-            'question_pref': ['CAT', 'DOG', 'HORSE']
+            'question_pref': ['CAT', 'DOG', 'HORSE'],
+            'lugares': 'Andalucia'
         }
 
         response = self.client.post('/voting/', data, format='json')
@@ -436,6 +466,7 @@ class VotingTestCase(BaseTestCase):
             'escanios': 20,
             'question': 'I want a ',
             'question_opt': ['cat', 'dog', 'horse'],
+            'lugares': 'Andalucia',
             'candidates' :
             {
                 'name': 'pepe',
@@ -483,6 +514,7 @@ class VotingTestCase(BaseTestCase):
             'escanios': 20,
             'question': 'I want a ',
             'question_opt': ['cat', 'dog', 'horse'],
+            'lugares': 'Andalucia',
             'candidates' :
             [{
                 'name': 'pepe',
@@ -713,7 +745,8 @@ class VotingOrderingTestCase(BaseTestCase):
             'question': 'I want a ',
             'escanios': 20,
             'question_opt': [],
-            'question_ordering': [2,1,3]
+            'question_ordering': [2,1,3],
+            'lugares': 'Andalucia'
         }
 
         response = self.client.post('/voting/', data, format='json')
