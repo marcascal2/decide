@@ -30,15 +30,13 @@ class CensusAddUserForm(forms.Form):
     def clean(self):
         try:
             cleaned_data = super().clean()
-            user_to_add = cleaned_data.get("user_to_add")
+            user_location = cleaned_data.get("user_to_add")
             if user_to_add is not None:
                 voting = Voting.objects.get(id=self.voting_id)
                 user = User.objects.get(id=user_to_add)
                 if user.userdata is not None:
-                    age = user.userdata.age
-                    if voting.min_age is not None and age < voting.min_age:
-                            self.add_error('user_to_add', 'El usuario no cumple con la edad mínima')
-                    if voting.max_age is not None and age > voting.max_age:
-                            self.add_error('user_to_add', 'El usuario no cumple con la edad máxima')
+                    location = user.userdata.location
+                    if voting.location is not '' and location != voting.location:
+                            self.add_error('user_to_add', 'El usuario no cuenta con la localización adecuada')
         except User.userdata.RelatedObjectDoesNotExist:
-            self.add_error('user_to_add', 'El usuario a agregar no tiene edad registrada')
+            self.add_error('user_to_add', 'El usuario a agregar no tiene la localización adecuada')
