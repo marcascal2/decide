@@ -403,3 +403,35 @@ class CensusTestCase(BaseTestCase):
         request.user = user1
         response = views.voting_census(request, '1')
         self.assertEqual(response.status_code, 302)
+
+    def test_create_user_data_location(self):
+        user1 = User(id=100, username='user', password='test_password')
+        user1.save()
+        user1_data = UserData(age=20, location='Seville', user=user1)
+        user1_data.save()
+        self.assertEqual(user1_data.location, 'Seville')
+
+    def test_census_add_user_form_invalid_no_location(self):
+        user1 = User(id=100, username='user', password='test_password')
+        user1.save()
+
+        rf = RequestFactory()
+        request = rf.post('/panel/{}'.format(1), data={'user_to_add': 100})
+        request.user = user1
+        response = views.voting_census(request, '1')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response, "El usuario a agregar no tiene la localización adecuada", html=True
+        )
+
+    def test_census_add_user_form_location(self):
+        user1 = User(id=100, username='user', password='test_password')
+        user1.save()
+        user1_data = UserData(location='Seville', age=20, user=user1)
+        user1_data.save()
+
+        rf = RequestFactory()
+        request = rf.post('/panel/{}'.format(1), data={'user_to_add': 100})
+        request.user = user1
+        response = views.voting_census(request, '1')
+        self.assertEqual(response.status_code, 200)
