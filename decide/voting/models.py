@@ -149,7 +149,7 @@ class Voting(models.Model):
     question = models.ForeignKey(Question, related_name='voting', on_delete=models.CASCADE,null=True)
     candidates = models.ManyToManyField(Candidate, related_name='votings', blank = True)
     escanios = models.PositiveSmallIntegerField(default=0)
-
+    location = models.TextField(blank=True, null=True)
 
     start_date = models.DateTimeField(blank=True, null=True, validators=[validate_start_date])
     end_date = models.DateTimeField(validators=[validate_end_date],blank=True, null=True)

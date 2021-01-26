@@ -435,6 +435,11 @@ def import_by_voting(request):
                 user = User.objects.get(id=voter_id)
                 if user.userdata is not None:
                     edad = user.userdata.age
+                    location = user.userdata.location
+                    if location != voting.location:
+                        for census in census_list:
+                            census.delete()
+                        return render(request, 'age_error.html', locals())
                     if edad < voting.min_age or edad > voting.max_age:
                         for census in census_list:
                             census.delete()

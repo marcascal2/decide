@@ -48,24 +48,30 @@ class CensusAdmin(admin.ModelAdmin):
         class UploadDocumentForm(forms.Form):
             file = forms.FileField()
 
-        def save_import(f):
+        def save_import(f, voting_id):
+            voting = Voting.objects.get(id=voting_id)
             census_list = []
+
             for row in f:
-                if not row.startswith(b'id'):
+                if not row.startswith(b'voter_id'):
                     cadena = row.decode('utf-8')
                     ids = cadena.split(',')
-                    voting_id = ids[1]
-                    voting = Voting.objects.get(id=voting_id)
-                    voter_id = ids[2]
+                    voter_id = ids[0]
                     user = User.objects.get(id=voter_id)
                     if user.userdata is not None:
                         edad = user.userdata.age
+                        location = user.userdata.location
+                        if location != voting.location:
+                            for census in census_list:
+                                census.delete()
+                            return render(request, 'age_error.html', locals())
                         if edad < voting.min_age or edad > voting.max_age:
                             for census in census_list:
                                 census.delete()
                             return render(request, 'age_error.html', locals())
-                    adscripcion = ids[3]
-                    dat = ids[4]
+                    adscripcion = ids[1]
+                    if adscripcion == '': adscripcion=None
+                    dat = ids[2]
                     objDate = datetime.strptime(dat, '%Y-%m-%d')
                     census = Census(voting_id=voting_id, voter_id=voter_id, adscripcion=adscripcion, date=objDate)
                     census_list.append(census)
