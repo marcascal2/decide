@@ -636,6 +636,37 @@ class PostProcTestCase(APITestCase):
         values = response.json()
         self.assertEqual(values, expected_result)
 
+    def test_droop(self):
+        data = {
+            'type': 'DROOP',
+            'escanio': 21,
+            'options': [
+                { 'option': 'Option 1', 'number': 1, 'votes': 391000 },
+                { 'option': 'Option 2', 'number': 2, 'votes': 184000 },
+                { 'option': 'Option 3', 'number': 3, 'votes': 311000 },
+                { 'option': 'Option 4', 'number': 4, 'votes': 73000 },
+                { 'option': 'Option 5', 'number': 5, 'votes': 2000},
+                { 'option': 'Option 6', 'number': 6, 'votes': 12000 },
+                { 'option': 'Option 7', 'number': 7, 'votes': 27000 }
+
+            ]
+        }
+        expected_result = [
+            { 'option': 'Option 1', 'number': 1, 'votes': 391000, 'escanio': 8 },
+            { 'option': 'Option 2', 'number': 2, 'votes': 184000, 'escanio': 4 },
+            { 'option': 'Option 3', 'number': 3, 'votes': 311000, 'escanio': 7 },
+            { 'option': 'Option 4', 'number': 4, 'votes': 73000, 'escanio': 2 },
+            { 'option': 'Option 5', 'number': 5, 'votes': 2000 , 'escanio': 0 },
+            { 'option': 'Option 6', 'number': 6, 'votes': 12000 , 'escanio': 0 },
+            { 'option': 'Option 7', 'number': 7, 'votes': 27000, 'escanio': 0 }
+        ]
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+
     def test_mgu_un_ganador(self):
         data = {
             'type': 'MGU',

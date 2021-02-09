@@ -86,6 +86,61 @@ class PostProcView(APIView):
     # en dicho método trabajaremos con listas de partidos politicos y con un número de escaños que será pasado como parámetro. 
     #           Fórmula de D'Hondt: cociente = V/S+1    , siendo V: el número total de votosS
     #                                                            S: el num. de escaños que posee en el momento
+    def droop(self, options, escanio):
+        out = []
+
+        for droop in options:
+            out.append({
+                **droop,
+                'escanio': 0,
+            })
+
+        votosTotales=0
+
+        for vot in out:
+            votosTotales += vot['votes']
+
+        q = round(1 + (votosTotales/(escanio+1)))
+        print(q)
+        
+        escanios = 0
+        n = 0
+        votosOrdenados = []
+        votosResiduo = []
+
+        for i in range(0, len(out)):
+            votos = out[i]['votes']
+            escanio_sin = votos / q
+            escanio_con = int(votos / q)
+            out[i]['escanio'] = escanio_con
+            qe = escanio_con * q
+            r = votos - qe
+            votosOrdenados.append(r)
+            votosResiduo.append(r)
+            escanios += escanio_con
+        
+        #Ordenamos los votos de mayor a menor
+        votosOrdenados.sort(reverse=True)
+        escaniosRestantes = escanio - escanios
+        
+        #los primeros de la lista = al numero de escaniosRestantes
+        votosPrimeros = votosOrdenados[:escaniosRestantes]
+        print(votosResiduo, votosPrimeros)
+
+        indices = []
+        for i in range(0, escaniosRestantes):
+            if votosResiduo.index(votosPrimeros[i]) in indices :
+                residuosReverse = list(reversed(votosResiduo))
+                #comprueba el indice de out lo saca en funcion del voto primero
+                indices.append((len(out)-1) - residuosReverse.index(i))
+            else:
+                indices.append(votosResiduo.index(votosPrimeros[i]))
+        print(indices)
+        for i in indices:
+            out[i]['escanio'] += 1
+    
+        return out
+
     def dhondt(self, options, totalEscanio,cands):
 
         #Salida
@@ -334,6 +389,8 @@ class PostProcView(APIView):
                 return Response({'message' : 'la diferencia del numero de hombres y mujeres es de más de un 60% - 40%'})
         elif t == 'MGU':
             return Response(self.mgu(opts,s))
+        elif t == 'DROOP':
+            return Response(self.droop(opts,s))
         elif t == 'MGUCP':
             comprueba= self.comprobar(opts,cands)
             if comprueba:
