@@ -379,6 +379,55 @@ class PostProcView(APIView):
         if (cands != []):
             out = self.paridad(out, cands)
         return Response(out)
+
+    def saintelagueNorm(self, options, escanio,cands):
+        
+        #Definimos las variables
+
+        partidos = [] 
+        puntosPorPart = [] 
+        escanos = [] 
+        out = [] 
+
+       #Ponemos los escaños iniciales de todos los partidos a 0
+        for n in options:
+            escanosIniciales = 0
+            escanos.append(escanosIniciales)
+
+        #Añadimos los votos a cada partido y a out todas las salidas anterioes mas los escaños
+        for opt in options:
+            partidos.append(opt['votes']) 
+            out.append({
+                **opt,
+                'escanio': 0,
+                })
+
+        #Inicializamos la lista así para que no se cambie por referencia
+        puntosPorPart = partidos[:]
+        escanosTotales = escanio 
+
+
+        
+        #Realizamos la iteracion tantas veces como escaños a repartir haya
+        i = 0
+        while(i<escanosTotales):
+        #Sacamos el partido con más votos ahora mismo
+            maxVotos = max(puntosPorPart) 
+        #Lo localizamos en index
+            index = puntosPorPart.index(maxVotos)
+        #Si es distinto a 0 le aplicamos sante lague a ese partido y recalculamos sus votos
+            if maxVotos != 0:
+                
+                escanos[index] += 1 
+                out[index]['escanio'] += 1 
+                puntosPorPart[index] = partidos[index] / ((2*escanos[index])+1) 
+
+            i=i+1
+            
+        out.sort(key=lambda x: -x['escanio'])
+        if (cands != []):
+            out = self.paridad(out, cands)
+        return Response(out)
     
     def post(self, request):
         """
@@ -443,6 +492,8 @@ class PostProcView(APIView):
             return self.saintelague(self.borda(opts),s,cands)
         elif t == 'SAINTELAGUETCP':
             return self.saintelague(opts,s,cands)
+        elif t == 'SAINTELAGUENORM':
+            return self.saintelagueNorm(opts,s,cands)
         elif t == 'PARIDAD':
             comprueba= self.comprobar(opts,cands)
             if comprueba:
