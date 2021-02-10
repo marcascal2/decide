@@ -1774,4 +1774,102 @@ class PostProcTestCase(APITestCase):
         self.assertEqual(values, resultado_esperado)
 
     
+    def test_simple_borda(self):
+        data = {
+            'type': 'SIMPLEBORDA',
+            'escanio':40,
+            'options': [
+                { 'option': 'Option 1', 'number': 1, 'votes': [3,8,1] },
+                { 'option': 'Option 2', 'number': 2, 'votes': [4,2,6]},
+                { 'option': 'Option 3', 'number': 3, 'votes': [7,2,3]},
 
+            ]
+        }
+        expected_result = [
+            { 'option': 'Option 3', 'number': 3, 'votes': 28, 'escanio': 15 },
+            { 'option': 'Option 1', 'number': 1, 'votes': 26, 'escanio': 14 },
+            { 'option': 'Option 2', 'number': 2, 'votes': 22, 'escanio': 11 }
+        ]
+
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+
+    
+    def test_mgu_borda(self):
+        data = {
+            'type': 'MGUBORDA',
+            'escanio':40,
+            'options': [
+                { 'option': 'Option 1', 'number': 1, 'votes': [3,8,1] },
+                { 'option': 'Option 2', 'number': 2, 'votes': [4,2,6]},
+                { 'option': 'Option 3', 'number': 3, 'votes': [7,2,3]},
+
+            ]
+        }
+        expected_result = [
+            { 'option': 'Option 3', 'number': 3, 'votes': 28, 'escanio': 40 },
+            { 'option': 'Option 1', 'number': 1, 'votes': 26, 'escanio': 0 },
+            { 'option': 'Option 2', 'number': 2, 'votes': 22, 'escanio': 0 }
+        ]
+
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+
+    def test_dhont_borda(self):
+        data = {
+            'type': 'DHONDTBORDA',
+            'escanio':40,
+            'options': [
+                { 'option': 'Option 1', 'number': 1, 'votes': [3,8,1] },
+                { 'option': 'Option 2', 'number': 2, 'votes': [4,2,6]},
+                { 'option': 'Option 3', 'number': 3, 'votes': [7,2,3]},
+
+            ]
+        }
+        expected_result = [
+            { 'option': 'Option 3', 'number': 3, 'votes': 28, 'escanio': 15 },
+            { 'option': 'Option 1', 'number': 1, 'votes': 26, 'escanio': 14 },
+            { 'option': 'Option 2', 'number': 2, 'votes': 22, 'escanio': 11 }
+        ]
+
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)
+
+
+
+
+    def test_saintelague_borda(self):
+        data = {
+            'type': 'SAINTELAGUEBORDA',
+            'escanio':40,
+            'options': [
+                { 'option': 'Option 1', 'number': 1, 'votes': [3,8,1] },
+                { 'option': 'Option 2', 'number': 2, 'votes': [4,2,6]},
+                { 'option': 'Option 3', 'number': 3, 'votes': [7,2,3]},
+
+            ]
+        }
+        expected_result = [
+            { 'option': 'Option 3', 'number': 3, 'votes': 28, 'escanio': 15 },
+            { 'option': 'Option 1', 'number': 1, 'votes': 26, 'escanio': 14 },
+            { 'option': 'Option 2', 'number': 2, 'votes': 22, 'escanio': 11 }
+        ]
+
+
+        response = self.client.post('/postproc/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        values = response.json()
+        self.assertEqual(values, expected_result)

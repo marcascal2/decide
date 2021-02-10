@@ -174,6 +174,21 @@ class PostProcView(APIView):
                         out[ng]['escanio'] =r
         return out
     
+    
+    def borda(self, options):
+        out = options
+
+        for o in out:
+
+            puntosT= 0
+            for i in range(0,len(o['votes'])):
+                puntosT += o['votes'][i] * (len(o['votes'])-i)
+
+            o['votes'] =  puntosT
+
+        out.sort(key=lambda x: -x['votes'])
+        return out
+
     def comprobar(self,opts,cands):
         comprueba = False   
         out = []
@@ -316,6 +331,8 @@ class PostProcView(APIView):
             return self.identity(opts)
         elif t == 'DHONDT':
             return self.dhondt(opts, request.data.get('escanio'),cands)
+        elif t == 'DHONDTBORDA':
+            return self.dhondt(self.borda(opts), request.data.get('escanio'),cands)
         elif t == 'SIMPLE':
             return Response(self.simple(opts,s))
         
@@ -334,6 +351,10 @@ class PostProcView(APIView):
                 return Response({'message' : 'la diferencia del numero de hombres y mujeres es de más de un 60% - 40%'})
         elif t == 'MGU':
             return Response(self.mgu(opts,s))
+        elif t == 'MGUBORDA':
+            return Response(self.mgu(self.borda(opts),s))
+        elif t == 'SIMPLEBORDA':
+            return Response(self.simple(self.borda(opts),s))
         elif t == 'MGUCP':
             comprueba= self.comprobar(opts,cands)
             if comprueba:
@@ -344,6 +365,8 @@ class PostProcView(APIView):
                 return Response({'message' : 'la diferencia del numero de hombres y mujeres es de más de un 60% - 40%'})        
         elif t == 'SAINTELAGUE':
             return self.saintelague(opts,s,cands)
+        elif t == 'SAINTELAGUEBORDA':
+            return self.saintelague(self.borda(opts),s,cands)
         elif t == 'SAINTELAGUETCP':
             return self.saintelague(opts,s,cands)
         elif t == 'PARIDAD':
