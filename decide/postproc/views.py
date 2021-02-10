@@ -312,8 +312,24 @@ class PostProcView(APIView):
                     escanios = 0
                     break
         return out
+    
+    def imperiali(self, options, escanio):
+       #Recorremos todas las opciones e iniciamos los escaños a 0
+        for opt in options:
+            opt['escanio'] = 0
+        #Recorremos todos los escaños a repartir teniendo en cuenta los ya asignados  
+        for i in range(escanio):
+            max(options,
+                key = lambda x : x['votes'] / ( x['escanio'] + 2)) ['escanio'] += 1 
+           
+            
+           
+            #Seleccionamos la lista a iterar y aplicamos la formula imperiali q =m(votos totales)/n(escaños) +2) escaños =mi/q
+        #Ordenamos por el número de escaños en orden descendiente
+        options.sort(key=lambda x: -x['escanio'])
+        return Response(options)
       
-    def saintelague(self, options, escanio,cands):
+    def saintelague(self, options, escanio, cands):
         
         #Definimos las variables
 
@@ -433,4 +449,6 @@ class PostProcView(APIView):
                 return Response(self.paridad(opts,cands))
             else:
                 return Response({'message' : 'la diferencia del numero de hombres y mujeres es de más de un 60% - 40%'})        
+        elif t == 'IMPERIALI':
+            return self.imperiali(opts, int(s))
         return Response({})
