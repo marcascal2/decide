@@ -1780,15 +1780,15 @@ class PostProcTestCase(APITestCase):
             'escanio':40,
             'options': [
                 { 'option': 'Option 1', 'number': 1, 'votes': [3,8,1] },
-                { 'option': 'Option 2', 'number': 2, 'votes': [4,2,6]},
+                { 'option': 'Option 2', 'number': 2, 'votes': [2,2,8]},
                 { 'option': 'Option 3', 'number': 3, 'votes': [7,2,3]},
 
             ]
         }
         expected_result = [
-            { 'option': 'Option 3', 'number': 3, 'votes': 28, 'escanio': 15 },
+            { 'option': 'Option 3', 'number': 3, 'votes': 28, 'escanio': 16 },
             { 'option': 'Option 1', 'number': 1, 'votes': 26, 'escanio': 14 },
-            { 'option': 'Option 2', 'number': 2, 'votes': 22, 'escanio': 11 }
+            { 'option': 'Option 2', 'number': 2, 'votes': 18, 'escanio': 10 }
         ]
 
 
@@ -1805,7 +1805,7 @@ class PostProcTestCase(APITestCase):
             'escanio':40,
             'options': [
                 { 'option': 'Option 1', 'number': 1, 'votes': [3,8,1] },
-                { 'option': 'Option 2', 'number': 2, 'votes': [4,2,6]},
+                { 'option': 'Option 2', 'number': 2, 'votes': [2,2,8]},
                 { 'option': 'Option 3', 'number': 3, 'votes': [7,2,3]},
 
             ]
@@ -1813,7 +1813,7 @@ class PostProcTestCase(APITestCase):
         expected_result = [
             { 'option': 'Option 3', 'number': 3, 'votes': 28, 'escanio': 40 },
             { 'option': 'Option 1', 'number': 1, 'votes': 26, 'escanio': 0 },
-            { 'option': 'Option 2', 'number': 2, 'votes': 22, 'escanio': 0 }
+            { 'option': 'Option 2', 'number': 2, 'votes': 18, 'escanio': 0 }
         ]
 
 
@@ -1829,15 +1829,15 @@ class PostProcTestCase(APITestCase):
             'escanio':40,
             'options': [
                 { 'option': 'Option 1', 'number': 1, 'votes': [3,8,1] },
-                { 'option': 'Option 2', 'number': 2, 'votes': [4,2,6]},
+                { 'option': 'Option 2', 'number': 2, 'votes': [2,2,8]},
                 { 'option': 'Option 3', 'number': 3, 'votes': [7,2,3]},
 
             ]
         }
         expected_result = [
-            { 'option': 'Option 3', 'number': 3, 'votes': 28, 'escanio': 15 },
+            { 'option': 'Option 3', 'number': 3, 'votes': 28, 'escanio': 16 },
             { 'option': 'Option 1', 'number': 1, 'votes': 26, 'escanio': 14 },
-            { 'option': 'Option 2', 'number': 2, 'votes': 22, 'escanio': 11 }
+            { 'option': 'Option 2', 'number': 2, 'votes': 18, 'escanio': 10 }
         ]
 
 
@@ -1856,15 +1856,14 @@ class PostProcTestCase(APITestCase):
             'escanio':40,
             'options': [
                 { 'option': 'Option 1', 'number': 1, 'votes': [3,8,1] },
-                { 'option': 'Option 2', 'number': 2, 'votes': [4,2,6]},
+                { 'option': 'Option 2', 'number': 2, 'votes': [2,2,8]},
                 { 'option': 'Option 3', 'number': 3, 'votes': [7,2,3]},
-
             ]
         }
         expected_result = [
-            { 'option': 'Option 3', 'number': 3, 'votes': 28, 'escanio': 15 },
+            { 'option': 'Option 3', 'number': 3, 'votes': 28, 'escanio': 16 },
             { 'option': 'Option 1', 'number': 1, 'votes': 26, 'escanio': 14 },
-            { 'option': 'Option 2', 'number': 2, 'votes': 22, 'escanio': 11 }
+            { 'option': 'Option 2', 'number': 2, 'votes': 18, 'escanio': 10 }
         ]
 
 
