@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
+import django_heroku
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,7 +26,7 @@ SECRET_KEY = '^##ydkswfu0+=ofw0l#$kv^8n)0$i(qd&d&ol#p9!b$8*5%j1+'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', '.herokuapp.com']
 
 
 # Application definition
@@ -69,18 +70,18 @@ MODULES = [
     'voting',
 ]
 
-BASEURL = 'http://decide-part-zumeta.herokuapp.com/'
+BASEURL = 'https://creandoherokuegc.herokuapp.com'
 
 APIS = {
-    'authentication': BASEURL,
-    'base': BASEURL,
-    'booth': BASEURL,
-    'census': BASEURL,
-    'mixnet': BASEURL,
-    'postproc': BASEURL,
-    'store': BASEURL,
-    'visualizer': BASEURL,
-    'voting': BASEURL,
+    'authentication': 'https://creandoherokuegc.herokuapp.com',
+    'base': 'https://creandoherokuegc.herokuapp.com',
+    'booth': 'https://creandoherokuegc.herokuapp.com',
+    'census': 'https://creandoherokuegc.herokuapp.com',
+    'mixnet': 'https://creandoherokuegc.herokuapp.com',
+    'postproc': 'https://creandoherokuegc.herokuapp.com',
+    'store': 'https://creandoherokuegc.herokuapp.com',
+    'visualizer': 'https://creandoherokuegc.herokuapp.com',
+    'voting': 'https://creandoherokuegc.herokuapp.com',
 }
 
 MIDDLEWARE = [
@@ -179,7 +180,8 @@ DEFAULT_VERSION = 'v1'
 try:
     from local_settings import *
 except ImportError:
-    print("local_settings.py not found")
+    #print("local_settings.py not found")
+    pass
 
 # loading jsonnet config
 if os.path.exists("config.jsonnet"):
