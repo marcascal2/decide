@@ -8,7 +8,7 @@ from base.serializers import AuthSerializer
 from django.conf import settings
 
 
-# number of bits for the key, all auths should use the same number of bits
+# number of bits for the key, all auths should use the same number of bitss
 B = settings.KEYBITS
 
 
