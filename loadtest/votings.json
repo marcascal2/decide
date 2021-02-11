@@ -1,0 +1,104 @@
+
+{
+    "voting1": [
+        {
+            "type": "DHONDT",
+            "options": [
+                {"option": "Option 1", "number": 1, "votes": 510},
+                {"option": "Option 2", "number": 2, "votes": 250},
+                {"option": "Option 3", "number": 3, "votes": 450},
+                {"option": "Option 4", "number": 4, "votes": 300},
+                {"option": "Option 5", "number": 5, "votes": 150}
+            ],
+            "escanio": 7,
+            "candidates": []
+        }
+    ],
+
+    "voting2": [
+        {
+            "type": "SAINTELAGUE",
+            "options": [
+                {"option": "Option 1", "number": 1, "votes": 32},
+                {"option": "Option 2", "number": 2, "votes": 20},
+                {"option": "Option 3", "number": 3, "votes": 58}
+            ],
+            "escanio": 5,
+            "candidates": []
+        }
+    ],
+
+    "voting3": [
+        {
+            "type": "MGU",
+            "options": [
+                {"option": "Option 1", "number": 1, "votes": 60},
+                {"option": "Option 2", "number": 2, "votes": 36},
+                {"option": "Option 3", "number": 3, "votes": 84}
+            ],
+            "escanio": 6,
+            "candidates": [{"id": "1", "sex": "M",  "edad":23},
+                {"id": "2", "sex": "H",  "edad":42},
+                {"id": "3", "sex": "H",  "edad":29},
+                {"id": "4", "sex": "M",  "edad":26},
+                {"id": "5", "sex": "H",  "edad":61},
+                {"id": "6", "sex": "H",  "edad":32},
+                {"id": "7", "sex": "H",  "edad":42},
+                {"id": "8", "sex": "M",  "edad":27},
+                {"id": "9", "sex": "M",  "edad":25},
+                {"id": "10", "sex": "M",  "edad":56}]
+        },
+        {
+            "type": "MGUCP",
+            "options": [
+                {"option": "Option 1", "number": 1, "votes": 60},
+                {"option": "Option 2", "number": 2, "votes": 36},
+                {"option": "Option 3", "number": 3, "votes": 84}
+            ],
+            "escanio": 6,
+            "candidates": [{"id": "1", "sex": "M",  "edad":23},
+                {"id": "2", "sex": "H",  "edad":42},
+                {"id": "3", "sex": "H",  "edad":29},
+                {"id": "4", "sex": "M",  "edad":26},
+                {"id": "5", "sex": "H",  "edad":61},
+                {"id": "6", "sex": "H",  "edad":32},
+                {"id": "7", "sex": "H",  "edad":42},
+                {"id": "8", "sex": "M",  "edad":27},
+                {"id": "9", "sex": "M",  "edad":25},
+                {"id": "10", "sex": "M",  "edad":56}]
+        },
+        {
+            "type": "PARIDAD",
+            "options": [
+                {"option": "Option 1", "number": 1, "votes": 60},
+                {"option": "Option 2", "number": 2, "votes": 36},
+                {"option": "Option 3", "number": 3, "votes": 84}
+            ],
+            "escanio": 6,
+            "candidates": [{"id": "1", "sex": "M",  "edad":23},
+                {"id": "2", "sex": "H",  "edad":42},
+                {"id": "3", "sex": "H",  "edad":29},
+                {"id": "4", "sex": "M",  "edad":26},
+                {"id": "5", "sex": "H",  "edad":61},
+                {"id": "6", "sex": "H",  "edad":32},
+                {"id": "7", "sex": "H",  "edad":42},
+                {"id": "8", "sex": "M",  "edad":27},
+                {"id": "9", "sex": "M",  "edad":25},
+                {"id": "10", "sex": "M",  "edad":56}]
+        }
+    ],
+
+    "voting4": [
+        {
+            "type": "SIMPLE",
+            "options": [
+                {"option": "Option 1", "number": 1, "votes": 432},
+                {"option": "Option 2", "number": 2, "votes": 943},
+                {"option": "Option 3", "number": 3, "votes": 645},
+                {"option": "Option 4", "number": 4, "votes": 213}
+            ],
+            "escanio": 10,
+            "candidates": []
+        }
+    ]
+}
