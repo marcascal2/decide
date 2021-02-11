@@ -16,10 +16,10 @@ install:
 script:
 - cd decide
 - cp travis_local_settings.py local_settings.py
-deploy:
-  provider: heroku
-  app: decide-part-zumeta
-  strategy: git
-  api_key: $HEROKU_TOKEN
-  on:
-    branch: develop
+#deploy:
+#  provider: heroku
+#  app: decide-part-zumeta
+#  strategy: git
+#  api_key: $HEROKU_TOKEN
+#  on:
+#    branch: develop
