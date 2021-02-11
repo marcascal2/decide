@@ -19,7 +19,6 @@ script:
 - ./manage.py makemigrations
 - ./manage.py migrate
 - python manage.py collectstatic
-- coverage run --branch --source=. ./manage.py test --keepdb
 deploy:
   provider: heroku
   app: decide-part-zumeta
