@@ -19,10 +19,10 @@ script:
 - ./manage.py makemigrations
 - ./manage.py migrate
 - python manage.py collectstatic
-deploy:
-  provider: heroku
-  app: decide-part-zumeta
-  strategy: git
-  api_key: $HEROKU_TOKEN
-  on:
-    branch: master
+#deploy:
+ # provider: heroku
+  #app: decide-part-zumeta
+  #strategy: git
+  #api_key: $HEROKU_TOKEN
+  #on:
+  #  branch: master
