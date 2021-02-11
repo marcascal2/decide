@@ -21,5 +21,3 @@ deploy:
   app: mcuatropostproc
   strategy: git
   api_key: $HEROKU_TOKEN
-  on:
-    branch: decide-part-zumeta-postproc
