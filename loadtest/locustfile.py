@@ -39,8 +39,8 @@ class DefVoters(SequentialTaskSet):
 
     @task
     def getuser(self):
-        self.usr= self.client.post("/authentication/getuser/", self.token).json()
-        print( str(self.user))
+        self.usr = self.client.post("/authentication/getuser/", self.token).json()
+        print(str(self.user))
 
     @task
     def voting(self):
@@ -58,18 +58,41 @@ class DefVoters(SequentialTaskSet):
             "voting": VOTING
         }), headers=headers)
 
-
     def on_quit(self):
         self.voter = None
+
+
+class DefPostproc(SequentialTaskSet):
+
+    def on_start(self):
+        with open('votings.json') as f:
+            self.votings = json.loads(f.read())
+            self.voting = choice(list(self.votings.items()))
+
+    @task
+    def do_postproc(self):
+        json = self.voting
+        data = json[1][0]
+        self.client.post('/postproc/', json=data)
+
+    def on_quit(self):
+        self.voting = None
+
 
 class Visualizer(HttpUser):
     host = HOST
     tasks = [DefVisualizer]
-    wait_time = between(3,5)
-
+    wait_time = between(3, 5)
 
 
 class Voters(HttpUser):
     host = HOST
     tasks = [DefVoters]
-    wait_time= between(3,5)
+    wait_time = between(3, 5)
+
+
+class Postproc(HttpUser):
+    host = HOST
+    tasks = [DefPostproc]
+    wait_time = between(3, 5)
+

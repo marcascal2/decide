@@ -14,7 +14,7 @@
 # import time
 # import os
 
-# class TestGroupingbyadscripciontest(StaticLiveServerTestCase):
+# class GroupingByAdscripcionTest(StaticLiveServerTestCase):
   
 #   def setUp(self):
 #     self.base = BaseTestCase()

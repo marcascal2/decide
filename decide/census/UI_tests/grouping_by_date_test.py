@@ -13,7 +13,7 @@
 # import time
 # import os
 
-# class TestGroupingbyvotingtest(StaticLiveServerTestCase):
+# class GroupingByDateTest(StaticLiveServerTestCase):
   
 #     def setUp(self):
 #         self.base = BaseTestCase()

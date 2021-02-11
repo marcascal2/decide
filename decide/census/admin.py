@@ -8,6 +8,7 @@ from django.urls import path
 from voting.models import Voting
 from datetime import datetime
 from .models import Census, UserData
+from django.contrib.auth.models import User
 
 
 class CensusAdmin(admin.ModelAdmin):
@@ -48,25 +49,36 @@ class CensusAdmin(admin.ModelAdmin):
             file = forms.FileField()
 
         def save_import(f):
+            census_list = []
             for row in f:
                 if not row.startswith(b'id'):
                     cadena = row.decode('utf-8')
                     ids = cadena.split(',')
                     voting_id = ids[1]
+                    voting = Voting.objects.get(id=voting_id)
                     voter_id = ids[2]
+                    user = User.objects.get(id=voter_id)
+                    if user.userdata is not None:
+                        edad = user.userdata.age
+                        if edad < voting.min_age or edad > voting.max_age:
+                            for census in census_list:
+                                census.delete()
+                            return render(request, 'age_error.html', locals())
                     adscripcion = ids[3]
                     dat = ids[4]
                     objDate = datetime.strptime(dat, '%Y-%m-%d')
                     census = Census(voting_id=voting_id, voter_id=voter_id, adscripcion=adscripcion, date=objDate)
+                    census_list.append(census)
                     census.save()
+
+            return render(request, 'succes.html', locals())
 
         form = UploadDocumentForm()
         if request.method == 'POST':
             form = UploadDocumentForm(request.POST, request.FILES)
             if form.is_valid():
                 try:
-                    save_import(request.FILES['file'])
-                    return render(request, 'succes.html', locals())
+                    return save_import(request.FILES['file'])
                 except:
                     return render(request, 'import_error.html', locals())
         else:

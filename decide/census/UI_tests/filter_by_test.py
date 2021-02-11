@@ -12,7 +12,7 @@
 # from datetime import date
 # import time
 
-# class TestGroupingbyvotingtest(StaticLiveServerTestCase):
+# class FilterByTest(StaticLiveServerTestCase):
     
 #     def setUp(self):
 #         self.base = BaseTestCase()
@@ -50,7 +50,7 @@
 #         self.driver.quit()
 #         self.base.tearDown()
 
-#     def filter_by_test(self):
+#     def test_search_adscripcion(self):
 #         self.driver.get(f'{self.live_server_url}/admin/')
 #         self.driver.find_element_by_id('id_username').send_keys("admin")
 #         self.driver.find_element_by_id('id_password').send_keys("qwerty",Keys.ENTER)
@@ -60,3 +60,54 @@
 #         self.driver.find_element(By.ID, "q").send_keys("Colegio1", Keys.ENTER)
 #         assert self.driver.find_element(By.ID, "adscripcion-column-1").text == "Colegio1"
 #         assert self.driver.find_element(By.ID, "adscripcion-column-2").text == "Colegio1"
+
+#     def test_search_voting(self):                    
+#         self.driver.get(f'{self.live_server_url}/census/login')
+#         self.driver.find_element(By.ID, "id_username").send_keys("admin")
+#         self.driver.find_element(By.ID, "id_password").send_keys("qwerty")
+#         self.driver.find_element(By.ID, "loginForm").submit()
+        
+#         time.sleep(1)
+
+#         self.driver.find_element(By.ID, "q").send_keys("voting_testing1")
+#         self.driver.find_element(By.ID, "search_form").submit()
+
+#         time.sleep(1)
+
+#         elements = self.driver.find_elements(By.ID, "linea_votings")
+#         assert len(elements) < 2
+#         assert len(elements) > 0
+
+#     def test_search_voter1(self):                    
+#         self.driver.get(f'{self.live_server_url}/census/login')
+#         self.driver.find_element(By.ID, "id_username").send_keys("admin")
+#         self.driver.find_element(By.ID, "id_password").send_keys("qwerty")
+#         self.driver.find_element(By.ID, "loginForm").submit()
+
+#         time.sleep(1)
+        
+#         self.driver.find_element(By.ID, "q").send_keys("voter1")
+#         self.driver.find_element(By.ID, "search_form").submit()
+
+#         time.sleep(1)
+
+#         elements = self.driver.find_elements(By.ID, "linea_votings")
+#         assert len(elements) < 2
+#         assert len(elements) > 0
+
+#     def test_search_voter(self):                    
+#         self.driver.get(f'{self.live_server_url}/census/login')
+#         self.driver.find_element(By.ID, "id_username").send_keys("admin")
+#         self.driver.find_element(By.ID, "id_password").send_keys("qwerty")
+#         self.driver.find_element(By.ID, "loginForm").submit()
+
+#         time.sleep(1)
+        
+#         self.driver.find_element(By.ID, "q").send_keys("voter")
+#         self.driver.find_element(By.ID, "search_form").submit()
+
+#         time.sleep(1)
+
+#         elements = self.driver.find_elements(By.ID, "linea_votings")
+#         assert len(elements) < 3
+#         assert len(elements) > 1
