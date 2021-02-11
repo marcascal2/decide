@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 import os
 import django_heroku
 
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -70,18 +71,18 @@ MODULES = [
     'voting',
 ]
 
-BASEURL = 'https://creandoherokuegc.herokuapp.com'
+BASEURL = 'https://mcuatropostproc.herokuapp.com'
 
 APIS = {
-    'authentication': 'https://creandoherokuegc.herokuapp.com',
-    'base': 'https://creandoherokuegc.herokuapp.com',
-    'booth': 'https://creandoherokuegc.herokuapp.com',
-    'census': 'https://creandoherokuegc.herokuapp.com',
-    'mixnet': 'https://creandoherokuegc.herokuapp.com',
-    'postproc': 'https://creandoherokuegc.herokuapp.com',
-    'store': 'https://creandoherokuegc.herokuapp.com',
-    'visualizer': 'https://creandoherokuegc.herokuapp.com',
-    'voting': 'https://creandoherokuegc.herokuapp.com',
+    'authentication': BASEURL,
+    'base': BASEURL,
+    'booth': BASEURL,
+    'census': BASEURL,
+    'mixnet': BASEURL,
+    'postproc': BASEURL,
+    'store': BASEURL,
+    'visualizer': BASEURL,
+    'voting': BASEURL,
 }
 
 MIDDLEWARE = [
@@ -194,5 +195,4 @@ if os.path.exists("config.jsonnet"):
 
 INSTALLED_APPS = INSTALLED_APPS + MODULES
 
-import django_heroku
 django_heroku.settings(locals())
