@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
-import django_heroku
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -71,7 +70,7 @@ MODULES = [
     'voting',
 ]
 
-BASEURL = 'https://defensaegcm4.herokuapp.com'
+BASEURL = 'http://decide-part-zumeta.herokuapp.com'
 
 APIS = {
     'authentication': BASEURL,
