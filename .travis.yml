@@ -18,8 +18,8 @@ script:
 - coverage run --branch --source=. ./manage.py test --keepdb
 deploy:
   provider: heroku
-  app: decide-part-zumeta
+  app: mcuatropostproc
   strategy: git
   api_key: $HEROKU_TOKEN
   on:
-    branch: master
+    branch: decide-part-zumeta-postproc
